@@ -1,0 +1,9 @@
+*/bin/*
+*/.vs/*
+*/obj/*
+*/TestResults/*
+*.suo
+*.vsmdi
+*.user
+*_ReSharper*
+*.ide

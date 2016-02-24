@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{630A9CC5-328A-4569-8CBB-568410D7ADB3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WarLight.AI</RootNamespace>
+    <AssemblyName>WarLight.AI</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ref\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BotFactory.cs" />
+    <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
+    <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
+    <Compile Include="Common\PlayExported.cs" />
+    <Compile Include="Common\PlayBots.cs" />
+    <Compile Include="Common\PlayFFA.cs" />
+    <Compile Include="Common\PlayAI.cs" />
+    <Compile Include="Common\PlayHuman.cs" />
+    <Compile Include="Common\IWarLightAI.cs" />
+    <Compile Include="Prod\BotMain.cs" />
+    <Compile Include="Prod\PickTerritories.cs" />
+    <Compile Include="Prod\TakePlayingTurn.cs" />
+    <Compile Include="Wunderwaffe\BasicAlgorithms\DistanceCalculator.cs" />
+    <Compile Include="Wunderwaffe\Bot\BotBonus.cs" />
+    <Compile Include="Common\AIGamesParser.cs" />
+    <Compile Include="Wunderwaffe\Bot\BotMain.cs" />
+    <Compile Include="Wunderwaffe\Bot\DeploymentHistory.cs" />
+    <Compile Include="Wunderwaffe\Bot\HistoryTracker.cs" />
+    <Compile Include="Wunderwaffe\Bot\BotMap.cs" />
+    <Compile Include="Wunderwaffe\Bot\BotTerritory.cs" />
+    <Compile Include="Common\Util\AILog.cs" />
+    <Compile Include="Common\GameObjects\Armies.cs" />
+    <Compile Include="Common\Util\Assert.cs" />
+    <Compile Include="Common\Comm\BotGameAPI.cs" />
+    <Compile Include="Common\GameObjects\CardInstance.cs" />
+    <Compile Include="Common\EntryPoint.cs" />
+    <Compile Include="Common\GameObjects\GameObject.cs" />
+    <Compile Include="Common\Comm\HumanGameAPI.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderDiscard.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardFogged.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrder.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderAttackTransfer.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderDeploy.cs" />
+    <Compile Include="Common\Comm\Communication.cs" />
+    <Compile Include="Common\GameObjects\GamePlayer.cs" />
+    <Compile Include="Common\GameObjects\GameSettings.cs" />
+    <Compile Include="Common\GameObjects\GameStanding.cs" />
+    <Compile Include="Common\GameObjects\GameTurn.cs" />
+    <Compile Include="Common\GameObjects\IDTypes.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCard.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardDiplomacy.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardSpy.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardReconnaissance.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardSurveillance.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardAbandon.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardSanctions.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardBomb.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardBlockade.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardOrderPriority.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardOrderDelay.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardGift.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardAirlift.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPlayCardReinforcement.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderReceiveCard.cs" />
+    <Compile Include="Common\GameObjects\Orders\ActiveCardWoreOff.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderStateTransition.cs" />
+    <Compile Include="Common\GameObjects\PlayerIncome.cs" />
+    <Compile Include="Common\GameObjects\PlayerInvite.cs" />
+    <Compile Include="Common\Util\RandomUtility.cs" />
+    <Compile Include="Common\GameObjects\SpecialUnit.cs" />
+    <Compile Include="Common\GameObjects\TerritoryStanding.cs" />
+    <Compile Include="Wunderwaffe\Debug\Debug.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\ExpansionMapUpdater.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\GameStateEvaluator.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\LastVisibleMapUpdater.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\MapUpdater.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\OpponentDeploymentGuesser.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\PicksEvaluator.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\TerritoryValueCalculator.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\BonusExpansionValueCalculator.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\BonusValueCalculator.cs" />
+    <Compile Include="Wunderwaffe\Heuristics\PlayerExpansionValueHeuristic.cs" />
+    <Compile Include="Wunderwaffe\Heuristics\BonusExpansionValueHeuristic.cs" />
+    <Compile Include="Common\GameObjects\MapDetails.cs" />
+    <Compile Include="Common\GameObjects\TerritoryDetails.cs" />
+    <Compile Include="Common\GameObjects\BonusDetails.cs" />
+    <Compile Include="Wunderwaffe\Move\BotOrderAttackTransfer.cs" />
+    <Compile Include="Wunderwaffe\Move\BotOrder.cs" />
+    <Compile Include="Wunderwaffe\Move\BotOrderGeneric.cs" />
+    <Compile Include="Wunderwaffe\Move\Moves.cs" />
+    <Compile Include="Wunderwaffe\Move\MovesCleaner.cs" />
+    <Compile Include="Wunderwaffe\Move\MovesCommitter.cs" />
+    <Compile Include="Wunderwaffe\Move\BotOrderDeploy.cs" />
+    <Compile Include="Wunderwaffe\Move\SameMovesJoiner.cs" />
+    <Compile Include="Wunderwaffe\Strategy\MovesCalculator.cs" />
+    <Compile Include="Wunderwaffe\Strategy\MovesScheduler.cs" />
+    <Compile Include="Wunderwaffe\Strategy\MovesScheduler2.cs" />
+    <Compile Include="Wunderwaffe\Strategy\RunawayStrategy.cs" />
+    <Compile Include="Wunderwaffe\Strategy\TakeTerritoriesTaskCalculator.cs" />
+    <Compile Include="Wunderwaffe\Strategy\TransferMovesChooser.cs" />
+    <Compile Include="Wunderwaffe\Tasks\AttackTerritoriesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\BonusRunTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\BreakTerritoriesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\BreakTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\DefendTerritoriesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\DefendTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\DefendBonusTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\DelayTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\DeleteBadMovesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\FlankBonusTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\JoinInAttacksTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\MoveIdleArmiesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\NoPlanAttackBestTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\NoPlanBreakBestTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\NoPlanCleanupTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\NoPlanDefendBestTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\NoPlanTryoutAttackTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\OneHitBreakTerritoryTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\PlayCardsTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\PreventOpponentExpandBonusTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\PreventTerritoriesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\PreventBonusTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\TakeBonusOverTask.cs" />
+    <Compile Include="Common\Util\SharedUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
