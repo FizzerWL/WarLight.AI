@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -180,7 +181,7 @@ namespace WarLight.AI
 
             var ret = new GameTurn();
 
-            ret.Date = DateTime.Parse((string)jToken["date"]);
+            ret.Date = DateTime.Parse((string)jToken["date"], new CultureInfo("en-US"));
             ret.Orders = ReadOrders(jToken["orders"]);
             return ret;
         }
