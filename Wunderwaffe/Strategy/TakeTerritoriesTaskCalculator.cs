@@ -21,27 +21,26 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             this.BotState = state;
         }
 
-        public Moves CalculateOneStepExpandBonusTask(int maxDeployment, BotBonus
-        Bonus, bool acceptStackOnly, BotMap workingMap, BotTerritory.DeploymentType conservativeLevel)
+        public Moves CalculateOneStepExpandBonusTask(int maxDeployment, BotBonus bonus, bool acceptStackOnly, BotMap workingMap, BotTerritory.DeploymentType conservativeLevel)
         {
             var outvar = new Moves();
             if (maxDeployment == -1)
-            {
                 maxDeployment = 1000;
-            }
-            var visibleNeutralTerritories = Bonus.GetVisibleNeutralTerritories();
+
+            var visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories();
             var territoriesToRemove = new List<BotTerritory>();
             foreach (var territory in visibleNeutralTerritories)
             {
                 if (workingMap.Territories[territory.ID].OwnerPlayerID == BotState.Me.ID)
                     territoriesToRemove.Add(territory);
             }
+
             visibleNeutralTerritories.RemoveAll(territoriesToRemove);
             if (visibleNeutralTerritories.Count == 0)
                 return null;
 
             var sortedNeutralTerritories = BotState.TerritoryValueCalculator.SortExpansionValue(visibleNeutralTerritories);
-            List<BotTerritory> territoryToTake = new List<BotTerritory>();
+            var territoryToTake = new List<BotTerritory>();
             territoryToTake.Add(sortedNeutralTerritories[0]);
             var takeTerritoryMoves = CalculateTakeTerritoriesTask(-1, territoryToTake, conservativeLevel, "CalculateOneStepExpandBonusTask");
             if (takeTerritoryMoves.GetTotalDeployment() > maxDeployment)

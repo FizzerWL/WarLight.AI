@@ -101,7 +101,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
 
         public bool IsTeammate(PlayerIDType playerID)
         {
-            return Me.Team != PlayerInvite.NoTeam && Players.ContainsKey(playerID) && Players[playerID].Team == Me.Team;
+            return playerID != Me.ID && Me.Team != PlayerInvite.NoTeam && Players.ContainsKey(playerID) && Players[playerID].Team == Me.Team;
         }
         public bool IsTeammateOrUs(PlayerIDType playerID)
         {

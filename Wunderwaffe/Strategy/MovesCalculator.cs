@@ -473,8 +473,8 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             armiesForExpansion = Math.Max(0, armiesForExpansion - armiesUsedForTakeOver);
             if (takenOverBonuses.Count == 0 || isExpandingAfterTakeOverSmart)
             {
-                BotBonus BonusToExpand = null;
-                foreach (BotBonus bonus in sortedAccessibleBonuses)
+                BotBonus bonusToExpand = null;
+                foreach (var bonus in sortedAccessibleBonuses)
                 {
                     if (!takenOverBonuses.Contains(bonus))
                     {
@@ -483,12 +483,12 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                         var condition3 = !opponentBorderPresent || bonus.ExpansionValueCategory > 0;
                         if (condition1 && condition2 && condition3)
                         {
-                            BonusToExpand = bonus;
+                            bonusToExpand = bonus;
                             break;
                         }
                     }
                 }
-                if (BonusToExpand == null)
+                if (bonusToExpand == null)
                     return;
                 var foundMoves = true;
                 var firstStep = true;
@@ -500,20 +500,20 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                     foundMoves = false;
                     if (firstStep == false)
                     {
-                        if (BonusToExpand.ExpansionValueCategory == 0)
+                        if (bonusToExpand.ExpansionValueCategory == 0)
                             return;
                         if (opponentBorderPresent)
                             armiesForExpansion = 0;
-                        if (BonusToExpand.GetOpponentNeighbors().Count > 0)
+                        if (bonusToExpand.GetOpponentNeighbors().Count > 0)
                             return;
                         if (debug == 1)
                             return;
                     }
                     Moves oneStepMoves = null;
                     if (!opponentBorderPresent)
-                        oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, BonusToExpand, false, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
+                        oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, bonusToExpand, false, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
                     else
-                        oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, BonusToExpand, false, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
+                        oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, bonusToExpand, false, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
 
                     if (oneStepMoves != null)
                     {

@@ -10,6 +10,11 @@ namespace WarLight.AI
     {
         public CardInstanceIDType ID;
         public CardIDType CardID;
+
+        public override string ToString()
+        {
+            return GetType().Name + " " + ID;
+        }
     }
 
     public class ReinforcementCardInstance : CardInstance

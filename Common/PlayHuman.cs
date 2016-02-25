@@ -68,7 +68,15 @@ namespace WarLight.AI
                 {
                     var game = HumanGameAPI.GetGameInfo(gameID, null);
 
-                    if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks => HumanGameAPI.SendPicks(game.ID, picks), orders => HumanGameAPI.SendOrders(game.ID, orders, game.NumberOfTurns + 1)))
+                    if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks =>
+                    {
+                        HumanGameAPI.SendPicks(game.ID, picks);
+                        AILog.Log("Sent picks");
+                    }, orders =>
+                    {
+                        HumanGameAPI.SendOrders(game.ID, orders, game.NumberOfTurns + 1);
+                        AILog.Log("Sent orders");
+                    }))
                     {
                         AILog.Log("We're no longer alive");
                         break;

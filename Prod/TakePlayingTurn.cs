@@ -63,7 +63,7 @@ namespace WarLight.AI.Prod
             get
             {
 
-                return Territories.Where(o => Parent.Map.Territories[o.ID].ConnectedTo.Any(c => Parent.Standing.Territories[c].OwnerPlayerID == Parent.Player));
+                return Territories.Where(o => Parent.Map.Territories[o.ID].ConnectedTo.Any(c => Parent.Standing.Territories[c].OwnerPlayerID == Parent.PlayerID));
             }
         }
     }
@@ -74,7 +74,7 @@ namespace WarLight.AI.Prod
         public GameSettings Settings;
         public Dictionary<PlayerIDType, GamePlayer> Players;
 
-        public PlayerIDType Player;
+        public PlayerIDType PlayerID;
         public PlayerIncome Income;
         PlayerIncomeTracker IncomeTracker;
         public List<GameOrder> Orders;
@@ -90,7 +90,7 @@ namespace WarLight.AI.Prod
             this.Standing = noFogStanding;
             this.Players = players;
             this.Settings = settings;
-            this.Player = player;
+            this.PlayerID = player;
             this.Income = income;
             this.Cards = cards;
             this.CardsMustPlay = cardsMustPlay;
@@ -125,7 +125,7 @@ namespace WarLight.AI.Prod
 
         public GamePlayer GamePlayerReference
         {
-            get { return Players[Player]; }
+            get { return Players[PlayerID]; }
         }
         public IEnumerable<TerritoryStanding> Territories
         {
@@ -137,7 +137,7 @@ namespace WarLight.AI.Prod
             get
             {
 
-                return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Any(c => Standing.Territories[c].OwnerPlayerID == Player));
+                return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Any(c => Standing.Territories[c].OwnerPlayerID == PlayerID));
             }
         }
 
@@ -161,20 +161,20 @@ namespace WarLight.AI.Prod
             {
 
                 return Territories
-                    .Where(o => Standing.Territories[o.ID].OwnerPlayerID == Player)
+                    .Where(o => Standing.Territories[o.ID].OwnerPlayerID == PlayerID)
                     .Where(o => this.Map.Territories[o.ID].ConnectedTo
-                        .Any(c => this.Standing.Territories[c].OwnerPlayerID != this.Player));
+                        .Any(c => this.Standing.Territories[c].OwnerPlayerID != this.PlayerID));
             }
         }
 
 
         public bool IsTeammate(PlayerIDType playerID)
         {
-            return Players[Player].Team != PlayerInvite.NoTeam && Players.ContainsKey(playerID) && Players[playerID].Team == Players[Player].Team;
+            return Players[PlayerID].Team != PlayerInvite.NoTeam && Players.ContainsKey(playerID) && Players[playerID].Team == Players[PlayerID].Team;
         }
         public bool IsTeammateOrUs(PlayerIDType playerID)
         {
-            return Player == playerID || IsTeammate(playerID);
+            return PlayerID == playerID || IsTeammate(playerID);
         }
         public int BonusValue(BonusIDType bonusID)
         {
@@ -248,14 +248,14 @@ namespace WarLight.AI.Prod
             if (!Settings.Commanders)
                 return;
 
-            var cmdrTerritory = Standing.Territories.Values.SingleOrDefault(o => o.NumArmies.SpecialUnits.OfType<Commander>().Any(t => t.OwnerID == Player));
+            var cmdrTerritory = Standing.Territories.Values.SingleOrDefault(o => o.NumArmies.SpecialUnits.OfType<Commander>().Any(t => t.OwnerID == PlayerID));
 
             if (cmdrTerritory == null)
                 return;
 
             //Consider this territory and all adjacent territories.  Which is the furthest from any enemy?
             var terrDistances = Map.Territories[cmdrTerritory.ID].ConnectedTo.ConcatOne(cmdrTerritory.ID)
-                .Where(o => Standing.Territories[o].OwnerPlayerID == Player || Standing.Territories[o].NumArmies.DefensePower <= 4) //don't go somewhere that's defended heavily
+                .Where(o => Standing.Territories[o].OwnerPlayerID == PlayerID || Standing.Territories[o].NumArmies.DefensePower <= 4) //don't go somewhere that's defended heavily
                 .ToDictionary(o => o, o => DistanceFromEnemy(o));
 
             var sorted = terrDistances.OrderByDescending(o => o.Value).ToList();
@@ -324,7 +324,7 @@ namespace WarLight.AI.Prod
             if (count == 0)
                 return;
 
-            var ourTerritories = Standing.Territories.Values.Where(o => o.OwnerPlayerID == Player).ToList();
+            var ourTerritories = Standing.Territories.Values.Where(o => o.OwnerPlayerID == PlayerID).ToList();
 
             if (ourTerritories.Count == 0)
                 return;
@@ -349,7 +349,7 @@ namespace WarLight.AI.Prod
 
         private TerritoryIDType OurNearestSpotTo(TerritoryIDType terr)
         {
-            if (Standing.Territories[terr].OwnerPlayerID == Player)
+            if (Standing.Territories[terr].OwnerPlayerID == PlayerID)
                 return terr;
 
             var visited = new HashSet<TerritoryIDType>();
@@ -368,7 +368,7 @@ namespace WarLight.AI.Prod
 
                     foreach (var conn in connections)
                     {
-                        if (Standing.Territories[conn].OwnerPlayerID == Player)
+                        if (Standing.Territories[conn].OwnerPlayerID == PlayerID)
                             return conn;
 
                         visited.Add(conn);
@@ -396,7 +396,7 @@ namespace WarLight.AI.Prod
         {
 
 
-            if (GamePlayerReference.Team != PlayerInvite.NoTeam && Players.Values.Any(o => !o.IsAIOrHumanTurnedIntoAI && o.Team == this.GamePlayerReference.Team && o.State == GamePlayerState.Playing && !o.HasCommittedOrders))
+            if (GamePlayerReference.Team != PlayerInvite.NoTeam && Players.Values.Any(o => o.ID != PlayerID && !o.IsAIOrHumanTurnedIntoAI && o.Team == this.GamePlayerReference.Team && o.State == GamePlayerState.Playing && !o.HasCommittedOrders))
                 return; //If there are any humans on our team that have yet to take their turn, do not play cards.
 
             //For now, just play all reinforcement cards, and discard if we must use any others.
@@ -415,13 +415,13 @@ namespace WarLight.AI.Prod
 
                 if (card is ReinforcementCardInstance)
                 {
-                    AddOrder(GameOrderPlayCardReinforcement.Create(card.ID, Player));
+                    AddOrder(GameOrderPlayCardReinforcement.Create(card.ID, PlayerID));
                     Income.FreeArmies += card.As<ReinforcementCardInstance>().Armies;
                     numMustPlay--;
                 }
                 else if (numMustPlay > 0) //For now, just discard all non-reinforcement cards if we must use the card
                 {
-                    AddOrder(GameOrderDiscard.Create(Player, card.ID));
+                    AddOrder(GameOrderDiscard.Create(PlayerID, card.ID));
                     numMustPlay--;
                 }
             }
@@ -430,7 +430,7 @@ namespace WarLight.AI.Prod
         private bool PlayerControlsBonus(BonusDetails b)
         {
             var c = b.ControlsBonus(Standing);
-            return c.HasValue && c.Value == Player;
+            return c.HasValue && c.Value == PlayerID;
         }
 
         private void ResolveTeamBonuses()
@@ -449,9 +449,9 @@ namespace WarLight.AI.Prod
                     Assert.Fatal(owners.Count >= 2);
 
                     var attacks = bonus.Territories
-                        .Where(o => this.Standing.Territories[o].OwnerPlayerID != this.Player) //Territories in the bonus by our teammate
-                        .Where(o => this.Map.Territories[o].ConnectedTo.Any(c => this.Standing.Territories[c].OwnerPlayerID == this.Player)) //Where we control an adjacent
-                        .Select(o => new PossibleAttack(this, this.Map.Territories[o].ConnectedTo.RandomWhere(c => this.Standing.Territories[c].OwnerPlayerID == this.Player), o));
+                        .Where(o => this.Standing.Territories[o].OwnerPlayerID != this.PlayerID) //Territories in the bonus by our teammate
+                        .Where(o => this.Map.Territories[o].ConnectedTo.Any(c => this.Standing.Territories[c].OwnerPlayerID == this.PlayerID)) //Where we control an adjacent
+                        .Select(o => new PossibleAttack(this, this.Map.Territories[o].ConnectedTo.RandomWhere(c => this.Standing.Territories[c].OwnerPlayerID == this.PlayerID), o));
 
                     if (owners[0].Count() == owners[1].Count())
                     {
@@ -463,7 +463,7 @@ namespace WarLight.AI.Prod
                                 AddAttack(doAttack1.From, doAttack1.To, Settings.AllowAttackOnly ? AttackTransferEnum.Attack : AttackTransferEnum.AttackTransfer, 2, true);
                         }
                     }
-                    else if (owners[0].Key == Player)
+                    else if (owners[0].Key == PlayerID)
                     {
                         //We should take the bonus
                         foreach (var doAttack2 in attacks)
@@ -487,7 +487,7 @@ namespace WarLight.AI.Prod
 
             var start = Environment.TickCount;
 
-            foreach (var landlocked in Standing.Territories.Values.Where(o => o.OwnerPlayerID == this.Player
+            foreach (var landlocked in Standing.Territories.Values.Where(o => o.OwnerPlayerID == this.PlayerID
                 && this.Map.Territories[o.ID].ConnectedTo.All(c => this.IsTeammateOrUs(this.Standing.Territories[c].OwnerPlayerID))
                 && this.GetArmiesAvailable(o.ID) > 1))
             {
@@ -660,7 +660,7 @@ namespace WarLight.AI.Prod
                     specials = specials.Where(o => used.Contains(o.ID) == false).ToArray();
                 }
 
-                AddOrder(GameOrderAttackTransfer.Create(this.Player, from, to, attackTransfer, false, new Armies(numArmies, false, specials), attackTeammates));
+                AddOrder(GameOrderAttackTransfer.Create(this.PlayerID, from, to, attackTransfer, false, new Armies(numArmies, false, specials), attackTeammates));
             }
         }
 
@@ -670,7 +670,7 @@ namespace WarLight.AI.Prod
             var weightedNeighbors = WeightNeighbors();
             //build all possible attacks
             List<PossibleAttack> ret = Territories
-                .Where(o => o.OwnerPlayerID == this.Player)
+                .Where(o => o.OwnerPlayerID == this.PlayerID)
                 .SelectMany(us =>
                     this.Map.Territories[us.ID].ConnectedTo
                     .Select(k => this.Standing.Territories[k])
@@ -777,12 +777,12 @@ namespace WarLight.AI.Prod
         private void Deploy(TerritoryIDType terr, int armies)
         {
             if (!TryDeploy(terr, armies))
-                throw new Exception("Deploy failed.  Territory=" + terr + ", armies=" + armies + ", us=" + Player + ", Income=" + Income.ToString() + ", IncomeTrakcer=" + IncomeTracker.ToString());
+                throw new Exception("Deploy failed.  Territory=" + terr + ", armies=" + armies + ", us=" + PlayerID + ", Income=" + Income.ToString() + ", IncomeTrakcer=" + IncomeTracker.ToString());
         }
 
         private bool TryDeploy(TerritoryIDType terrID, int armies)
         {
-            Assert.Fatal(Standing.Territories[terrID].OwnerPlayerID == Player);
+            Assert.Fatal(Standing.Territories[terrID].OwnerPlayerID == PlayerID);
             Assert.Fatal(armies > 0);
 
             if (!IncomeTracker.TryRecordUsedArmies(terrID, armies))
@@ -794,7 +794,7 @@ namespace WarLight.AI.Prod
             if (existing != null)
                 existing.NumArmies += armies;
             else
-                AddOrder(GameOrderDeploy.Create(armies, Player, terrID));
+                AddOrder(GameOrderDeploy.Create(armies, PlayerID, terrID));
 
             return true;
         }
@@ -815,7 +815,7 @@ namespace WarLight.AI.Prod
 
             AssignExpansionWeights(attackableNeutrals);
 
-            AILog.Log("Before filter, " + Player + "'s " + useArmies + " armies got " + attackableNeutrals.Count + " attackable spots with weights " + string.Join(" ; ", attackableNeutrals.Select(o => o.ToString()).ToArray()));
+            AILog.Log("Before filter, " + PlayerID + "'s " + useArmies + " armies got " + attackableNeutrals.Count + " attackable spots with weights " + string.Join(" ; ", attackableNeutrals.Select(o => o.ToString()).ToArray()));
 
 
             //Sort by weight
@@ -825,7 +825,7 @@ namespace WarLight.AI.Prod
                 .Select(o => o.Key)
                 .ToList();
 
-            AILog.Log(Player + " Got " + expandToList.Count + " items over weight " + minWeight + ", top finals are " + string.Join(",", expandToList.Take(4).Select(o => o.ToString()).ToArray()));
+            AILog.Log(PlayerID + " Got " + expandToList.Count + " items over weight " + minWeight + ", top finals are " + string.Join(",", expandToList.Take(4).Select(o => o.ToString()).ToArray()));
 
             foreach (var expandTo in expandToList)
             {
@@ -839,7 +839,7 @@ namespace WarLight.AI.Prod
 
                 var attackFrom = Map.Territories[expandTo].ConnectedTo
                     .Select(o => this.Standing.Territories[o])
-                    .Where(o => o.OwnerPlayerID == this.Player)
+                    .Where(o => o.OwnerPlayerID == this.PlayerID)
                     .ToDictionary(o => o.ID, o => this.GetArmiesAvailable(o.ID))
                     .OrderByDescending(o => o.Value).First();
 
@@ -871,7 +871,7 @@ namespace WarLight.AI.Prod
         /// <returns></returns>
         private int GetArmiesAvailable(TerritoryIDType terrID)
         {
-            Assert.Fatal(Standing.Territories[terrID].OwnerPlayerID == Player);
+            Assert.Fatal(Standing.Territories[terrID].OwnerPlayerID == PlayerID);
             int armies = Standing.Territories[terrID].NumArmies.NumArmies;
             IEnumerable<GameOrderDeploy> deploys = Orders.OfType<GameOrderDeploy>();
             IEnumerable<GameOrderAttackTransfer> attacks = Orders.OfType<GameOrderAttackTransfer>();
@@ -915,7 +915,7 @@ namespace WarLight.AI.Prod
                     {
                         var ts = Standing.Territories[terrInBonus];
 
-                        if (ts.OwnerPlayerID == Player)
+                        if (ts.OwnerPlayerID == PlayerID)
                             continue; //Already own it
                         else if (ts.OwnerPlayerID == TerritoryStanding.FogPlayerID)
                             weight -= Settings.InitialNonDistributionArmies; //assume neutral on fogged items

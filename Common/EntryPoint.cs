@@ -34,22 +34,24 @@ namespace WarLight.AI
 
 @"Usage: 
 
-To play a game against enemy AIs:
-    WarLight.AI.exe PlayAI <bot name>
-    WarLight.AI.exe PlayFFA <bot name>
-
 To start a new game against a human:
-    WarLight.AI.exe Create <bot name> <opponent email or profile token> <game name>
+    WarLight.AI Create <bot name> <opponent email or profile token> <game name>
 
 To play an existing human game: 
-    WarLight.AI.exe Play <bot name> <game ID>
+    WarLight.AI Play <bot name> <game ID>
 
 To simulate creating orders for an existing human game at an earlier turn:  (turn number = 0 for picks)
-    WarLight.AI.exe Simulate <bot name> <game ID> <turn number>
+    WarLight.AI Simulate <bot name> <game ID> <turn number>
+
+To play a game against enemy AIs:
+    WarLight.AI PlayAI <bot name>
+    WarLight.AI PlayFFA <bot name>
 
 To play bots against each other:
-    WarLight.AI.exe PlayBots <bot name> <bot name> [<bot name>...]
+    WarLight.AI PlayBots <bot name> <bot name> [<bot name>...]
 
+To simulate a turn from a bot game:
+    WarLight.AI PlayExported <bot name> <folder> <game ID> <player ID> <turn number>
 
 Supported bot names: " + BotFactory.Names.JoinStrings(", "));
 
@@ -116,18 +118,12 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
             var bot = BotFactory.Construct(botName);
             bot.Init(playerID, game.Players, map, game.LatestInfo.DistributionStanding, settings, game.NumberOfTurns, game.LatestInfo.Income, game.LatestInfo.LatestTurn == null ? null : game.LatestInfo.LatestTurn.Orders, game.LatestInfo.LatestStanding, game.LatestInfo.PreviousTurnStanding, game.LatestInfo.TeammatesOrders, game.LatestInfo.Cards, game.LatestInfo.CardsMustUse);
 
-            AILog.Log("PlayGame. State=" + game.State + ", numTurns=" + game.NumberOfTurns);
+            AILog.Log("PlayGame. State=" + game.State + ", numTurns=" + game.NumberOfTurns + ", cardsMustUse=" + game.LatestInfo.CardsMustUse);
 
             if (game.State == GameState.DistributingTerritories)
-            {
                 sendPicks(bot.GetPicks());
-                AILog.Log("Sent picks");
-            }
             else if (game.State == GameState.Playing)
-            {
                 sendOrders(bot.GetOrders());
-                AILog.Log("Sent orders");
-            }
 
             return true;
         }
