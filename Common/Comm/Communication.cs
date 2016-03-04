@@ -12,8 +12,8 @@ namespace WarLight.AI
 {
     public static class Communication
     {
-        public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
-        //public static string HttpRoot = "http://aiserver.warlight.net/api/";
+        //public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
+        public static string HttpRoot = "http://aiserver.warlight.net/api/";
 
         public static JToken Call(string api, JToken input)
         {
