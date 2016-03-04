@@ -19,9 +19,10 @@ namespace WarLight.AI
         public static void Go(string[] args)
         {
             var botName = args[0];
+            var numOpponents = args.Length > 1 ? int.Parse(args[1]) : 2;
 
             //play one full game with the log printing to ensure everything works, then suppress the log and just play games multi-threaded as fast as possible.
-            PlayGame(botName); 
+            PlayGame(botName, numOpponents); 
 
             AILog.SuppressLog = true;
 
@@ -30,7 +31,7 @@ namespace WarLight.AI
                 try
                 {
                     while (true)
-                        PlayGame(botName);
+                        PlayGame(botName, numOpponents);
                 }
                 catch (Exception ex)
                 {
@@ -48,35 +49,41 @@ namespace WarLight.AI
             }
         }
 
-        private static void PlayGame(string botName)
+        private static void PlayGame(string botName, int numOpponents)
         {
+            var players = new[] { PlayerInvite.Create(MeID, (TeamIDType)1, null) }.Concat(Enumerable.Range(0, numOpponents).Select(o => PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null)));
+
             AILog.Log("Creating game...");
-            var gameID = BotGameAPI.CreateGame(new[] {
-                    PlayerInvite.Create(MeID, (TeamIDType)1, null),
-                    PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null),
-                    PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null),
-                }, "AI Competition");
+            var gameID = BotGameAPI.CreateGame(players, "AI Competition", null, gameSettings => gameSettings["MaxCardsHold"] = 999);
 
             AILog.Log("Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
 
-            while (true)
+            try
             {
-                var game = BotGameAPI.GetGameInfo(gameID, MeID);
-                if (game.State == GameState.Finished)
+                while (true)
                 {
-                    GameFinished(game);
-                    break;
-                }
+                    var game = BotGameAPI.GetGameInfo(gameID, MeID);
+                    if (game.State == GameState.Finished)
+                    {
+                        GameFinished(game);
+                        break;
+                    }
 
-                if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks => BotGameAPI.SendPicks(game.ID, MeID, picks), orders => BotGameAPI.SendOrders(game.ID, MeID, orders, game.NumberOfTurns + 1)))
-                {
-                    GameFinished(game);
-                    break;
-                }
+                    if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks => BotGameAPI.SendPicks(game.ID, MeID, picks), orders => BotGameAPI.SendOrders(game.ID, MeID, orders, game.NumberOfTurns + 1)))
+                    {
+                        GameFinished(game);
+                        break;
+                    }
 
-                Thread.Sleep(100);
+                    Thread.Sleep(100);
+                }
+            }
+            finally
+            {
+                ExportGame(gameID);
+                BotGameAPI.DeleteGame(gameID);
             }
         }
 
@@ -86,15 +93,13 @@ namespace WarLight.AI
             var weWon = winners.Count > 0 && winners.Any(o => o.ID == MeID);
             Console.WriteLine(DateTime.Now + ": Game " + game.ID + " finished.  Won=" + weWon);
 
-            ExportGame(game.ID);
-
-            BotGameAPI.DeleteGame(game.ID);
-
             if (weWon)
                 Interlocked.Increment(ref NumWins);
             else
                 Interlocked.Increment(ref NumLosses);
         }
+
+        
 
         /// <summary>
         /// Save it off in case we want to look at it later.  To look at it, go to https://www.warlight.net/Play, press Ctrl+Shift+E then click Import

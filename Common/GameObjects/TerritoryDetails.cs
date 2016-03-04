@@ -14,11 +14,6 @@ namespace WarLight.AI
 
         public MapDetails Parent;
         
-        public override int GetHashCode()
-        {
-            return (int)this.ID;
-        }
-        
         public TerritoryDetails(MapDetails parent, TerritoryIDType id)
         {
             this.Parent = parent;

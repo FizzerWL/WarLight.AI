@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,11 +15,30 @@ namespace WarLight.AI
     {
         public static void Go(string[] args)
         {
+            //play one with full log to ensure all bots are functional, then suppress log and play games as fast as possible.
+            PlayGame(args); 
+
             AILog.SuppressLog = true;
 
-            while(true)
-                PlayGame(args);
+            var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
+            {
+                try
+                {
+                    while (true)
+                        PlayGame(args);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Thread failed: " + ex);
+                }
+
+            })).ToList();
+
+            threads.ForEach(o => o.Start());
+            Thread.Sleep(int.MaxValue);
         }
+
+        static ConcurrentDictionary<string, int> _totals = new ConcurrentDictionary<string, int>();
 
         private static void PlayGame(string[] args)
         {
@@ -28,6 +48,7 @@ namespace WarLight.AI
             var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Length).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
+                gameSettings["ReinforcementCard"] = "none";
             });
 
             AILog.Log("Created game " + gameID);
@@ -45,7 +66,11 @@ namespace WarLight.AI
                     game = BotGameAPI.GetGameInfo(gameID, null);
                     if (game.State == GameState.Finished)
                     {
-                        Console.WriteLine("Game " + gameID + " finished.  Winner=" + game.Players.Values.Where(o => o.State == GamePlayerState.Won).Select(o => botsDict[o.ID]).JoinStrings(","));
+                        var winnerStr = game.Players.Values.Where(o => o.State == GamePlayerState.Won).Select(o => botsDict[o.ID]).JoinStrings(",");
+                        _totals.AddOrUpdate(winnerStr, 1, (_, i) => i + 1);
+                        Console.WriteLine("Game " + gameID + " finished.  Winner=" + winnerStr + ", totals: " + _totals.OrderByDescending(o => o.Value).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
+
+                        
                         break;
                     }
 

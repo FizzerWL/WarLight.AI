@@ -44,7 +44,7 @@ To simulate creating orders for an existing human game at an earlier turn:  (tur
     WarLight.AI Simulate <bot name> <game ID> <turn number>
 
 To play a game against enemy AIs:
-    WarLight.AI PlayAI <bot name>
+    WarLight.AI PlayAI <bot name> [number of opponent AIs]
     WarLight.AI PlayFFA <bot name>
 
 To play bots against each other:
@@ -97,9 +97,7 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
                 default:
                     PrintHelp();
                     break;
-
             }
-            
         }
 
         public static bool PlayGame(string botName, GameObject game, PlayerIDType playerID, GameSettings settings, MapDetails map, Action<List<TerritoryIDType>> sendPicks, Action<List<GameOrder>> sendOrders)
@@ -118,7 +116,7 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
             var bot = BotFactory.Construct(botName);
             bot.Init(playerID, game.Players, map, game.LatestInfo.DistributionStanding, settings, game.NumberOfTurns, game.LatestInfo.Income, game.LatestInfo.LatestTurn == null ? null : game.LatestInfo.LatestTurn.Orders, game.LatestInfo.LatestStanding, game.LatestInfo.PreviousTurnStanding, game.LatestInfo.TeammatesOrders, game.LatestInfo.Cards, game.LatestInfo.CardsMustUse);
 
-            AILog.Log("PlayGame. State=" + game.State + ", numTurns=" + game.NumberOfTurns + ", cardsMustUse=" + game.LatestInfo.CardsMustUse);
+            AILog.Log("PlayGame. State=" + game.State + ", numTurns=" + game.NumberOfTurns + ", income=" + game.LatestInfo.Income[playerID] + ", cardsMustUse=" + game.LatestInfo.CardsMustUse);
 
             if (game.State == GameState.DistributingTerritories)
                 sendPicks(bot.GetPicks());

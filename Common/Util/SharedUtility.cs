@@ -187,6 +187,21 @@ namespace WarLight.AI
             foreach (T t in a)
                 action(t);
         }
+        public static bool ContainsAll<T>(this HashSet<T> col, IEnumerable<T> items)
+        {
+            foreach (var u in items)
+                if (!col.Contains(u))
+                    return false;
+            return true;
+        }
+        public static V GetOr<K, V>(this Dictionary<K, V> dict, K key, V def)
+        {
+            V ret;
+            if (dict.TryGetValue(key, out ret))
+                return ret;
+            else
+                return def;
+        }
     }
 
 }

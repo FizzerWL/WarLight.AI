@@ -16,7 +16,7 @@ namespace WarLight.AI
             var folder = args[1];
             var gameID = (GameIDType)int.Parse(args[2]);
             var playerID = (PlayerIDType)int.Parse(args[3]);
-            var turnNumber = int.Parse(args[4]) - 1;
+            var turnNumber = args[4].ToLower() == "latest" ? (int?)null : int.Parse(args[4]) - 1;
 
             var details = BotGameAPI.GetBotExportedGame(gameID, ReadExported(folder, gameID), playerID, turnNumber);
 

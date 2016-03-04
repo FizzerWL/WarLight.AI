@@ -1,5 +1,4 @@
 ﻿
-using WarLight.AI.Wunderwaffe.Bot;
 
 namespace WarLight.AI
 {
@@ -27,5 +26,9 @@ namespace WarLight.AI
             return o;
         }
 
+        public override string ToString()
+        {
+            return "Player " + PlayerID + " deploys " + NumArmies + " armies on " + DeployOn;
+        }
     }
 }

@@ -1,11 +1,5 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-
-
+﻿
 using System;
-using WarLight.AI.Wunderwaffe.Bot;
 
 namespace WarLight.AI
 {
@@ -39,6 +33,11 @@ namespace WarLight.AI
             return r;
         }
 
-        
+        public override string ToString()
+        {
+            return AttackTransfer + " by " + this.PlayerID + " from " + this.From + " to " + this.To + ", ByPercent=" + ByPercent + ", NumArmies = " + NumArmies;
+        }
+
+
     }
 }

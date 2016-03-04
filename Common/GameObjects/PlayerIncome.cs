@@ -20,5 +20,10 @@ namespace WarLight.AI
         {
             this.FreeArmies = freeArmies;
         }
+
+        public override string ToString()
+        {
+            return FreeArmies.ToString() + (BonusRestrictions.Count == 0 ? "" : " local deployments=" + BonusRestrictions.Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
+        }
     }
 }

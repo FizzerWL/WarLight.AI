@@ -217,20 +217,17 @@ namespace WarLight.AI
                 throw new Exception("Unexpected map input: " + mapInput[1]);
         }
 
-        
         private static GameStanding ReadMap(string[] mapInput)
         {
-            var terrs = new List<TerritoryStanding>();
+            var ret = new GameStanding(Map.Territories.Values.Select(o => new TerritoryStanding(o.ID, TerritoryStanding.FogPlayerID, new Armies(fogged: true))));
 
             for (var i = 1; i < mapInput.Length; i++)
             {
-                var terrID = (TerritoryIDType)int.Parse(mapInput[i++]);
-                var playerID = (PlayerIDType)ToPlayerID(mapInput[i++]);
-                var armies = int.Parse(mapInput[i]);
-                terrs.Add(new TerritoryStanding(terrID, playerID, new Armies(armies)));
+                var ts = ret.Territories[(TerritoryIDType)int.Parse(mapInput[i++])];
+                ts.OwnerPlayerID = (PlayerIDType)ToPlayerID(mapInput[i++]);
+                ts.NumArmies = new Armies(int.Parse(mapInput[i]));
             }
-            return new GameStanding(terrs);
-
+            return ret;
         }
 
         private static void ReadOpponentMoves(string[] moveInput)
@@ -245,8 +242,18 @@ namespace WarLight.AI
                     var playerID = ToPlayerID(moveInput[i]);
                     var terrID = (TerritoryIDType)int.Parse(moveInput[i + 2]);
                     var armies = int.Parse(moveInput[i + 3]);
-                    order = GameOrderDeploy.Create(armies, playerID, terrID);
                     i += 3;
+
+                    var existing = orders.OfType<GameOrderDeploy>().FirstOrDefault(o => o.DeployOn == terrID);
+                    if (existing != null)
+                    {
+                        //Don't allow dupe deploy orders.  Just add it to the existing one
+                        Assert.Fatal(existing.PlayerID == playerID);
+                        existing.NumArmies += armies;
+                        continue;
+                    }
+
+                    order = GameOrderDeploy.Create(armies, playerID, terrID);
                 }
                 else
                 {
