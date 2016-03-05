@@ -129,7 +129,7 @@ namespace WarLight.AI.Cowzow.Bot
             // reserveTroops declaration
             var reserveTroops = new Dictionary<TerritoryIDType, int>();
             foreach (var terr in BotMap.VisibleTerritories.Where(o => o.OwnerPlayerID == this.Me.ID))
-                reserveTroops[terr.ID] = terr.Armies - 1;  //TODO: OneArmyMustStandGuard
+                reserveTroops[terr.ID] = terr.Armies - MustStandGuardOneOrZero;
 
             // Get all attack paths
             var targets = BotMap.GetUnfriendlyTerritories().Select(o => o.ID).ToHashSet(true);
@@ -207,7 +207,7 @@ namespace WarLight.AI.Cowzow.Bot
             var myMovableTerritories = new HashSet<TerritoryIDType>();
 
             foreach (var r in BotMap.VisibleTerritories.Where(o => o.OwnerPlayerID == Me.ID))
-                if (r.Armies > 1) //TODO: OneArmyMustStandGuard
+                if (r.Armies > MustStandGuardOneOrZero)
                     myMovableTerritories.Add(r.ID);
 
             var manager = new OrderManager(this, myMovableTerritories);
@@ -224,15 +224,13 @@ namespace WarLight.AI.Cowzow.Bot
 
                 attackerChoices.Add(new Edge(attacker, attacker, 0));
                 attackerChoices.Sort(Eval);
-                network.AddAttacker(attacker, attacker.Armies - 1); //TODO: OneArmyMustStandGuard
+                network.AddAttacker(attacker, attacker.Armies - MustStandGuardOneOrZero);
                 var firstEnemy = false;
                 foreach (var e in attackerChoices)
                 {
-                    if (e.End.OwnerPlayerID == TerritoryStanding.NeutralPlayerID && Eval.GetScore(e) < 0.05 && MyIncome.Total < 2 * Analyzer.TroopEstimate) //TODO: Settings
-                    {
-                        // && eval.getScore(attackerChoices.get(0)) >= 0.06
+                    if (e.End.OwnerPlayerID == TerritoryStanding.NeutralPlayerID && Eval.GetScore(e) < 0.05 && MyIncome.Total < 2 * Analyzer.TroopEstimate)
                         break;
-                    }
+
                     if (firstEnemy == false || IsOpponent(e.End.OwnerPlayerID))
                     {
                         var est = CaptureCosts[e.End.ID];
@@ -243,6 +241,7 @@ namespace WarLight.AI.Cowzow.Bot
                             firstEnemy = true;
                             continue;
                         }
+
                         if (e.End.OwnerPlayerID == TerritoryStanding.NeutralPlayerID && attacker.Armies < est || e.End.OwnerPlayerID == TerritoryStanding.NeutralPlayerID && NumberOfTurns == 0 && e.End.Bonuses.Any(o => !o.IsSafe()))
                             firstEnemy = true;
 
@@ -331,12 +330,9 @@ namespace WarLight.AI.Cowzow.Bot
             return formalOrders;
         }
 
-        // A memory of all enemy territories owned by the enemy
-        // What my opponent sees before any placements
-        // What my opponent placed last turn
         private int ArmiesNeededToCapture(int troops)
         {
-            return (int)(1.6 * troops + 0.5);  //TODO: Settings
+            return SharedUtility.Ceiling(troops / Settings.OffensiveKillRate);
         }
 
         private Dictionary<TerritoryIDType, int> ConstructCaptureCosts(CowzowBot Bot)
@@ -367,7 +363,7 @@ namespace WarLight.AI.Cowzow.Bot
                             var est = Math.Max(maxThreat - 1, ArmiesNeededToCapture(r.Armies + 2));
                             if (visibleCount == 1 && r.Bonuses.Any(b => b.ArmiesReward >= 3)) //TODO: Magic numbers
                             {
-                                var defendEst = (int)(0.75 * Math.Min(Analyzer.TroopEstimate, MyIncome.Total)); //TODO: Settings
+                                var defendEst = SharedUtility.Ceiling(Settings.DefensiveKillRate * Math.Min(Analyzer.TroopEstimate, MyIncome.Total));
                                 est = Math.Max(est, ArmiesNeededToCapture(defendEst));
                             }
                             // est = Math.max(est, armiesNeededToCapture(r.getArmies()));
@@ -407,7 +403,7 @@ namespace WarLight.AI.Cowzow.Bot
                     }
                     else
                     {
-                        var est = (int)Math.Max(1.7 * r.Armies, r.GetStrongestNearestEnemy() + 2); //TODO: Settings
+                        var est = (int)Math.Max(ArmiesNeededToCapture(r.Armies), r.GetStrongestNearestEnemy() + 2);
                         est = Math.Max(est, r.Armies + Analyzer.TroopEstimate / 2);
                         captureCosts[r.ID] = est;
                     }

@@ -184,7 +184,7 @@ namespace WarLight.AI.Cowzow.Map
             var paths = new List<Edge>();
             foreach (var r in Neighbors)
                 if (r.OwnerPlayerID == Bot.Me.ID)
-                    paths.Add(new Edge(r, this, r.Armies - 1)); //TODO: OneArmyMustStandGuard
+                    paths.Add(new Edge(r, this, r.Armies - Bot.MustStandGuardOneOrZero));
             return paths;
         }
 

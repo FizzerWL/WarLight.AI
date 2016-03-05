@@ -70,9 +70,9 @@ namespace WarLight.AI.Cowzow.Comparators
             if (end.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
             {
                 score += (double)bonus.ArmiesReward * (double)end.Armies / (double)bonus.GuessedArmiesNotOwnedByUs;
-                if (bonus.GuessedArmiesNotOwnedByUs > 6)
-                    score *= 0.7; //TODO
-                if (bonus.ArmiesToNeutralsRatio < 0.3)
+                if (bonus.GuessedArmiesNotOwnedByUs >= 7)
+                    score *= 0.7 - ((bonus.GuessedArmiesNotOwnedByUs - 7) * 0.05);
+                if (bonus.ArmiesToNeutralsRatio < 0.3)  
                     score *= 0.35;
                 if (!bonus.IsSafe())
                 {

@@ -34,7 +34,7 @@ namespace WarLight.AI.Cowzow.Fulkerson2
 
         public void AddAttacker(BotTerritory r)
         {
-            AddAttacker(r, r.Armies - 1); //TODO: OneArmyMustStandGuard
+            AddAttacker(r, r.Armies - Bot.MustStandGuardOneOrZero);
         }
 
         public void AddAttacker(BotTerritory r, int armiesAvailable)

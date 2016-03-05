@@ -22,7 +22,7 @@ namespace WarLight.AI.Cowzow.Bot
             this.Bot = bot;
             BonusBuckets = new Dictionary<BonusIDType, int>();
             BonusCosts = new Dictionary<BonusIDType, int>();
-            TroopEstimate = 5;
+            TroopEstimate = Bot.Settings.MinimumArmyBonus;
             foreach (var bonus in Bot.BotMap.Bonuses.Values)
             {
                 BonusBuckets[bonus.ID] = 0;
@@ -63,7 +63,9 @@ namespace WarLight.AI.Cowzow.Bot
 
             if (TroopEstimate < troopsUsed)
                 TroopEstimate = troopsUsed;
+
             var hiddenTroops = TroopEstimate - troopsUsed;
+
             var bonusList = new List<BotBonus>();
             foreach (var bonus in Bot.BotMap.Bonuses.Values)
                 if (UnvisCount(bonus) >= 1 && 2 * VisCount(bonus) <= TroopEstimate)
@@ -181,11 +183,13 @@ namespace WarLight.AI.Cowzow.Bot
                 return false;
             if (BonusBuckets[bonus.ID] + 4 < BonusCosts[bonus.ID])
                 return false;
-            // TODO: EXPERIMENTAL:
+
+            // EXPERIMENTAL:
             var bonusList = new List<BotBonus>();
             foreach (var tmp in Bot.BotMap.Bonuses.Values)
                 if (VisCount(tmp) <= 1 && !MightBeOwned(tmp))
                     bonusList.Add(tmp);
+
             var eval = new BonusComparator(this);
             foreach (var tmp_1 in bonusList)
                 if (eval.Compare(bonus, tmp_1) > 0)
