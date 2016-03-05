@@ -20,36 +20,46 @@ namespace WarLight.AI
         {
             var botName = args[0];
             var numOpponents = args.Length > 1 ? int.Parse(args[1]) : 2;
+            var numThreads = args.Length > 2 ? int.Parse(args[2]) : 3;
 
-            //play one full game with the log printing to ensure everything works, then suppress the log and just play games multi-threaded as fast as possible.
-            PlayGame(botName, numOpponents); 
-
-            AILog.SuppressLog = true;
-
-            var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
+            if (numThreads == 1)
             {
-                try
-                {
-                    while (true)
-                        PlayGame(botName, numOpponents);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Thread failed: " + ex);
-                }
-
-            })).ToList();
-
-            threads.ForEach(o => o.Start());
-
-            while (true)
+                while (true)
+                    PlayGame(botName, numOpponents);
+            }
+            else
             {
-                Thread.Sleep(30000);
-                Console.WriteLine(DateTime.Now + ": Wins: " + NumWins + ", Losses=" + NumLosses);
+
+                //play one full game with the log printing to ensure everything works, then suppress the log and just play games multi-threaded as fast as possible.
+                PlayGame(botName, numOpponents);
+
+                AILog.SuppressLog = true;
+
+                var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
+                {
+                    try
+                    {
+                        while (true)
+                            PlayGame(botName, numOpponents);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Thread failed: " + ex);
+                    }
+
+                })).ToList();
+
+                threads.ForEach(o => o.Start());
+
+                while (true)
+                {
+                    Thread.Sleep(30000);
+                    Console.WriteLine(DateTime.Now + ": Wins: " + NumWins + ", Losses=" + NumLosses);
+                }
             }
         }
 
-        private static void PlayGame(string botName, int numOpponents)
+        public static void PlayGame(string botName, int numOpponents)
         {
             var players = new[] { PlayerInvite.Create(MeID, (TeamIDType)1, null) }.Concat(Enumerable.Range(0, numOpponents).Select(o => PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null)));
 

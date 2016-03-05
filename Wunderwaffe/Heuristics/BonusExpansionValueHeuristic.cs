@@ -114,7 +114,7 @@ namespace WarLight.AI.Wunderwaffe.Heuristics
             // value += additions;
             // value -= deductions;
 
-            var distanceFromUs = bonus.DistanceFrom(terr => terr.OwnerPlayerID == playerID);
+            var distanceFromUs = bonus.DistanceFrom(terr => terr.OwnerPlayerID == playerID, 3);
             if (distanceFromUs > 2)
             {
                 //Penalize weight of bonuses far away

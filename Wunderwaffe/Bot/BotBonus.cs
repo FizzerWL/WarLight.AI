@@ -150,7 +150,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public int DistanceFrom(Func<BotTerritory, bool> pred)
+        public int DistanceFrom(Func<BotTerritory, bool> pred, int max = int.MaxValue)
         {
             if (this.Territories.Any(pred))
                 return 0;
@@ -160,7 +160,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
 
             while (true)
             {
-                var next = terrs.SelectMany(o => BotState.Map.Territories[o].ConnectedTo).Where(o => terrs.Contains(o) == false).Distinct().ToList();
+                var next = terrs.SelectMany(o => BotState.Map.Territories[o].ConnectedTo).Where(o => terrs.Contains(o) == false).ToList();
 
                 if (next.Count == 0)
                     return int.MaxValue;
@@ -170,6 +170,9 @@ namespace WarLight.AI.Wunderwaffe.Bot
                 terrs.AddRange(next);
 
                 distance++;
+
+                if (distance >= max)
+                    return max;
             }
         }
 

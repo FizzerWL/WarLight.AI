@@ -835,8 +835,6 @@ namespace WarLight.AI.Prod
 
                 int attackWith = SharedUtility.MathMax(1, Standing.Territories[expandTo].NumArmies.DefensePower * 2);
 
-                AILog.Log("Figuring out where to attack from");
-
                 var attackFrom = Map.Territories[expandTo].ConnectedTo
                     .Select(o => this.Standing.Territories[o])
                     .Where(o => o.OwnerPlayerID == this.PlayerID)

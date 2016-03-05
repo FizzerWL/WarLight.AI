@@ -59,6 +59,7 @@
     <Compile Include="Common\PlayAI.cs" />
     <Compile Include="Common\PlayHuman.cs" />
     <Compile Include="Common\IWarLightAI.cs" />
+    <Compile Include="Common\Compete.cs" />
     <Compile Include="Cowzow\Bot\BonusAnalyzer.cs" />
     <Compile Include="Cowzow\Bot\CowzowBot.cs" />
     <Compile Include="Cowzow\Bot\OrderManager.cs" />

@@ -93,7 +93,9 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
                 case "playbots":
                     PlayBots.Go(args.Skip(1).ToArray());
                     break;
-
+                case "compete":
+                    Compete.Go(args[1], int.Parse(args[2]));
+                    break;
                 default:
                     PrintHelp();
                     break;
