@@ -39,7 +39,7 @@ namespace WarLight.Shared.AI
             incomes.Add(OpponentPlayerID, new PlayerIncome(5));
 
 
-            Bot.Init(MyPlayerID, Players, Map, DistributionStanding, new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16), NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
+            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16), NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
         }
 
         static IWarLightAI Bot;
