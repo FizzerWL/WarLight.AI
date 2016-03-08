@@ -25,11 +25,12 @@ namespace WarLight.AI.Prod.MakeOrders
                 return; //No attacks possible
             }
 
-            //Divide 50/50 between offense and defense.  Defense armies could still be used for offense if we happen to attack there
-            int armiesToOffense = SharedUtility.Round(incomeToUse * (Bot.IsFFA ? 0.3 : 0.6));
+            //Divide between offense and defense.  Defense armies could still be used for offense if we happen to attack there
+            var offenseRatio = (Bot.IsFFA ? 0.3 : 0.6) + (Bot.UseRandomness ? RandomUtility.RandomPercentage() * .3 - .15 : 0);
+            int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio);
             int armiesToDefense = incomeToUse - armiesToOffense;
 
-            AILog.Log("DefendAttack", armiesToOffense + " armies go to offense, " + armiesToDefense + " armies go to defense");
+            AILog.Log("DefendAttack", "offenseRatio=" + offenseRatio + ": " + armiesToOffense + " armies go to offense, " + armiesToDefense + " armies go to defense");
 
             //Find defensive opportunities.
             var orderedDefenses = WeightedMoves.OrderByDescending(o => o.DefenseImportance).ToList();
@@ -47,7 +48,11 @@ namespace WarLight.AI.Prod.MakeOrders
             foreach (var defend in orderedDefenses.Take(10))
                 AILog.Log("Defense", " - " + defend);
 
-
+            if (orderedDefenses.Count == 0)
+            {
+                AILog.Log("Defense", "No defenses");
+                return;
+            }
 
 #if IOS
             //Work around the "attacking to JIT compile method" for below WeightedRandom call
@@ -55,22 +60,41 @@ namespace WarLight.AI.Prod.MakeOrders
                 new List<PossibleAttack>().Select(o => o.DefenseImportance).ToList();
 #endif
 
-            if (orderedDefenses.Count == 0)
-                AILog.Log("Defense", "No defenses");
-            else
+            var allDefenses = new Dictionary<TerritoryIDType, int>();
+
+            if (Bot.UseRandomness)
             {
-                var allDefenses = new Dictionary<TerritoryIDType, int>();
                 for (int i = 0; i < armies; i++)
                 {
                     var defend = orderedDefenses.WeightedRandom(o => o.DefenseImportance);
                     if (Bot.Orders.TryDeploy(defend.From, 1))
                         allDefenses.AddTo(defend.From, 1);
                 }
+            }
+            else
+            {
+                var avg = orderedDefenses.Select(o => o.DefenseImportance).Average();
+                var betterThanAvg = orderedDefenses.Where(o => o.DefenseImportance >= avg).ToList();
+                var armiesLeft = armies;
+                while (armiesLeft > 0)
+                {
+                    foreach(var d in betterThanAvg)
+                    {
+                        if (Bot.Orders.TryDeploy(d.From, 1))
+                        {
+                            allDefenses.AddTo(d.From, 1);
+                            armiesLeft--;
+                            if (armiesLeft <= 0)
+                                break;
+                        }
+                    }
 
-                AILog.Log("Defense", "Defended " + allDefenses.Count + " territories: " + allDefenses.OrderByDescending(o => o.Value).Select(o => Bot.TerrString(o.Key) + " with " + o.Value).JoinStrings(", "));
+                    if (armies == armiesLeft)
+                        break; //We couldn't deploy any, possibly due to local deployments.
+                }
             }
 
-
+            AILog.Log("Defense", "Defended " + allDefenses.Count + " territories: " + allDefenses.OrderByDescending(o => o.Value).Select(o => Bot.TerrString(o.Key) + " with " + o.Value).JoinStrings(", "));
         }
 
         private void DoOffense(int armiesToOffense, List<PossibleAttack> orderedAttacks)
@@ -79,42 +103,75 @@ namespace WarLight.AI.Prod.MakeOrders
             foreach (var attack in orderedAttacks.Take(10))
                 AILog.Log("Offense", " - " + attack);
 
-
-
-            foreach (var attack in orderedAttacks)
+            if (!Bot.UseRandomness)
             {
-                int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[attack.To].NumArmies);
-
-                //TODO: If we're attacking a human opponent, add a few more to what's required so we're not as predictable.   Also take into account the offense weight.
-
-                int have = Bot.MakeOrders.GetArmiesAvailable(attack.From);
-                int need = Math.Max(0, attackWith - have);
-
-                if (need > armiesToOffense)
+                int attackIndex = 0;
+                while (armiesToOffense > 0 && attackIndex < orderedAttacks.Count)
                 {
-                    //We can't swing it. Just deploy the rest and quit. Will try again next turn.
-                    if (armiesToOffense > 0 && Bot.Orders.TryDeploy(attack.From, armiesToOffense))
-                    {
-                        AILog.Log("Offense", "Could not attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + ". Short by " + need + ".  Just deploying " + armiesToOffense + " to the source and quitting attacks.");
-                        armiesToOffense = 0;
-                    }
-                }
-                else
-                {
-                    //We can attack.  First deploy however many we needed
-                    if (need > 0)
-                    {
-                        if (!Bot.Orders.TryDeploy(attack.From, need))
-                            continue;
-                        armiesToOffense -= need;
-                        Assert.Fatal(armiesToOffense >= 0);
-                    }
-
-                    //Now issue the attack
-                    Bot.Orders.AddAttack(attack.From, attack.To, AttackTransferEnum.AttackTransfer, attackWith, false);
-                    AILog.Log("Offense", "Attacking from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + " by deploying " + need);
+                    TryDoAttack(orderedAttacks[attackIndex], ref armiesToOffense);
+                    attackIndex++;
                 }
             }
+            else
+            {
+                while (armiesToOffense > 0 && orderedAttacks.Count > 0)
+                {
+                    var i = RandomUtility.WeightedRandomIndex(orderedAttacks, o => o.OffenseImportance);
+                    TryDoAttack(orderedAttacks[i], ref armiesToOffense);
+                    orderedAttacks.RemoveAt(i);
+                }
+
+            }
+        }
+
+        private void TryDoAttack(PossibleAttack attack, ref int armiesToOffense)
+        {
+            int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[attack.To].NumArmies);
+
+            //Add a few more to what's required so we're not as predictable.
+            if (Bot.UseRandomness)
+            {
+                attackWith += SharedUtility.Round(attackWith * (RandomUtility.RandomPercentage() * .2));
+
+                //Once in a while, be willing to do a stupid attack.  Sometimes it will work out, sometimes it will fail catastrophically
+                if (RandomUtility.RandomNumber(20) == 0)
+                {
+                    var origAttackWith = attackWith;
+                    attackWith = SharedUtility.Round(attackWith * RandomUtility.RandomPercentage());
+                    AILog.Log("Offense", "Willing to do a \"stupid\" attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + ": attacking with " + attackWith + " instead of our planned " + origAttackWith);
+                }
+            }
+            else
+                attackWith += SharedUtility.Round(attackWith * 0.1);
+
+            int have = Bot.MakeOrders.GetArmiesAvailable(attack.From);
+            int need = Math.Max(0, attackWith - have);
+
+            if (need > armiesToOffense)
+            {
+                //We can't swing it. Just deploy the rest and quit. Will try again next turn.
+                if (armiesToOffense > 0 && Bot.Orders.TryDeploy(attack.From, armiesToOffense))
+                {
+                    AILog.Log("Offense", "Could not attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + ". Short by " + need + ".  Just deploying " + armiesToOffense + " to the source and quitting attacks.");
+                    armiesToOffense = 0;
+                }
+            }
+            else
+            {
+                //We can attack.  First deploy however many we needed
+                if (need > 0)
+                {
+                    if (!Bot.Orders.TryDeploy(attack.From, need))
+                        return;
+                    armiesToOffense -= need;
+                    Assert.Fatal(armiesToOffense >= 0);
+                }
+
+                //Now issue the attack
+                Bot.Orders.AddAttack(attack.From, attack.To, AttackTransferEnum.AttackTransfer, attackWith, false);
+                AILog.Log("Offense", "Attacking from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + " by deploying " + need);
+            }
+
         }
 
         private List<PossibleAttack> WeightAttacks()

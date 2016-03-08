@@ -8,7 +8,7 @@ namespace WarLight.AI
 {
     public static class BotFactory
     {
-        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "Cowzow" };
+        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "ProdRandom", "Cowzow" };
 
         public static IWarLightAI Construct(string name)
         {
@@ -17,7 +17,9 @@ namespace WarLight.AI
                 case "wunderwaffe":
                     return new Wunderwaffe.Bot.BotMain();
                 case "prod":
-                    return new Prod.BotMain();
+                    return new Prod.BotMain(false);
+                case "prodrandom":
+                    return new Prod.BotMain(true);
                 case "cowzow":
                     return new Cowzow.Bot.CowzowBot();
                 default:

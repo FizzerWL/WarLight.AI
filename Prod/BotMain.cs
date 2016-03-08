@@ -9,6 +9,13 @@ namespace WarLight.AI.Prod
 {
     public class BotMain : IWarLightAI
     {
+        public BotMain(bool useRandomness)
+        {
+            this.UseRandomness = useRandomness;
+        }
+
+        public bool UseRandomness;
+
         public GameStanding DistributionStandingOpt;
         public GameStanding Standing;
         public PlayerIDType PlayerID;
@@ -19,13 +26,13 @@ namespace WarLight.AI.Prod
         public List<CardInstance> Cards;
         public int CardsMustPlay;
         public Dictionary<PlayerIDType, PlayerIncome> Incomes;
+
         public PlayerIncome BaseIncome;
         public PlayerIncome EffectiveIncome;
 
         public List<GamePlayer> Opponents;
         public bool IsFFA; //if false, we're in a 1v1, 2v2, 3v3, etc.  If false, there are more than two entities still alive in the game.  A game can change from FFA to non-FFA as players are eliminated.
         public Dictionary<PlayerIDType, Neighbor> Neighbors;
-        public bool NoRandomness = false;
 
 
         //not available during picking:
@@ -58,11 +65,15 @@ namespace WarLight.AI.Prod
             if (ret == SharedUtility.Round(defenseArmies.DefensePower * Settings.DefensiveKillRate))
                 ret++;
 
-            if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom)
+            if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom && (!UseRandomness || RandomUtility.RandomNumber(3) != 0))
                 ret++;
 
             if (Settings.LuckModifier < 1)
-                ret += SharedUtility.Round((1.0 - Settings.LuckModifier) / 10.0 * ret); //Add up to 10% more armies to account for luck
+            {
+                //Add up some armies to account for luck
+                var factor = UseRandomness ? RandomUtility.RandomPercentage() * 15 + 2.5 : 10.0;
+                ret += SharedUtility.Round((1.0 - Settings.LuckModifier) / factor * ret); 
+            }
 
             return ret;
         }
@@ -197,7 +208,9 @@ namespace WarLight.AI.Prod
                 foreach (var front in visited.ToList())
                 {
                     var connections = Map.Territories[front].ConnectedTo.Where(o => !visited.Contains(o)).ToList();
-                    connections.RandomizeOrder();
+
+                    if (UseRandomness)
+                        connections.RandomizeOrder();
 
                     foreach (var conn in connections)
                     {
@@ -328,5 +341,22 @@ namespace WarLight.AI.Prod
 
             return true;
         }
+
+        private Dictionary<BonusIDType, float> _bonusFuzz;
+        public float BonusFuzz(BonusIDType bonusID)
+        {
+            if (!UseRandomness)
+                return 0;
+
+            if (_bonusFuzz == null)
+                _bonusFuzz = new Dictionary<BonusIDType, float>();
+
+            if (!_bonusFuzz.ContainsKey(bonusID))
+                _bonusFuzz.Add(bonusID, (float)RandomUtility.RandomPercentage() * 4 - 2);
+
+            return _bonusFuzz[bonusID];
+        }
+
+
     }
 }

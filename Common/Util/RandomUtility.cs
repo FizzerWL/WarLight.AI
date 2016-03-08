@@ -36,6 +36,22 @@ namespace WarLight.AI
             //We should only get here if all weights are 0
             return array.Random();
         }
+        public static int WeightedRandomIndex<T>(this List<T> array, Func<T, double> weightSelector)
+        {
+            double sum = array.Select(weightSelector).Sum();
+            var val = RandomPercentage() * sum;
+            
+            for(int i=0;i<array.Count;i++)
+            {
+                var item = array[i];
+                val -= weightSelector(item);
+                if (val <= 0)
+                    return i;
+            }
+
+            //We should only get here if all weights are 0
+            return RandomNumber(array.Count);
+        }
 
         public static IEnumerable<T> OrderByRandom<T>(this IEnumerable<T> items)
         {

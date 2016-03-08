@@ -20,13 +20,14 @@ namespace WarLight.AI.Prod.MakeOrders
         {
             var attacks = bot.Orders.Orders.OfType<GameOrderAttackTransfer>();
 
-            foreach (var o in attacks.Select(o => new UtilizeSpareArmies(o, bot.MakeOrders.GetArmiesAvailable(o.From)))
+            foreach (var orders in attacks.Select(o => new UtilizeSpareArmies(o, bot.MakeOrders.GetArmiesAvailable(o.From)))
                 .Where(o => o.Available > 0)
-                .GroupBy(o => o.Order.From)
-                .Select(o => o.Random()))
+                .GroupBy(o => o.Order.From))
             {
-                AILog.Log("UtilizeSpareArmies", "Adding " + o.Available + " available armies into attack from " + bot.TerrString(o.Order.From) + " to " + bot.TerrString(o.Order.To) + ", originally had " + o.Order.NumArmies.NumArmies);
-                o.Order.NumArmies = o.Order.NumArmies.Add(new Armies(o.Available));
+                var order = bot.UseRandomness ? orders.Random() : orders.First();
+
+                AILog.Log("UtilizeSpareArmies", "Adding " + order.Available + " available armies into attack from " + bot.TerrString(order.Order.From) + " to " + bot.TerrString(order.Order.To) + ", originally had " + order.Order.NumArmies.NumArmies);
+                order.Order.NumArmies = order.Order.NumArmies.Add(new Armies(order.Available));
             }
         }
     }

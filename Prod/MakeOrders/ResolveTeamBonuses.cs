@@ -26,14 +26,14 @@ namespace WarLight.AI.Prod.MakeOrders
                     var attacks = bonus.Territories
                         .Where(o => bot.Standing.Territories[o].OwnerPlayerID != bot.PlayerID) //Territories in the bonus by our teammate
                         .Where(o => bot.Map.Territories[o].ConnectedTo.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID)) //Where we control an adjacent
-                        .Select(o => new PossibleAttack(bot, bot.Map.Territories[o].ConnectedTo.RandomWhere(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID), o));
+                        .Select(o => new PossibleAttack(bot, bot.Map.Territories[o].ConnectedTo.First(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID), o));
 
                     if (owners[0].Count() == owners[1].Count())
                     {
                         //The top two players have the same number of terrs.  50% chance we should try taking one.
                         if (attacks.Any() && RandomUtility.RandomNumber(2) == 0)
                         {
-                            var doAttack1 = attacks.Random();
+                            var doAttack1 = bot.UseRandomness ? attacks.Random() : attacks.First();
                             var numArmies = bot.ArmiesToTake(bot.Standing.Territories[doAttack1.To].NumArmies);
                             if (bot.Orders.TryDeploy(doAttack1.From, numArmies))
                             {

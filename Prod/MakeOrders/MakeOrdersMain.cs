@@ -35,7 +35,7 @@ namespace WarLight.AI.Prod.MakeOrders
             ResolveTeamBonuses.Go(Bot);
 
             //Expand into good opportunities.  In FFA, focus on expansion even moreso than in headsup
-            Expand.Go(IncomeTracker.RemainingUndeployed, ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0));
+            Expand.Go(IncomeTracker.RemainingUndeployed, ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? RandomUtility.RandomNumber(4) - 2 : 0));
 
             //Defend/attack
             DefendAttack.Go(IncomeTracker.RemainingUndeployed);

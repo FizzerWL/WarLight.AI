@@ -74,17 +74,22 @@ namespace WarLight.AI.Prod.MakeOrders
 
             foreach (var helpExpansionTo in terrs.SelectMany(o => bot.Map.Territories[o].ConnectedTo).Where(o => expandWeights.ContainsKey(o)).OrderByDescending(o => expandWeights[o].Weight))
             {
-                var attack = bot.Orders.Orders.OfType<GameOrderAttackTransfer>().RandomOrDefault(o => o.To == helpExpansionTo);
+                var attackOptions = bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.To == helpExpansionTo).ToList();
 
-                if (attack != null)
+                if (attackOptions.Count > 0)
                 {
+                    var attack = bot.UseRandomness ? attackOptions.Random() : attackOptions[0];
+
                     Deploy(bot, source + " by expansion weight", attack.From, armies);
                     attack.NumArmies = attack.NumArmies.Add(new Armies(armies));
                     return;
                 }
             }
 
-            Deploy(bot, source + " random", terrs.Random(), armies);
+            if (bot.UseRandomness)
+                Deploy(bot, source + " random", terrs.Random(), armies);
+            else
+                Deploy(bot, source + " first", terrs.First(), armies);
         }
 
         private static void Deploy(BotMain bot, string source, TerritoryIDType terrID, int armies)

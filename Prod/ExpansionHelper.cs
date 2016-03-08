@@ -20,6 +20,9 @@ namespace WarLight.AI.Prod
 
             var weight = BaseBonusWeight;
 
+            //When randomness is enabled, modify the bonus by a fixed amount for this bonus.
+            weight += bot.BonusFuzz(bonusID);
+
             weight += bonusValue * (bot.IsFFA ? 9 : 4);
 
             //Subtract value for each additional turn it takes to take over one

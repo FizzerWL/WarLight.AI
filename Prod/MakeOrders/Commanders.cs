@@ -29,7 +29,7 @@ namespace WarLight.AI.Prod.MakeOrders
             var sorted = terrDistances.OrderByDescending(o => o.Value).ToList();
             sorted.RemoveWhere(o => o.Value < sorted[0].Value);
 
-            var runTo = sorted.Random().Key;
+            var runTo = bot.UseRandomness ? sorted.Random().Key : sorted[0].Key;
 
             if (runTo == cmdrTerritory.ID)
                 return; //already there
