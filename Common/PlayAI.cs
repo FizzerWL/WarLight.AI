@@ -33,7 +33,7 @@ namespace WarLight.AI
                 //play one full game with the log printing to ensure everything works, then suppress the log and just play games multi-threaded as fast as possible.
                 PlayGame(botName, numOpponents);
 
-                AILog.SuppressLog = true;
+                AILog.DoLog = l => false;
 
                 var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
                 {
@@ -54,7 +54,7 @@ namespace WarLight.AI
                 while (true)
                 {
                     Thread.Sleep(30000);
-                    Console.WriteLine(DateTime.Now + ": Wins: " + NumWins + ", Losses=" + NumLosses);
+                    Console.WriteLine(DateTime.Now + ": Wins=" + NumWins + ", Losses=" + NumLosses);
                 }
             }
         }
@@ -63,12 +63,13 @@ namespace WarLight.AI
         {
             var players = new[] { PlayerInvite.Create(MeID, (TeamIDType)1, null) }.Concat(Enumerable.Range(0, numOpponents).Select(o => PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null)));
 
-            AILog.Log("Creating game...");
+            AILog.Log("PlayAI", "Creating game...");
             var gameID = BotGameAPI.CreateGame(players, "AI Competition", null, gameSettings => gameSettings["MaxCardsHold"] = 999);
 
-            AILog.Log("Created game " + gameID);
+            AILog.Log("PlayAI", "Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
+            bool? weWon = null;
 
             try
             {
@@ -77,13 +78,13 @@ namespace WarLight.AI
                     var game = BotGameAPI.GetGameInfo(gameID, MeID);
                     if (game.State == GameState.Finished)
                     {
-                        GameFinished(game);
+                        weWon = GameFinished(game);
                         break;
                     }
 
                     if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks => BotGameAPI.SendPicks(game.ID, MeID, picks), orders => BotGameAPI.SendOrders(game.ID, MeID, orders, game.NumberOfTurns + 1)))
                     {
-                        GameFinished(game);
+                        weWon = GameFinished(game);
                         break;
                     }
 
@@ -92,21 +93,23 @@ namespace WarLight.AI
             }
             finally
             {
-                ExportGame(gameID);
+                ExportGame(gameID, weWon);
                 BotGameAPI.DeleteGame(gameID);
             }
         }
 
-        private static void GameFinished(GameObject game)
+        private static bool GameFinished(GameObject game)
         {
             var winners = game.Players.Values.Where(o => o.State == GamePlayerState.Won).ToList();
-            var weWon = winners.Count > 0 && winners.Any(o => o.ID == MeID);
+            var weWon = winners.Any(o => o.ID == MeID);
             Console.WriteLine(DateTime.Now + ": Game " + game.ID + " finished.  Won=" + weWon);
 
             if (weWon)
                 Interlocked.Increment(ref NumWins);
             else
                 Interlocked.Increment(ref NumLosses);
+
+            return weWon;
         }
 
         
@@ -114,13 +117,13 @@ namespace WarLight.AI
         /// <summary>
         /// Save it off in case we want to look at it later.  To look at it, go to https://www.warlight.net/Play, press Ctrl+Shift+E then click Import
         /// </summary>
-        private static void ExportGame(GameIDType gameID)
+        private static void ExportGame(GameIDType gameID, bool? weWon)
         {
             var export = BotGameAPI.ExportGame(gameID);
             var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "PlayAI");
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, gameID + ".txt"), export);
+            File.WriteAllText(Path.Combine(dir, gameID + (!weWon.HasValue ? "" : weWon.Value ? "_win" : "_loss") + ".txt"), export);
 
         }
     }

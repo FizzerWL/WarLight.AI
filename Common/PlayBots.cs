@@ -16,9 +16,9 @@ namespace WarLight.AI
         public static void Go(string[] args)
         {
             //play one with full log to ensure all bots are functional, then suppress log and play games as fast as possible.
-            PlayGame(args); 
+            PlayGame(args);
 
-            AILog.SuppressLog = true;
+            AILog.DoLog = l => false;
 
             var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
             {
@@ -44,14 +44,15 @@ namespace WarLight.AI
         {
             var bots = args;
 
-            AILog.Log("Creating game...");
+            AILog.Log("PlayBots", "Creating game...");
             var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Length).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
+                gameSettings["Fog"] = "NoFog";
             });
 
-            AILog.Log("Created game " + gameID);
+            AILog.Log("PlayBots", "Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
             var game = BotGameAPI.GetGameInfo(gameID, null);

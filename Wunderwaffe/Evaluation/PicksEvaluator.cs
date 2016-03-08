@@ -41,14 +41,14 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
                 map.Territories[terrID].OwnerPlayerID = BotState.Me.ID;
 
                 var r = map.MyExpansionValue().PlayerExpansionValue;
-                AILog.Log("PlayerExpansionValue for " + terrID + " " + map.Territories[terrID].Details.Name + " is " + r);
+                AILog.Log("PicksEvaluator", "PlayerExpansionValue for " + terrID + " " + map.Territories[terrID].Details.Name + " is " + r);
                 return r;
             });
 
             //TODO: Take the top numPicks * 2, then normalize their values and do a weighted random.
             var ret = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
 
-            AILog.Log("Final picks: " + ret.JoinToStrings(","));
+            AILog.Log("PicksEvaluator", "Final picks: " + ret.JoinToStrings(","));
             return ret;
         }
 

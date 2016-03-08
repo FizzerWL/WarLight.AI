@@ -80,24 +80,24 @@ namespace WarLight.AI.Wunderwaffe.Move
 
         public void DumpToLog()
         {
-            AILog.Log("Final " + Orders.Count + " orders:");
+            AILog.Log("Moves", "Final " + Orders.Count + " orders:");
                 
             foreach (var order in Orders)
             {
                 if (order is BotOrderDeploy)
                 {
                     var dep = (BotOrderDeploy)order;
-                    AILog.Log(" - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
+                    AILog.Log("Moves", " - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
                 }
                 else if (order is BotOrderAttackTransfer)
                 {
                     var attack = (BotOrderAttackTransfer)order;
 
-                    AILog.Log(" - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
+                    AILog.Log("Moves", " - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
                 }
                 else if (order is BotOrderGeneric)
                 {
-                    AILog.Log(" - " + order.As<BotOrderGeneric>().Order.ToString());
+                    AILog.Log("Moves", " - " + order.As<BotOrderGeneric>().Order.ToString());
                 }
                 else
                     throw new Exception("Unexpected order type");

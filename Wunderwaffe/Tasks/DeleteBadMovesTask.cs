@@ -67,7 +67,7 @@ namespace WarLight.AI.Wunderwaffe.Tasks
             }
             if (interestingTransfers.Count > 0)
             {
-                AILog.Log("interestingTransfers.size(): " + interestingTransfers.Count);
+                AILog.Log("DeleteBadMovesTask", "interestingTransfers.size(): " + interestingTransfers.Count);
             }
             foreach (var atm_1 in interestingTransfers)
             {

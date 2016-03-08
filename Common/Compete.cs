@@ -36,7 +36,7 @@ namespace WarLight.AI
             else
             {
 
-                AILog.SuppressLog = true;
+                AILog.DoLog = l => l == "Speeds";
 
                 var threads = Enumerable.Range(0, numThreads).Select(threadNum => new Thread(() =>
                 {
@@ -58,7 +58,11 @@ namespace WarLight.AI
 
                 threads.ForEach(o => o.Start());
 
-                Thread.Sleep(int.MaxValue);
+                while (true)
+                {
+                    Thread.Sleep(30000);
+                    EntryPoint.LogSpeeds();
+                }
             }
         }
 
@@ -96,17 +100,18 @@ namespace WarLight.AI
             else
                 invite.Add(PlayerInvite.Create(oppID, PlayerInvite.NoTeam, null));
 
-            AILog.Log("Creating game...");
+            AILog.Log("Compete", "Creating game...");
             var gameID = BotGameAPI.CreateGame(invite, "Compete", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
             });
 
-            AILog.Log("Created game " + gameID);
+            AILog.Log("Compete", "Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
             var game = BotGameAPI.GetGameInfo(gameID, null);
+            bool? won = null;
 
             try
             {
@@ -117,9 +122,9 @@ namespace WarLight.AI
 
                     if (game.State == GameState.Finished)
                     {
-                        var won = game.Players.Values.Single(o => o.State == GamePlayerState.Won).ID == usID;
-                        _botStats.GetOrAdd(opponent, _ => new Stats()).Record(won);
-                        Console.WriteLine("T" + threadNum.ToString("00") + " G" + gameNum.ToString("00") + ": " + (won ? "Won " : "Lost") + " game vs " + opponent + " " + gameID + " finished. Totals: " + _botStats.OrderBy(o => o.Key).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
+                        won = game.Players.Values.Single(o => o.State == GamePlayerState.Won).ID == usID;
+                        _botStats.GetOrAdd(opponent, _ => new Stats()).Record(won.Value);
+                        Console.WriteLine("T" + threadNum.ToString("00") + " G" + gameNum.ToString("00") + ": " + (won.Value ? "Won " : "Lost") + " game vs " + opponent + " " + gameID + " finished. Totals: " + _botStats.OrderBy(o => o.Key).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
                         break;
                     }
 
@@ -140,7 +145,7 @@ namespace WarLight.AI
             }
             finally
             {
-                ExportGame(gameID, opponent);
+                ExportGame(gameID, opponent, won);
                 BotGameAPI.DeleteGame(gameID);
             }
 
@@ -150,13 +155,13 @@ namespace WarLight.AI
         /// <summary>
         /// Save it off in case we want to look at it later.  To look at it, go to https://www.warlight.net/Play, press Ctrl+Shift+E then click Import
         /// </summary>
-        private static void ExportGame(GameIDType gameID, string oppBot)
+        private static void ExportGame(GameIDType gameID, string oppBot, bool? won)
         {
             var export = BotGameAPI.ExportGame(gameID);
             var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Compete");
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, oppBot + "_" + gameID + ".txt"), export);
+            File.WriteAllText(Path.Combine(dir, gameID + "_" + oppBot + (!won.HasValue ? "" : won.Value ? "_win" : "_loss") + ".txt"), export);
 
         }
     }

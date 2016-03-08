@@ -39,7 +39,7 @@ namespace WarLight.AI
             incomes.Add(OpponentPlayerID, new PlayerIncome(5));
 
 
-            Bot.Init(MyPlayerID, Players, Map, DistributionStanding, new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false), NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
+            Bot.Init(MyPlayerID, Players, Map, DistributionStanding, new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16), NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
         }
 
         static IWarLightAI Bot;
@@ -64,7 +64,7 @@ namespace WarLight.AI
                     {
                         InitBot();
                         PickedTerritories = Bot.GetPicks();
-                        AILog.Log("Bot picked " + PickedTerritories.JoinToStrings(" "));
+                        AILog.Log("AIGamesParser", "Bot picked " + PickedTerritories.JoinToStrings(" "));
                     }
 
                     var timeout = long.Parse(parts[1]);
@@ -76,7 +76,7 @@ namespace WarLight.AI
                         Console.Out.WriteLine(pick[0]);
                     else
                     {
-                        AILog.Log("None of bot's picks are still available, picking random");
+                        AILog.Log("AIGamesParser", "None of bot's picks are still available, picking random");
                         Console.Out.WriteLine(pickableStartingTerritories.Random());
                     }
                 }

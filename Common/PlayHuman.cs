@@ -14,7 +14,7 @@ namespace WarLight.AI
 
         public static void Create(string botName, string opponent, string gameName)
         {
-            AILog.Log("Creating game...");
+            AILog.Log("PlayHuman", "Creating game...");
             var gameID = HumanGameAPI.CreateGame(new[] {
                             PlayerInvite.Create("me", (TeamIDType)0, null),
                             PlayerInvite.Create("AI@warlight.net", (TeamIDType)0, null),
@@ -28,7 +28,7 @@ namespace WarLight.AI
                             //settings["BlockadeCard"] = "none";
                             //settings["NumberOfCardsToReceiveEachTurn"] = 1;
                         });
-            AILog.Log("Created game " + gameID);
+            AILog.Log("PlayHuman", "Created game " + gameID);
             PlayLoop(botName, gameID, MeID);
         }
 
@@ -51,9 +51,9 @@ namespace WarLight.AI
                         var game = HumanGameAPI.GetGameInfo(gameID, null);
                         if (game.Players[playerID].State == GamePlayerState.Invited)
                         {
-                            AILog.Log("Accepting invite...");
+                            AILog.Log("PlayHuman", "Accepting invite...");
                             HumanGameAPI.AcceptGame(gameID);
-                            AILog.Log("Accepted invite");
+                            AILog.Log("PlayHuman", "Accepted invite");
                         }
 
                         checkedAccept = true;
@@ -61,7 +61,7 @@ namespace WarLight.AI
                 }
                 else if (status.Item2 == GameState.Finished)
                 {
-                    AILog.Log("Game finished");
+                    AILog.Log("PlayHuman", "Game finished");
                     break;
                 }
                 else if (status.Item1 > turnNumber)
@@ -71,14 +71,14 @@ namespace WarLight.AI
                     if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks =>
                     {
                         HumanGameAPI.SendPicks(game.ID, picks);
-                        AILog.Log("Sent picks");
+                        AILog.Log("PlayHuman", "Sent picks");
                     }, orders =>
                     {
                         HumanGameAPI.SendOrders(game.ID, orders, game.NumberOfTurns + 1);
-                        AILog.Log("Sent orders");
+                        AILog.Log("PlayHuman", "Sent orders");
                     }))
                     {
-                        AILog.Log("We're no longer alive");
+                        AILog.Log("PlayHuman", "We're no longer alive");
                         break;
                     }
                     turnNumber = status.Item1;
@@ -92,7 +92,7 @@ namespace WarLight.AI
 
         public static void PlayForTurn(string botName, GameIDType gameID, int playForTurn)
         {
-            AILog.Log("Generating orders for game " + gameID + " turn " + playForTurn);
+            AILog.Log("PlayHuman", "Generating orders for game " + gameID + " turn " + playForTurn);
             var settings = HumanGameAPI.GetGameSettings(gameID);
             var game = HumanGameAPI.GetGameInfo(gameID, playForTurn);
 

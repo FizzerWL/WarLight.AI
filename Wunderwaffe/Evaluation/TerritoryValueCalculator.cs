@@ -210,7 +210,7 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
             return outvar;
         }
 
-        public List<BotTerritory> SortExpansionValue(List<BotTerritory> inTerritories)
+        public List<BotTerritory> SortExpansionValue(IEnumerable<BotTerritory> inTerritories)
         {
             return inTerritories.OrderByDescending(o => o.ExpansionTerritoryValue).ToList();
         }

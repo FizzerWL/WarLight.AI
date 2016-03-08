@@ -29,8 +29,9 @@ namespace WarLight.AI
         
         public override string ToString()
         {
-            return "ID = " + this.ID + ", ArmiesReward = " + this.Amount;
+            return Name + " ID = " + this.ID + ", ArmiesReward = " + this.Amount;
         }
+
 
         /// <summary>
         /// Determines who controls this bonus. Will return null if nobody does or at least one territory is fogged
@@ -44,15 +45,15 @@ namespace WarLight.AI
             {
                 TerritoryStanding cs = standing.Territories[territoryID];
                 if (cs.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
-                    return new Nullable<PlayerIDType>();
+                    return null;
                 if (cs.IsNeutral)
-                    return new Nullable<PlayerIDType>();
+                    return null;
                 else if (cs.OwnerPlayerID == TerritoryStanding.FogPlayerID)
-                    return new Nullable<PlayerIDType>();
+                    return null;
                 else if ((int)playerID == int.MinValue)
                     playerID = cs.OwnerPlayerID;
                 else if (playerID != cs.OwnerPlayerID)
-                    return new Nullable<PlayerIDType>();
+                    return null;
             }
 
             Assert.Fatal(playerID != TerritoryStanding.FogPlayerID && playerID != TerritoryStanding.NeutralPlayerID);

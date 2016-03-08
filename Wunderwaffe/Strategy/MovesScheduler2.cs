@@ -238,8 +238,8 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                     {
                         if (unhandledMove.Armies.AttackPower * BotState.Settings.OffensiveKillRate > mmOpponentTerritory.Armies.DefensePower + BotState.GetGuessedOpponentIncome(mmOpponentTerritory.OwnerPlayerID, BotState.VisibleMap) + 3)
                         {
-                            AILog.Log("found substitute move: " + unhandledMove);
-                            AILog.Log(unhandledMove.To.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative) + " | " + mmOpponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative));
+                            AILog.Log("MovesScheduler2", "found substitute move: " + unhandledMove);
+                            AILog.Log("MovesScheduler2", unhandledMove.To.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative) + " | " + mmOpponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative));
                             return unhandledMove;
                         }
                     }
@@ -328,7 +328,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
         {
             List<BotTerritory> territoriesOpponentMightBreak = new List<BotTerritory>();
             var opponentIncome = BotState.GetGuessedOpponentIncome(slipperyOpponentTerritory.OwnerPlayerID, BotState.VisibleMap);
-            var opponentAttackingArmies = opponentIncome + slipperyOpponentTerritory.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+            var opponentAttackingArmies = opponentIncome + slipperyOpponentTerritory.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
             var neededArmiesForDefense = (int)Math.Round(opponentAttackingArmies * BotState.Settings.OffensiveKillRate);
             foreach (var ownedNeighbor in slipperyOpponentTerritory.GetOwnedNeighbors())
             {
@@ -365,7 +365,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.GetArmiesAfterDeploymentAndIncomingMoves();
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffensiveKillRate) >= ourArmies.DefensePower)
                     return true;
@@ -387,7 +387,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.GetArmiesAfterDeploymentAndIncomingMoves();
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffensiveKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefensiveKillRate))
                     return true;
@@ -407,7 +407,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.Armies;
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffensiveKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefensiveKillRate))
                     return true;
@@ -424,7 +424,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             var ourArmies = ourTerritory.Armies;
             var opponentAttackingArmies = opponentIncome;
             foreach (var opponentNeighbor in ourTerritory.GetOpponentNeighbors())
-                opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+                opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
             return Math.Round(opponentAttackingArmies * BotState.Settings.OffensiveKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefensiveKillRate);
         }

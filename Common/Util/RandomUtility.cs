@@ -25,10 +25,11 @@ namespace WarLight.AI
         public static T WeightedRandom<T>(this IEnumerable<T> array, Func<T, double> weightSelector)
         {
             double sum = array.Select(weightSelector).Sum();
+            var val = RandomPercentage() * sum;
             foreach (var item in array)
             {
-                sum -= weightSelector(item);
-                if (sum <= 0)
+                val -= weightSelector(item);
+                if (val <= 0)
                     return item;
             }
 

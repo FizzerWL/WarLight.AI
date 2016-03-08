@@ -34,7 +34,7 @@ namespace WarLight.AI
             return s.Substring(0, s.Length - toRemove.Length);
         }
 
-        public static void RemoveAll<T>(this ICollection<T> col, IEnumerable<T> rem)
+        public static void RemoveAll<T>(this HashSet<T> col, IEnumerable<T> rem)
         {
             foreach (var r in rem)
                 col.Remove(r);

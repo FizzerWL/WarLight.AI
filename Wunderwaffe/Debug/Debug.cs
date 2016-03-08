@@ -18,7 +18,7 @@ namespace WarLight.AI.Wunderwaffe.Debug
         
         public static void PrintDebugOutputBeginTurn(BotMain state)
         {
-            AILog.Log("========================= NumTurns=" + state.NumberOfTurns + " ==========================");
+            AILog.Log("Debug", "========================= NumTurns=" + state.NumberOfTurns + " ==========================");
         }
 
         public static void PrintDebugOutput(BotMain state)
@@ -39,18 +39,18 @@ namespace WarLight.AI.Wunderwaffe.Debug
         // System.err.println();
         private static void PrintDistances(BotMain state)
         {
-            AILog.Log("Territory distances:");
+            AILog.Log("Debug", "Territory distances:");
             foreach (var territory in state.VisibleMap.GetOwnedTerritories())
             {
                 var message = territory.ID + " --> " + territory.DirectDistanceToOpponentBorder + " | " + territory.DistanceToUnimportantSpot + " | " + territory.DistanceToImportantSpot  + " | " + territory.DistanceToHighlyImportantSpot + " | " + territory.DistanceToOpponentBorder + " | " + territory.DistanceToImportantOpponentBorder + " || " + TransferMovesChooser.GetAdjustedDistance(territory);
 
-                AILog.Log(message);
+                AILog.Log("Debug", message);
             }
         }
 
         private static void PrintAllTerritories(BotMain state)
         {
-            AILog.Log("Territories:");
+            AILog.Log("Debug", "Territories:");
             foreach (var territory in state.VisibleMap.Territories.Values)
             {
                 var id = territory.ID;
@@ -58,7 +58,7 @@ namespace WarLight.AI.Wunderwaffe.Debug
                 var armies = territory.Armies;
                 var ownershipHeuristic = territory.IsOwnershipHeuristic;
                 var deployment = territory.GetTotalDeployment(BotTerritory.DeploymentType.Normal);
-                AILog.Log(" - Territory " + id + " (" + player + " | " + armies + " | " + ownershipHeuristic + " | " + deployment + ")");
+                AILog.Log("Debug", " - Territory " + id + " (" + player + " | " + armies + " | " + ownershipHeuristic + " | " + deployment + ")");
             }
         }
 
@@ -71,7 +71,7 @@ namespace WarLight.AI.Wunderwaffe.Debug
                 if (bonus.IsOwnedByOpponent(opponentID))
                     message.Append(bonus.ID + ", ");
             }
-            AILog.Log(message.ToString());
+            AILog.Log("Debug", message.ToString());
         }
     }
 }

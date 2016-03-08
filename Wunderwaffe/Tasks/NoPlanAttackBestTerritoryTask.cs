@@ -34,7 +34,7 @@ namespace WarLight.AI.Wunderwaffe.Tasks
                         return attackTerritoryMoves;
 
                     // If we can't truly attack then attack with 1's
-                    var allowedSmallAttacks = territory.Armies.NumArmies - state.MustStandGuardOneOrZero;
+                    var allowedSmallAttacks = territory.Armies.NumArmies - state.Settings.OneArmyMustStandGuardOneOrZero;
                     allowedSmallAttacks -= GetAlreadyPresentSmallAttacks(territory);
                     foreach (var ownedNeighbor in territory.GetOwnedNeighbors())
                     {

@@ -81,19 +81,14 @@ namespace WarLight.AI.Cowzow.Bot
                     return this.PreviousTurn.Where(o => IsOpponent(o.PlayerID));
             }
         }
-        public int MustStandGuardOneOrZero
-        {
-            get { return Settings.OneArmyMustStandGuard ? 1 : 0; }
-        }
-
         public List<TerritoryIDType> GetPicks()
         {
             var territoryList = DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => BotMap.Territories[o.ID]).ToList();
             territoryList.Sort(new StartingTerritoryComparator(this));
 
-            AILog.Log("Picking " + territoryList.Count + " territories: ");
+            AILog.Log("Cowzow", "Picking " + territoryList.Count + " territories: ");
             foreach (var terr in territoryList)
-                AILog.Log(" - " + terr);
+                AILog.Log("Cowzow", " - " + terr);
 
             return territoryList.Select(o => o.ID).ToList();
         }
@@ -105,9 +100,9 @@ namespace WarLight.AI.Cowzow.Bot
 
             var final = deploys.Cast<BotOrder>().Concat(attacks).ToList();
 
-            AILog.Log("Final " + final.Count + " orders: ");
+            AILog.Log("Cowzow", "Final " + final.Count + " orders: ");
             foreach (var order in final)
-                AILog.Log(" - " + order);
+                AILog.Log("Cowzow", " - " + order);
 
             return BotOrder.Convert(final);
         }
@@ -129,7 +124,7 @@ namespace WarLight.AI.Cowzow.Bot
             // reserveTroops declaration
             var reserveTroops = new Dictionary<TerritoryIDType, int>();
             foreach (var terr in BotMap.VisibleTerritories.Where(o => o.OwnerPlayerID == this.Me.ID))
-                reserveTroops[terr.ID] = terr.Armies - MustStandGuardOneOrZero;
+                reserveTroops[terr.ID] = terr.Armies - Settings.OneArmyMustStandGuardOneOrZero;
 
             // Get all attack paths
             var targets = BotMap.GetUnfriendlyTerritories().Select(o => o.ID).ToHashSet(true);
@@ -149,7 +144,7 @@ namespace WarLight.AI.Cowzow.Bot
             totalAttackPaths.Sort(Eval);
 
             foreach (var attackPath in totalAttackPaths.Take(10))
-                AILog.Log("Top attack path: " + attackPath + " score=" + Eval.GetScore(attackPath));
+                AILog.Log("Cowzow", "Top attack path: " + attackPath + " score=" + Eval.GetScore(attackPath));
 
             var it = new EdgeChooser(totalAttackPaths, reserveTroops, Eval);
             while (it.HasNext() && armiesLeft > 0)
@@ -207,7 +202,7 @@ namespace WarLight.AI.Cowzow.Bot
             var myMovableTerritories = new HashSet<TerritoryIDType>();
 
             foreach (var r in BotMap.VisibleTerritories.Where(o => o.OwnerPlayerID == Me.ID))
-                if (r.Armies > MustStandGuardOneOrZero)
+                if (r.Armies > Settings.OneArmyMustStandGuardOneOrZero)
                     myMovableTerritories.Add(r.ID);
 
             var manager = new OrderManager(this, myMovableTerritories);
@@ -224,7 +219,7 @@ namespace WarLight.AI.Cowzow.Bot
 
                 attackerChoices.Add(new Edge(attacker, attacker, 0));
                 attackerChoices.Sort(Eval);
-                network.AddAttacker(attacker, attacker.Armies - MustStandGuardOneOrZero);
+                network.AddAttacker(attacker, attacker.Armies - Settings.OneArmyMustStandGuardOneOrZero);
                 var firstEnemy = false;
                 foreach (var e in attackerChoices)
                 {

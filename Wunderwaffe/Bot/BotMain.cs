@@ -85,11 +85,6 @@ namespace WarLight.AI.Wunderwaffe.Bot
         public BonusValueCalculator BonusValueCalculator;
         public BonusExpansionValueCalculator BonusExpansionValueCalculator;
 
-        public int MustStandGuardOneOrZero
-        {
-            get { return Settings.OneArmyMustStandGuard ? 1 : 0; }
-        }
-        
 
         public DefendTerritoryTask DefendTerritoryTask;
         public DefendTerritoriesTask DefendTerritoriesTask;

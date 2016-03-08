@@ -26,7 +26,7 @@ namespace WarLight.AI
         public static string ReadExported(string folder, GameIDType gameID)
         {
             var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), folder);
-            return File.ReadAllText(Path.Combine(dir, gameID + ".txt"));
+            return File.ReadAllText(Path.Combine(dir, Directory.GetFiles(dir, gameID + "*.txt").Single()));
         }
     }
 }

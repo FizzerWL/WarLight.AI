@@ -12,8 +12,9 @@ namespace WarLight.AI
 {
     public static class Communication
     {
-        //public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
         public static string HttpRoot = "http://aiserver.warlight.net/api/";
+        //public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
+        //public static string HttpRoot = "http://192.168.1.105:9000/AIServer/api/";
 
         public static JToken Call(string api, JToken input)
         {
@@ -132,6 +133,8 @@ namespace WarLight.AI
         {
             var overriddenBonuses = settingsNode["OverriddenBonuses"].As<JArray>().ToDictionary(o => (BonusIDType)(int)o["bonusID"], o => (int)o["value"]);
             var terrLimit = settingsNode["TerritoryLimit"].Type == JTokenType.String ? 0 : (int)settingsNode["TerritoryLimit"];
+            var roundingMode = (RoundingModeEnum)Enum.Parse(typeof(RoundingModeEnum), (string)settingsNode["RoundingMode"]);
+            
 
             return new GameSettings(
                 (double)settingsNode["OffensiveKillRate"] / 100.0,
@@ -145,7 +148,10 @@ namespace WarLight.AI
                 overriddenBonuses,
                 (bool)settingsNode["Commanders"],
                 (bool)settingsNode["AllowAttackOnly"],
-                (bool)settingsNode["AllowTransferOnly"]
+                (bool)settingsNode["AllowTransferOnly"],
+                (int)settingsNode["InitialPlayerArmiesPerTerritory"],
+                roundingMode,
+                (double)settingsNode["LuckModifier"]
                 );
 
         }
@@ -174,6 +180,8 @@ namespace WarLight.AI
             return ret;
         }
 
+        static CultureInfo EnUS = new CultureInfo("en-US");
+
         public static GameTurn ReadGameTurn(JToken jToken)
         {
             if (jToken.Type == JTokenType.String && (string)jToken == "null")
@@ -181,7 +189,7 @@ namespace WarLight.AI
 
             var ret = new GameTurn();
 
-            ret.Date = DateTime.Parse((string)jToken["date"], new CultureInfo("en-US"));
+            ret.Date = DateTime.Parse((string)jToken["date"], EnUS);
             ret.Orders = ReadOrders(jToken["orders"]);
             return ret;
         }
@@ -199,7 +207,6 @@ namespace WarLight.AI
                 var playerID = ToPlayerID((string)terr["ownedBy"]);
                 var armies = ToArmies((string)terr["armies"]);
                 ret.Territories.Add(terrID, new TerritoryStanding(terrID, playerID, armies));
-                
             }
 
             return ret;

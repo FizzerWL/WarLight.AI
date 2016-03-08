@@ -22,7 +22,7 @@ namespace WarLight.AI
         {
             var botName = args[0];
 
-            AILog.Log("Creating game...");
+            AILog.Log("PlayFFA", "Creating game...");
             var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, 6).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayFFA", null, gameSettings =>
             //var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, 6).Select(o => PlayerInvite.Create((PlayerIDType)o, (TeamIDType)(o == 0 ? 0 : 1), (SlotType)o)), "PlayFFA", 17, gameSettings =>
             {
@@ -32,7 +32,7 @@ namespace WarLight.AI
                 //gameSettings["AutomaticTerritoryDistribution"] = "Automatic";
             });
 
-            AILog.Log("Created game " + gameID);
+            AILog.Log("PlayFFA", "Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
 
@@ -44,7 +44,7 @@ namespace WarLight.AI
                     var game = BotGameAPI.GetGameInfo(gameID, null);
                     if (game.State == GameState.Finished)
                     {
-                        AILog.Log("Game finished: " + gameID);
+                        AILog.Log("PlayFFA", "Game finished: " + gameID);
                         break;
                     }
 

@@ -102,7 +102,7 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
             var ourAttackingArmies = 0;
             foreach (var ownedNeighbor in opponentTerritory.GetOwnedNeighbors())
-                ourAttackingArmies += ownedNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
+                ourAttackingArmies += ownedNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
             if (opponentTerritory.AttackTerritoryValue > TerritoryValueCalculator.LOWEST_HIGH_PRIORITY_VALUE)
                 ourAttackingArmies += 5;

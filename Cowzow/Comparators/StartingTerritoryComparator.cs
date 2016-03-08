@@ -91,7 +91,7 @@ namespace WarLight.AI.Cowzow.Comparators
                         if (visited.ContainsAll(subTerritories))
                         {
                             var neutralArmies = subTerritories.Sum(o => Bot.BotMap.Territories[o].GuessedArmiesNotOwnedByUs);
-                            var divisor = Math.Max(1, Math.Pow(depth, 1.3)) * Math.Max(1, neutralArmies + subTerritories.Count * Bot.MustStandGuardOneOrZero);
+                            var divisor = Math.Max(1, Math.Pow(depth, 1.3)) * Math.Max(1, neutralArmies + subTerritories.Count * Bot.Settings.OneArmyMustStandGuardOneOrZero);
                             var result = Math.Pow(bonus.ArmiesReward, 1.2) / divisor;
 
                             //ArmiesToNeutralsRatio range: 0.2 is terrible, 0.5 is great
@@ -100,7 +100,7 @@ namespace WarLight.AI.Cowzow.Comparators
                             if (bonus.ArmiesReward < 2)
                                 result *= 0.5;
 
-                            AILog.Log(" - " + bonus.Details.Name + " depth=" + depth + " neutrals=" + neutralArmies + " ratio=" + bonus.ArmiesToNeutralsRatio + " divisor=" + divisor + " result=" + result);
+                            AILog.Log("StartingTerritoryComparator", " - " + bonus.Details.Name + " depth=" + depth + " neutrals=" + neutralArmies + " ratio=" + bonus.ArmiesToNeutralsRatio + " divisor=" + divisor + " result=" + result);
                             score += result;
 
                             visitedBonuses.Remove(bonusID);
@@ -117,7 +117,7 @@ namespace WarLight.AI.Cowzow.Comparators
                     && bonus_1.Territories.Count < 5)
                     score += bonus_1.ArmiesToNeutralsRatio;
 
-            AILog.Log("Score for " + territory + " is " + score);
+            AILog.Log("StartingTerritoryComparator", "Score for " + territory + " is " + score);
 
             TerritoryScoresCache[territory.ID] = score;
 

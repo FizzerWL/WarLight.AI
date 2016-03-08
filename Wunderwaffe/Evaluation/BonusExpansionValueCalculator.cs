@@ -59,11 +59,11 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
             return sortedBonuses;
         }
 
-        public List<BotBonus> SortAccessibleBonuses(BotMap mapToUse)
+        public HashSet<BotBonus> SortAccessibleBonuses(BotMap mapToUse)
         {
             var copy = new List<BotBonus>();
             copy.AddRange(mapToUse.Bonuses.Values);
-            var outvar = new List<BotBonus>();
+            var outvar = new HashSet<BotBonus>();
             while (!copy.IsEmpty())
             {
                 var highestPrioBonus = copy[0];

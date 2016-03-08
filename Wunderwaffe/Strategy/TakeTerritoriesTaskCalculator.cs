@@ -27,7 +27,7 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             if (maxDeployment == -1)
                 maxDeployment = 1000;
 
-            var visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories();
+            var visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories().ToHashSet(false);
             var territoriesToRemove = new List<BotTerritory>();
             foreach (var territory in visibleNeutralTerritories)
             {

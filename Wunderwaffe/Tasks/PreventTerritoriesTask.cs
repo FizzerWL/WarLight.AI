@@ -160,7 +160,7 @@ namespace WarLight.AI.Wunderwaffe.Tasks
 
         private static Armies CalculateStillOpponentIdleArmies(BotMain state, BotTerritory territory, Moves alreadyMadeMoves)
         {
-            var idleArmies = territory.Armies.Subtract(new Armies(state.MustStandGuardOneOrZero));
+            var idleArmies = territory.Armies.Subtract(new Armies(state.Settings.OneArmyMustStandGuardOneOrZero));
             foreach (var pam in alreadyMadeMoves.Orders.OfType<BotOrderDeploy>())
             {
                 if (pam.Territory.ID == territory.ID)

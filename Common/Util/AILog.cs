@@ -8,13 +8,12 @@ namespace WarLight.AI
 {
     public static class AILog
     {
-        public static bool SuppressLog = false;
-
-        /// <summary>Prints the message to the console.</summary>
-        public static void Log(string message)
+        public static Func<string, bool> DoLog = null;
+        
+        public static void Log(string area, string message)
         {
-            if (!SuppressLog)
-                Console.Error.WriteLine(DateTime.Now + ": " + message);
+            if (DoLog == null || DoLog(area))
+                Console.Error.WriteLine(DateTime.Now + " " + area + ": " + message);
         }
 
 

@@ -20,10 +20,17 @@ namespace WarLight.AI
         {
             this.FreeArmies = freeArmies;
         }
+        public PlayerIncome Clone()
+        {
+            var ret = new PlayerIncome(FreeArmies);
+            ret.BonusRestrictions = this.BonusRestrictions.ToDictionary(o => o.Key, o => o.Value);
+            return ret;
+        }
 
         public override string ToString()
         {
             return FreeArmies.ToString() + (BonusRestrictions.Count == 0 ? "" : " local deployments=" + BonusRestrictions.Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
         }
+
     }
 }

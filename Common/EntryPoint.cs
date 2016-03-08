@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -118,14 +119,64 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
             var bot = BotFactory.Construct(botName);
             bot.Init(playerID, game.Players, map, game.LatestInfo.DistributionStanding, settings, game.NumberOfTurns, game.LatestInfo.Income, game.LatestInfo.LatestTurn == null ? null : game.LatestInfo.LatestTurn.Orders, game.LatestInfo.LatestStanding, game.LatestInfo.PreviousTurnStanding, game.LatestInfo.TeammatesOrders, game.LatestInfo.Cards, game.LatestInfo.CardsMustUse);
 
-            AILog.Log("PlayGame. State=" + game.State + ", numTurns=" + game.NumberOfTurns + ", income=" + game.LatestInfo.Income[playerID] + ", cardsMustUse=" + game.LatestInfo.CardsMustUse);
+            AILog.Log("PlayGame", "State=" + game.State + ", numTurns=" + game.NumberOfTurns + ", income=" + game.LatestInfo.Income[playerID] + ", cardsMustUse=" + game.LatestInfo.CardsMustUse);
 
             if (game.State == GameState.DistributingTerritories)
-                sendPicks(bot.GetPicks());
+                sendPicks(_speeds.GetOrAdd(botName, _ => new Speeds()).Record(true, () => bot.GetPicks()));
             else if (game.State == GameState.Playing)
-                sendOrders(bot.GetOrders());
+                sendOrders(_speeds.GetOrAdd(botName, _ => new Speeds()).Record(false, () => bot.GetOrders()));
 
             return true;
+        }
+
+
+        class Speeds
+        {
+            public int TotalPicks = 0;
+            public int TotalOrders = 0;
+            public TimeSpan ElapsedPicking = TimeSpan.Zero;
+            public TimeSpan ElapsedOrdering = TimeSpan.Zero;
+
+            public T Record<T>(bool picking, Func<T> go)
+            {
+                var sw = Stopwatch.StartNew();
+
+                var ret = go();
+
+                var elapsed = sw.Elapsed;
+                lock (this)
+                {
+                    if (picking)
+                    {
+                        TotalPicks++;
+                        ElapsedPicking += elapsed;
+                    }
+                    else
+                    {
+                        TotalOrders++;
+                        ElapsedOrdering += elapsed;
+                    }
+                }
+                return ret;
+            }
+
+            public override string ToString()
+            {
+                lock (this)
+                {
+                    var avgPicking = TotalPicks == 0 ? 0 : ElapsedPicking.TotalMilliseconds / TotalPicks;
+                    var avgOrdering = TotalOrders == 0 ? 0 : ElapsedOrdering.TotalMilliseconds / TotalOrders;
+                    return avgPicking.ToString("0") + "ms picking, " + avgOrdering.ToString("0") + "ms making orders (" + TotalPicks + "/" + TotalOrders + ")";
+                }
+            }
+        }
+
+        static ConcurrentDictionary<string, Speeds> _speeds = new ConcurrentDictionary<string, Speeds>();
+
+
+        public static void LogSpeeds()
+        {
+            AILog.Log("Speeds", _speeds.Select(o => o.Key + " " + o.Value).JoinStrings(", "));
         }
     }
 }
