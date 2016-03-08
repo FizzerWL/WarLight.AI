@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.AI.Prod
+namespace WarLight.Shared.AI.Prod
 {
 
     public class Neighbor

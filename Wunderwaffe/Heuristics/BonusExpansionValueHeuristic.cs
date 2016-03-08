@@ -5,11 +5,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 
 
-namespace WarLight.AI.Wunderwaffe.Heuristics
+namespace WarLight.Shared.AI.Wunderwaffe.Heuristics
 {
     /// <summary>The heuristic expansion value of a Bonus.</summary>
     public class BonusExpansionValueHeuristic

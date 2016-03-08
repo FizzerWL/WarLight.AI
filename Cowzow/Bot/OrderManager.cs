@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Cowzow.Fulkerson2;
-using WarLight.AI.Cowzow.Map;
-using WarLight.AI.Cowzow.Move;
+using WarLight.Shared.AI.Cowzow.Fulkerson2;
+using WarLight.Shared.AI.Cowzow.Map;
+using WarLight.Shared.AI.Cowzow.Move;
 
-namespace WarLight.AI.Cowzow.Bot
+namespace WarLight.Shared.AI.Cowzow.Bot
 {
     public class OrderManager
     {

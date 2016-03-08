@@ -3,14 +3,14 @@
 */
 
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 
-using WarLight.AI.Wunderwaffe.Strategy;
+using WarLight.Shared.AI.Wunderwaffe.Strategy;
 using System;
 using System.Text;
 
-namespace WarLight.AI.Wunderwaffe.Debug
+namespace WarLight.Shared.AI.Wunderwaffe.Debug
 {
     public class Debug
     {

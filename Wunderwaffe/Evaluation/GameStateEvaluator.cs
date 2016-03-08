@@ -5,10 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 
-namespace WarLight.AI.Wunderwaffe.Evaluation
+namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 {
     /// <remarks>GameState is responsible for evaluating whether we are winning or losing.
     /// </remarks>

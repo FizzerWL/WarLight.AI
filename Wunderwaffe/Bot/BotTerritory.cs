@@ -5,11 +5,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotTerritory
     {

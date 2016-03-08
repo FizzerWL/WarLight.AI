@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace WarLight.AI.Prod.MakeOrders
+namespace WarLight.Shared.AI.Prod.MakeOrders
 {
     public class MakeOrdersMain
     {

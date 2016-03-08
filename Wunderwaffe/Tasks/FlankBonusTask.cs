@@ -3,14 +3,14 @@
 */
 
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
-using WarLight.AI.Wunderwaffe.Strategy;
+using WarLight.Shared.AI.Wunderwaffe.Strategy;
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <summary>This class is responsible for flanking a Bonus owned by the opponent.
     /// </summary>

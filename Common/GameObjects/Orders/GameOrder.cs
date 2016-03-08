@@ -1,4 +1,4 @@
-﻿namespace WarLight.AI
+﻿namespace WarLight.Shared.AI
 {
     public enum TurnPhase
     {

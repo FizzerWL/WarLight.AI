@@ -4,9 +4,9 @@
 
 using System;
 using System.Linq;
-using WarLight.AI.Cowzow.Map;
+using WarLight.Shared.AI.Cowzow.Map;
 
-namespace WarLight.AI.Cowzow.Move
+namespace WarLight.Shared.AI.Cowzow.Move
 {
     /// <summary>This Move is used in the second part of each round.</summary>
     /// <remarks>

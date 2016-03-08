@@ -4,7 +4,7 @@ using System.Linq;
 
 using System;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     public class MapDetails
     {

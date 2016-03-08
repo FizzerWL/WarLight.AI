@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     public class PlayerIncomeProgress
     {

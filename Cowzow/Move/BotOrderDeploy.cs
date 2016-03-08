@@ -4,9 +4,9 @@
 
 using System;
 using System.Linq;
-using WarLight.AI.Cowzow.Map;
+using WarLight.Shared.AI.Cowzow.Map;
 
-namespace WarLight.AI.Cowzow.Move
+namespace WarLight.Shared.AI.Cowzow.Move
 {
     /// <remarks>
     ///     This Move is used in the first part of each round. It represents what Territory is increased  with how many armies.

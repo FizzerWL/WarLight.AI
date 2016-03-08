@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.AI.Wunderwaffe.Move
+namespace WarLight.Shared.AI.Wunderwaffe.Move
 {
     public class BotOrderGeneric : BotOrder
     {

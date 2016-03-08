@@ -4,11 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class DeploymentHistory
     {

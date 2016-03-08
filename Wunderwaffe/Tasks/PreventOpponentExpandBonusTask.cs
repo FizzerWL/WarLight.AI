@@ -4,13 +4,13 @@
 
 using System;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// This class is responsible for preventing the opponent from expanding in a Bonus in which we have no foothold  yet. Preventing the opponent from expanding can happen either by attacking a neutral territory there or by directly attacking the opponent there.

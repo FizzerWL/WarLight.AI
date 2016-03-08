@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
 
 

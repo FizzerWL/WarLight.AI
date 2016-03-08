@@ -5,13 +5,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
 
-namespace WarLight.AI.Wunderwaffe.Strategy
+namespace WarLight.Shared.AI.Wunderwaffe.Strategy
 {
     public class TakeTerritoriesTaskCalculator
     {

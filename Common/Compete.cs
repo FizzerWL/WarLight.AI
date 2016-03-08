@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     /// <summary>
     /// Play the passed bot against all other bots, and keep track of how we do against them.

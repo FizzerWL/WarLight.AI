@@ -4,9 +4,9 @@
 
 using System;
 using System.Linq;
-using WarLight.AI.Cowzow.Map;
+using WarLight.Shared.AI.Cowzow.Map;
 
-namespace WarLight.AI.Cowzow.Fulkerson2
+namespace WarLight.Shared.AI.Cowzow.Fulkerson2
 {
     public class Edge
     {

@@ -5,12 +5,12 @@
 
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 
 
-namespace WarLight.AI.Wunderwaffe.BasicAlgorithms
+namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
 {
     public static class DistanceCalculator
     {

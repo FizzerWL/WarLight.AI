@@ -5,13 +5,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.BasicAlgorithms;
-using WarLight.AI.Wunderwaffe.Evaluation;
-using WarLight.AI.Wunderwaffe.Move;
-using WarLight.AI.Wunderwaffe.Strategy;
-using WarLight.AI.Wunderwaffe.Tasks;
+using WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Strategy;
+using WarLight.Shared.AI.Wunderwaffe.Tasks;
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotMain : IWarLightAI
     {

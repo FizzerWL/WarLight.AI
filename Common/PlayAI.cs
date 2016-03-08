@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     public static class PlayAI
     {

@@ -5,11 +5,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Heuristics;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Heuristics;
 
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotBonus
     {

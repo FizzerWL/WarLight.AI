@@ -5,12 +5,12 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// This class is responsible for preventing the opponent from taking all of some territories. This is needed to prevent him from completely taking over a Bonus.

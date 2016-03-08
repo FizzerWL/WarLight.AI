@@ -1,6 +1,6 @@
 ﻿
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     /// <summary>This Move is used in the first part of each round.</summary>
     /// <remarks>

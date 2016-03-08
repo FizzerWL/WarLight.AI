@@ -7,7 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     public class BonusDetails
     {

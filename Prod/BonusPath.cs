@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.AI.Prod
+namespace WarLight.Shared.AI.Prod
 {
     /// <summary>
     /// Calculates the path to take the bonus in the fewest number of turns, ignoring armies.

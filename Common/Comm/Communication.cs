@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace WarLight.AI
+namespace WarLight.Shared.AI
 {
     public static class Communication
     {

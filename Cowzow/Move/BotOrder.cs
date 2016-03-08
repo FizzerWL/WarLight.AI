@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WarLight.AI.Cowzow.Move
+namespace WarLight.Shared.AI.Cowzow.Move
 {
     public class BotOrder
     {

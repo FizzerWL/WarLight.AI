@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Cowzow.Map;
+using WarLight.Shared.AI.Cowzow.Map;
 
-namespace WarLight.AI.Cowzow.Bot
+namespace WarLight.Shared.AI.Cowzow.Bot
 {
     public class BonusAnalyzer
     {

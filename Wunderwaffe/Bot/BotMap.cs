@@ -5,12 +5,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Heuristics;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Heuristics;
 
 using System;
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotMap
     {

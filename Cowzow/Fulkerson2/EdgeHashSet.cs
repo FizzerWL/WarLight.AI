@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.AI.Cowzow.Fulkerson2
+namespace WarLight.Shared.AI.Cowzow.Fulkerson2
 {
     public class EdgeHashSet : IEnumerable<Edge>
     {

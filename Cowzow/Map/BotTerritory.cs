@@ -5,10 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Cowzow.Bot;
-using WarLight.AI.Cowzow.Fulkerson2;
+using WarLight.Shared.AI.Cowzow.Bot;
+using WarLight.Shared.AI.Cowzow.Fulkerson2;
 
-namespace WarLight.AI.Cowzow.Map
+namespace WarLight.Shared.AI.Cowzow.Map
 {
     public class BotTerritory
     {

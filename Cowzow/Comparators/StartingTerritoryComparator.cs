@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Cowzow.Bot;
-using WarLight.AI.Cowzow.Map;
-using WarLight.AI;
+using WarLight.Shared.AI.Cowzow.Bot;
+using WarLight.Shared.AI.Cowzow.Map;
+using WarLight.Shared.AI;
 
-namespace WarLight.AI.Cowzow.Comparators
+namespace WarLight.Shared.AI.Cowzow.Comparators
 {
     public class StartingTerritoryComparator : IComparer<BotTerritory>
     {

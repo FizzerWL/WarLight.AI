@@ -4,10 +4,10 @@
 
 using System;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 
-namespace WarLight.AI.Wunderwaffe.Heuristics
+namespace WarLight.Shared.AI.Wunderwaffe.Heuristics
 {
     /// <summary>PlayerExpansionValueHeuristic represents the expansion value of a player looking at the whole board.
     /// </summary>
