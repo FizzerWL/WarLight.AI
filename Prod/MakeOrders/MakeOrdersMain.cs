@@ -105,10 +105,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             armies -= Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.From == terrID).Sum(o => o.NumArmies.NumArmies);
 
             //Subtract airlift out's
-            armies -= Orders.Orders.OfType<GameOrderPlayCardAirlift>().Where(o => o.FromTerritoryID == terrID).Sum(o => o.ArmiesToAirlift.NumArmies);
+            armies -= Orders.Orders.OfType<GameOrderPlayCardAirlift>().Where(o => o.FromTerritoryID == terrID).Sum(o => o.GetArmies().NumArmies);
 
             //Subtract 1, since one must remain
-            if (Bot.Settings.OneArmyMustStandGuard)
+            if (Bot.Settings.OneArmyStandsGuard && armies > 0)
                 armies -= 1;
 
             Assert.Fatal(armies >= 0, "Armies went negative");

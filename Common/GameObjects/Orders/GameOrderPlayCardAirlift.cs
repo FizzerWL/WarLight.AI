@@ -10,7 +10,7 @@ namespace WarLight.Shared.AI
     {
         public TerritoryIDType FromTerritoryID;
         public TerritoryIDType ToTerritoryID;
-        public Armies ArmiesToAirlift;
+        private Armies NumArmies;
         public static GameOrderPlayCardAirlift Create(CardInstanceIDType cardInstanceID, PlayerIDType playerID, TerritoryIDType fromTerritoryID, TerritoryIDType toTerritoryID, Armies numArmies)
         {
             var o = new GameOrderPlayCardAirlift();
@@ -18,7 +18,7 @@ namespace WarLight.Shared.AI
             o.PlayerID = playerID;
             o.FromTerritoryID = fromTerritoryID;
             o.ToTerritoryID = toTerritoryID;
-            o.ArmiesToAirlift = numArmies;
+            o.NumArmies = numArmies;
             return o;
         }
 
@@ -27,6 +27,9 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.Airlift; }
         }
 
-
+        public Armies GetArmies() //must use a wrapper function for historical reasons :(
+        {
+            return this.NumArmies;
+        }
     }
 }

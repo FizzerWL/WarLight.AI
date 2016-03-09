@@ -45,7 +45,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
                 int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[expandTo].NumArmies);
 
-                var attackFrom = Bot.Map.Territories[expandTo].ConnectedTo
+                var attackFrom = Bot.Map.Territories[expandTo].ConnectedTo.Keys
                     .Select(o => Bot.Standing.Territories[o])
                     .Where(o => o.OwnerPlayerID == Bot.PlayerID)
                     .ToDictionary(o => o.ID, o => Bot.MakeOrders.GetArmiesAvailable(o.ID))
@@ -83,8 +83,21 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private Dictionary<TerritoryIDType, PossibleExpandTarget> GetExpansionWeights(HashSet<TerritoryIDType> terrs)
         {
-            var bonusPaths = terrs.SelectMany(o => Bot.Map.Territories[o].PartOfBonuses).Where(o => Bot.BonusValue(o) > 0).Distinct().ToDictionary(o => o, o => new BonusPath(Bot, o, ts => ts.OwnerPlayerID == Bot.PlayerID));
+            var bonusPaths = terrs
+                .SelectMany(o => Bot.Map.Territories[o].PartOfBonuses)
+                .Where(o => Bot.BonusValue(o) > 0)
+                .Distinct()
+                .Select(o => BonusPath.TryCreate(Bot, o, ts => ts.OwnerPlayerID == Bot.PlayerID))
+                .Where(o => o != null)
+                .ToDictionary(o => o.BonusID, o => o);
+
             var turnsToTake = bonusPaths.Keys.ToDictionary(o => o, o => TurnsToTake(o, bonusPaths[o]));
+            foreach(var cannotTake in turnsToTake.Where(o => o.Value == null).ToList())
+            {
+                turnsToTake.Remove(cannotTake.Key);
+                bonusPaths.Remove(cannotTake.Key);
+            }
+
             var bonusWeights = bonusPaths.Keys.ToDictionary(o => o, o => ExpansionHelper.WeighBonus(Bot, o, bonusPaths[o], ts => ts.OwnerPlayerID == Bot.PlayerID, turnsToTake[o]));
 
             AILog.Log("Expand", "GetExpansionWeights called with " + terrs.Count + " territories.  Weighted " + bonusWeights.Count + " bonuses:");
@@ -115,12 +128,12 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var bonus = Bot.Map.Bonuses[bonusID];
             var terrsToTake = bonus.Territories.Where(o => Bot.Standing.Territories[o].OwnerPlayerID != Bot.PlayerID).ToHashSet(true);
 
-            var terrsWeOwnInOrAroundBonus = bonus.Territories.Concat(bonus.Territories.SelectMany(o => Bot.Map.Territories[o].ConnectedTo)).Where(o => Bot.Standing.Territories[o].OwnerPlayerID == Bot.PlayerID).ToHashSet(false);
+            var terrsWeOwnInOrAroundBonus = bonus.Territories.Concat(bonus.Territories.SelectMany(o => Bot.Map.Territories[o].ConnectedTo.Keys)).Where(o => Bot.Standing.Territories[o].OwnerPlayerID == Bot.PlayerID).ToHashSet(false);
             var armiesWeHaveInOrAroundBonus = terrsWeOwnInOrAroundBonus.Sum(o => Bot.MakeOrders.GetArmiesAvailable(o));
 
             var armiesPerTurn = Bot.BaseIncome.FreeArmies;
 
-            return CaptureTerritories.TryFindTurnsToTake(Bot, path, armiesWeHaveInOrAroundBonus, armiesPerTurn, terrsToTake, o => o.OwnerPlayerID == TerritoryStanding.FogPlayerID ? ExpansionHelper.GuessNumberOfArmies(Bot, o.ID).DefensePower : o.NumArmies.DefensePower);
+            return CaptureTerritories.TryFindTurnsToTake(Bot, path, armiesWeHaveInOrAroundBonus, armiesPerTurn, terrsToTake, o => o.NumArmies.Fogged ? ExpansionHelper.GuessNumberOfArmies(Bot, o.ID).DefensePower : o.NumArmies.DefensePower);
         }
     }
 }

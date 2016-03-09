@@ -85,15 +85,26 @@ namespace WarLight.Shared.AI.Prod.MakePicks
         {
             var td = bot.Map.Territories[terrID];
 
-            var bonusPaths = td.PartOfBonuses.Where(o => bot.BonusValue(o) > 0).ToDictionary(o => o, o => new BonusPath(bot, o, ts => ts.ID == terrID));
+            var bonusPaths = td.PartOfBonuses
+                .Where(o => bot.BonusValue(o) > 0)
+                .Select(o => BonusPath.TryCreate(bot, o, ts => ts.ID == terrID))
+                .Where(o => o != null)
+                .ToDictionary(o => o.BonusID, o => o);
+
             var turnsToTake = bonusPaths.Keys.ToDictionary(o => o, o => TurnsToTake(bot, td.ID, o, bonusPaths[o]));
+            foreach (var cannotTake in turnsToTake.Where(o => o.Value == null).ToList())
+            {
+                turnsToTake.Remove(cannotTake.Key);
+                bonusPaths.Remove(cannotTake.Key);
+            }
+
             var bonusWeights = bonusPaths.Keys.ToDictionary(o => o, o => ExpansionHelper.WeighBonus(bot, o, bonusPaths[o], ts => ts.ID == terrID, turnsToTake[o]));
 
             var weight = 0.0f;
 
             weight += td.PartOfBonuses.Count == 0 ? 0 : td.PartOfBonuses.Max(o => bonusWeights.ContainsKey(o) ? bonusWeights[o] : 0);
 
-            AILog.Log("PickTerritories", "Expansion weight for terr " + bot.TerrString(terrID) + " is " + weight + ". " + td.PartOfBonuses.Select(b => "Bonus " + bot.BonusString(b) + " Weight=" + bonusWeights[b] + " TurnsToTake=" + turnsToTake[b] + " (infinite armies=" + bonusPaths[b].TurnsToTakeByDistance + ")").JoinStrings(", "));
+            AILog.Log("PickTerritories", "Expansion weight for terr " + bot.TerrString(terrID) + " is " + weight + ". " + td.PartOfBonuses.Select(b => "Bonus " + bot.BonusString(b) + " Weight=" + (bonusWeights.ContainsKey(b) ? bonusWeights[b] : 0) + " TurnsToTake=" + (turnsToTake.ContainsKey(b) ? turnsToTake[b].ToString() : "") + " Path=" + (bonusPaths.ContainsKey(b) ? bonusPaths[b].ToString() : "")).JoinStrings(", "));
 
             return weight;
         }

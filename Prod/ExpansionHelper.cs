@@ -33,7 +33,7 @@ namespace WarLight.Shared.AI.Prod
 
             weight -= bonus.Territories.Count * bot.Settings.OneArmyMustStandGuardOneOrZero;
 
-            float armyMult = (float)bot.Settings.DefensiveKillRate + 0.8f;
+            float armyMult = (float)bot.Settings.DefenseKillRate + 0.8f;
 
             //How many territories do we need to take to get it? Subtract one weight for each army standing in our way
             foreach (var terrInBonus in bonus.Territories)
@@ -60,7 +60,7 @@ namespace WarLight.Shared.AI.Prod
 
         public static Armies GuessNumberOfArmies(BotMain bot, TerritoryIDType terrID)
         {
-            Assert.Fatal(bot.Standing.Territories[terrID].OwnerPlayerID == TerritoryStanding.FogPlayerID, "Not fog");
+            Assert.Fatal(bot.Standing.Territories[terrID].NumArmies.Fogged, "Not fog");
             if (bot.DistributionStandingOpt != null)
             {
                 var dist = bot.DistributionStandingOpt.Territories[terrID];

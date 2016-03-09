@@ -89,7 +89,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             var remainingArmies = this.GetArmiesAfterDeployment(type);
             foreach (var atm in IncomingMoves)
-                remainingArmies = remainingArmies.Subtract(new Armies(SharedUtility.Ceiling(atm.Armies.NumArmies * BotState.Settings.OffensiveKillRate)));
+                remainingArmies = remainingArmies.Subtract(new Armies(SharedUtility.Ceiling(atm.Armies.NumArmies * BotState.Settings.OffenseKillRate)));
 
             if (!remainingArmies.Fogged && remainingArmies.NumArmies < 1)
                 remainingArmies = new Armies(1, specialUnits: remainingArmies.SpecialUnits);
@@ -190,7 +190,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         /// <returns>True if this Territory is a neighbor of given Territory, false otherwise</returns>
         public bool IsNeighbor(BotTerritory territory)
         {
-            return Details.ConnectedTo.Contains(territory.ID);
+            return Details.ConnectedTo.ContainsKey(territory.ID);
         }
 
         /// <param name="playerID">A string with a player's name</param>
@@ -258,7 +258,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             get
             {
-                return Details.ConnectedTo.Select(o => Parent.Territories[o]).ToList();
+                return Details.ConnectedTo.Keys.Select(o => Parent.Territories[o]).ToList();
             }
         }
         

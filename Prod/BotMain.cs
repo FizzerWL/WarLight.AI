@@ -60,9 +60,9 @@ namespace WarLight.Shared.AI.Prod
 
         public int ArmiesToTake(Armies defenseArmies)
         {
-            var ret = SharedUtility.Round((defenseArmies.DefensePower / Settings.OffensiveKillRate) - 0.5);
+            var ret = SharedUtility.Round((defenseArmies.DefensePower / Settings.OffenseKillRate) - 0.5);
 
-            if (ret == SharedUtility.Round(defenseArmies.DefensePower * Settings.DefensiveKillRate))
+            if (ret == SharedUtility.Round(defenseArmies.DefensePower * Settings.DefenseKillRate))
                 ret++;
 
             if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom && (!UseRandomness || RandomUtility.RandomNumber(3) != 0))
@@ -140,7 +140,7 @@ namespace WarLight.Shared.AI.Prod
 
         public IEnumerable<TerritoryStanding> AttackableTerritories
         {
-            get { return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Any(c => Standing.Territories[c].OwnerPlayerID == PlayerID)); }
+            get { return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Keys.Any(c => Standing.Territories[c].OwnerPlayerID == PlayerID)); }
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace WarLight.Shared.AI.Prod
             {
                 return Territories
                     .Where(o => Standing.Territories[o.ID].OwnerPlayerID == PlayerID)
-                    .Where(o => this.Map.Territories[o.ID].ConnectedTo
+                    .Where(o => this.Map.Territories[o.ID].ConnectedTo.Keys
                         .Any(c => this.Standing.Territories[c].OwnerPlayerID != this.PlayerID));
             }
         }
@@ -175,7 +175,7 @@ namespace WarLight.Shared.AI.Prod
 
             while (true)
             {
-                var toAdd = terrIDs.SelectMany(o => Map.Territories[o].ConnectedTo).Except(terrIDs).ToList();
+                var toAdd = terrIDs.SelectMany(o => Map.Territories[o].ConnectedTo.Keys).Except(terrIDs).ToList();
 
                 if (toAdd.Count == 0)
                     return int.MaxValue; //no enemies found on the entire map
@@ -207,7 +207,7 @@ namespace WarLight.Shared.AI.Prod
 
                 foreach (var front in visited.ToList())
                 {
-                    var connections = Map.Territories[front].ConnectedTo.Where(o => !visited.Contains(o)).ToList();
+                    var connections = Map.Territories[front].ConnectedTo.Keys.Where(o => !visited.Contains(o)).ToList();
 
                     if (UseRandomness)
                         connections.RandomizeOrder();
@@ -239,7 +239,7 @@ namespace WarLight.Shared.AI.Prod
         {
             var neighborDistances = new KeyValueList<TerritoryIDType, int>();
 
-            foreach (var immediateNeighbor in Map.Territories[id].ConnectedTo)
+            foreach (var immediateNeighbor in Map.Territories[id].ConnectedTo.Keys)
             {
                 var nearestBorder = FindNearestBorder(immediateNeighbor, new Nullable<TerritoryIDType>(id));
                 if (nearestBorder != null)
@@ -308,10 +308,10 @@ namespace WarLight.Shared.AI.Prod
 
             var id = queue.Dequeue();
 
-            if (Map.Territories[id].ConnectedTo.Any(o => !this.IsTeammateOrUs(this.Standing.Territories[o].OwnerPlayerID)))
+            if (Map.Territories[id].ConnectedTo.Keys.Any(o => !this.IsTeammateOrUs(this.Standing.Territories[o].OwnerPlayerID)))
                 return id; //We're a border
 
-            foreach (var notVisited in Map.Territories[id].ConnectedTo.Where(o => !visited.Contains(o)))
+            foreach (var notVisited in Map.Territories[id].ConnectedTo.Keys.Where(o => !visited.Contains(o)))
             {
                 queue.Enqueue(notVisited);
                 visited.Add(notVisited);

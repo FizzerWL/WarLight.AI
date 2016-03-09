@@ -11,7 +11,6 @@ namespace WarLight.Shared.AI.Prod
         public readonly int NumTurns;
         public readonly int ArmiesNeededToDeploy;
 
-
         public CaptureTerritories(int numTurns, int armiesNeededToDeploy)
         {
             this.NumTurns = numTurns;
@@ -28,8 +27,8 @@ namespace WarLight.Shared.AI.Prod
             Assert.Fatal(armiesEarnPerTurn >= 0, "Negative armiesEarnPerTurn");
             var armiesDefending = terrsToTake.Sum(o => terrToTakeDefenders(bot.Standing.Territories[o]));
 
-            var avgAttackersNeededPerTerritory = SharedUtility.Round(bot.ArmiesToTake(new Armies(armiesDefending / terrsToTake.Count)));
-            var avgRemaindersPerTerritory = avgAttackersNeededPerTerritory - SharedUtility.Round(avgAttackersNeededPerTerritory * bot.Settings.DefensiveKillRate);
+            var avgAttackersNeededPerTerritory = bot.ArmiesToTake(new Armies(SharedUtility.Round((double)armiesDefending / (double)terrsToTake.Count)));
+            var avgRemaindersPerTerritory = avgAttackersNeededPerTerritory - SharedUtility.Round(avgAttackersNeededPerTerritory * bot.Settings.DefenseKillRate);
 
 
             var armiesNeeded = bot.ArmiesToTake(new Armies(armiesDefending));
@@ -56,6 +55,10 @@ namespace WarLight.Shared.AI.Prod
                 if (armiesEarnPerTurn == 0)
                     return null; //we can't take it with what we have, and we are earning no armies.  Just abort rather than infinite loop
             }
+
+#if CSSCALA
+            throw new Exception();
+#endif
         }
     }
 }

@@ -11,35 +11,47 @@ namespace WarLight.Shared.AI.Prod
     /// </summary>
     public class BonusPath
     {
+        public BonusIDType BonusID;
         public HashSet<TerritoryIDType> TerritoriesOnCriticalPath;
         public int TurnsToTakeByDistance; //how long to take the bonus, assuming we have infinite armies
 
-        public BonusPath(BotMain bot, BonusIDType bonusID, Func<TerritoryStanding, bool> weOwn)
+        public BonusPath(BonusIDType bonusID, int turnsToTakeByDistance, HashSet<TerritoryIDType> terrsOnCriticalPath)
+        {
+            this.BonusID = bonusID;
+            this.TurnsToTakeByDistance = turnsToTakeByDistance;
+            this.TerritoriesOnCriticalPath = terrsOnCriticalPath;
+        }
+
+        public override string ToString()
+        {
+            return "TurnsToTakeByDistance=" + TurnsToTakeByDistance;
+        }
+
+        public static BonusPath TryCreate(BotMain bot, BonusIDType bonusID, Func<TerritoryStanding, bool> weOwn)
         {
             var bonus = bot.Map.Bonuses[bonusID];
             var allUnownedTerrsInBonus = bonus.Territories.Where(o => !weOwn(bot.Standing.Territories[o])).ToHashSet(true);
 
-            Assert.Fatal(allUnownedTerrsInBonus.Count > 0, "We already have the bonus");
+            if (allUnownedTerrsInBonus.Count == 0)
+                return new BonusPath(bonusID, 0, new HashSet<TerritoryIDType>()); //Already own the bonus. We'll only get here with one-territory bonuses during distribution
 
             var terrsToTake = allUnownedTerrsInBonus.ToHashSet(true);
 
             var ownedTerritoriesTraverse = bot.Standing.Territories.Values.Where(o => weOwn(o)).Select(o => o.ID).ToHashSet(true);
             HashSet<TerritoryIDType> finalTerritoriesCaptured = null;
 
-            this.TurnsToTakeByDistance = 1;
+            var turns = 1;
 
             while (true)
             {
 
-                var takeThisTurn = terrsToTake.Where(o => bot.Map.Territories[o].ConnectedTo.Any(z => ownedTerritoriesTraverse.Contains(z))).ToHashSet(true);
+                var takeThisTurn = terrsToTake.Where(o => bot.Map.Territories[o].ConnectedTo.Keys.Any(z => ownedTerritoriesTraverse.Contains(z))).ToHashSet(true);
 
                 if (takeThisTurn.Count == 0)
                 {
                     //We can't take it without leaving the bonus.
                     AILog.Log("BonusPath", "  Could not find a way to take bonus " + bot.BonusString(bonus) + " without leaving it");
-                    TurnsToTakeByDistance = int.MaxValue;
-                    TerritoriesOnCriticalPath = new HashSet<TerritoryIDType>();
-                    return;
+                    return null;
                 }
 
                 if (takeThisTurn.Count == terrsToTake.Count)
@@ -50,24 +62,24 @@ namespace WarLight.Shared.AI.Prod
                 }
 
                 //Keep expanding!
-                this.TurnsToTakeByDistance++;
+                turns++;
                 ownedTerritoriesTraverse.AddRange(takeThisTurn);
                 terrsToTake.RemoveAll(takeThisTurn);
             }
 
-            var terrsWeOwnInOrAroundBonus = bonus.Territories.Concat(bonus.Territories.SelectMany(o => bot.Map.Territories[o].ConnectedTo)).Where(o => weOwn(bot.Standing.Territories[o])).ToHashSet(false);
+            var terrsWeOwnInOrAroundBonus = bonus.Territories.Concat(bonus.Territories.SelectMany(o => bot.Map.Territories[o].ConnectedTo.Keys)).Where(o => weOwn(bot.Standing.Territories[o])).ToHashSet(false);
             var traverse = allUnownedTerrsInBonus.Concat(terrsWeOwnInOrAroundBonus).ToHashSet(false);
 
-            TerritoriesOnCriticalPath = new HashSet<TerritoryIDType>();
+            var criticalPath = new HashSet<TerritoryIDType>();
 
             foreach(var final in finalTerritoriesCaptured)
             {
-                var path = FindPath.TryFindShortestPath(bot, o => weOwn(bot.Standing.Territories[o]), final, o => traverse.Contains(o));
+                var path = FindPath.TryFindShortestPathReversed(bot, o => weOwn(bot.Standing.Territories[o]), final, o => traverse.Contains(o));
 
                 if (path != null)
                 {
                     //AILog.Log("BonusPath", "  Critical path to " + bot.TerrString(final) + " goes " + path.Select(o => bot.TerrString(o)).JoinStrings(" -> "));
-                    TerritoriesOnCriticalPath.AddRange(path);
+                    criticalPath.AddRange(path);
                 }
                 else
                 {
@@ -76,6 +88,8 @@ namespace WarLight.Shared.AI.Prod
             }
 
             //AILog.Log("BonusPath", "With infinite armies, we can take bonus " + bot.BonusString(bonus) + " in " + TurnsToTake + " turns. " + /*" Final territories=" + finalTerritoriesCaptured.Select(o => bot.TerrString(o)).JoinStrings(", ") +*/ "  Critical path=" + TerritoriesOnCriticalPath.Select(o => bot.TerrString(o)).JoinStrings(", "));
+
+            return new BonusPath(bonusID, turns, criticalPath);
         }
 
     }

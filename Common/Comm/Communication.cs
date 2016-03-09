@@ -99,7 +99,7 @@ namespace WarLight.Shared.AI
             {
                 var td = new TerritoryDetails(map, (TerritoryIDType)(int)terrNode["id"]);
                 td.Name = (string)terrNode["name"];
-                td.ConnectedTo = terrNode["connectedTo"].As<JArray>().Select(o => (TerritoryIDType)(int)o).ToHashSet(true);
+                td.ConnectedTo = terrNode["connectedTo"].As<JArray>().Select(o => (TerritoryIDType)(int)o).ToDictionary(o => o, o => (object)null);
                 map.Territories.Add(td.ID, td);
             }
 
@@ -384,7 +384,7 @@ namespace WarLight.Shared.AI
                     var airlift = order.As<GameOrderPlayCardAirlift>();
                     jOrder["from"] = (int)airlift.FromTerritoryID;
                     jOrder["to"] = (int)airlift.ToTerritoryID;
-                    jOrder["armiesToAirlift"] = airlift.ArmiesToAirlift.SerializeToString();
+                    jOrder["armiesToAirlift"] = airlift.GetArmies().SerializeToString();
                 }
                 else if (order is GameOrderPlayCardGift)
                 {

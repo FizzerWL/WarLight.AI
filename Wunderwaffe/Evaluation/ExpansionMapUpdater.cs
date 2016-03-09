@@ -39,7 +39,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (vmNeutralTerritory.IsVisible)
                 {
                     var attackingArmies = vmNeutralTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffensiveKillRate) >= vmNeutralTerritory.Armies.DefensePower)
+                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= vmNeutralTerritory.Armies.DefensePower)
                         vmNeutralTerritoriesThatWeTake.Add(vmNeutralTerritory);
                 }
             }
@@ -48,7 +48,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             {
                 var emTakenTerritory = expansionMap.Territories[vmTakenTerritory.ID];
                 emTakenTerritory.OwnerPlayerID = BotState.Me.ID;
-                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefensiveKillRate)));
+                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefenseKillRate)));
             }
         }
     }

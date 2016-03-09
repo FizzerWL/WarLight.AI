@@ -14,9 +14,9 @@ namespace WarLight.Shared.AI
 
     public class GameSettings
     {
-        public double OffensiveKillRate;
-        public double DefensiveKillRate;
-        public bool OneArmyMustStandGuard;
+        public double OffenseKillRate;
+        public double DefenseKillRate;
+        public bool OneArmyStandsGuard;
         public int MinimumArmyBonus;
         public int InitialPlayerArmiesPerTerritory;
         public int InitialNeutralsInDistribution;
@@ -33,9 +33,9 @@ namespace WarLight.Shared.AI
         public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier)
         {
 
-            this.OffensiveKillRate = offensiveKillRate;
-            this.DefensiveKillRate = defensiveKillRate;
-            this.OneArmyMustStandGuard = oneArmyMustStandGuard;
+            this.OffenseKillRate = offensiveKillRate;
+            this.DefenseKillRate = defensiveKillRate;
+            this.OneArmyStandsGuard = oneArmyMustStandGuard;
             this.MinimumArmyBonus = baseIncome;
             this.InitialPlayerArmiesPerTerritory = initialPlayerArmiesPerTerritory;
             this.InitialNeutralsInDistribution = initialNeutralsInDistribution;
@@ -52,7 +52,7 @@ namespace WarLight.Shared.AI
 
         public int OneArmyMustStandGuardOneOrZero
         {
-            get { return OneArmyMustStandGuard ? 1 : 0; }
+            get { return OneArmyStandsGuard ? 1 : 0; }
         }
 
     }

@@ -31,8 +31,7 @@ namespace WarLight.Shared.AI.Prod
         {
             get
             {
-
-                return Territories.Where(o => Bot.Map.Territories[o.ID].ConnectedTo.Any(c => Bot.Standing.Territories[c].OwnerPlayerID == Bot.PlayerID));
+                return Territories.Where(o => Bot.Map.Territories[o.ID].ConnectedTo.Keys.Any(c => Bot.Standing.Territories[c].OwnerPlayerID == Bot.PlayerID));
             }
         }
     }

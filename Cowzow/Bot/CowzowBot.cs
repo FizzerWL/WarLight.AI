@@ -327,7 +327,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
 
         private int ArmiesNeededToCapture(int troops)
         {
-            return SharedUtility.Ceiling(troops / Settings.OffensiveKillRate);
+            return SharedUtility.Ceiling(troops / Settings.OffenseKillRate);
         }
 
         private Dictionary<TerritoryIDType, int> ConstructCaptureCosts(CowzowBot Bot)
@@ -358,7 +358,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                             var est = Math.Max(maxThreat - 1, ArmiesNeededToCapture(r.Armies + 2));
                             if (visibleCount == 1 && r.Bonuses.Any(b => b.ArmiesReward >= 3)) //TODO: Magic numbers
                             {
-                                var defendEst = SharedUtility.Ceiling(Settings.DefensiveKillRate * Math.Min(Analyzer.TroopEstimate, MyIncome.Total));
+                                var defendEst = SharedUtility.Ceiling(Settings.DefenseKillRate * Math.Min(Analyzer.TroopEstimate, MyIncome.Total));
                                 est = Math.Max(est, ArmiesNeededToCapture(defendEst));
                             }
                             // est = Math.max(est, armiesNeededToCapture(r.getArmies()));

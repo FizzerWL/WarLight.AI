@@ -112,7 +112,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             // if (deploymentDifference > 0) {
             // System.err.println("deploymentDifference = " + deploymentDifference + " !!!!!!!!!!!!!!!!!!!!!!!!!");
             // }
-            var opponentKills = SharedUtility.Ceiling(maxAttackingArmies * BotState.Settings.OffensiveKillRate);
+            var opponentKills = SharedUtility.Ceiling(maxAttackingArmies * BotState.Settings.OffenseKillRate);
             var ownArmies = territoryToDefend.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
             var missingArmies = Math.Max(0, opponentKills - ownArmies + 1);
             // First try to pull in more armies

@@ -195,9 +195,9 @@ namespace WarLight.Shared.AI
                     var terrID = (TerritoryIDType)int.Parse(mapInput[i++]);
 
                     var terr = Map.Territories[terrID];
-                    terr.ConnectedTo.AddRange(mapInput[i].Split(',').Select(o => (TerritoryIDType)int.Parse(o)));
-                    foreach (var conn in terr.ConnectedTo)
-                        Map.Territories[conn].ConnectedTo.Add(terrID);
+                    mapInput[i].Split(',').Select(o => (TerritoryIDType)int.Parse(o)).ForEach(o => terr.ConnectedTo.Add(o, null));
+                    foreach (var conn in terr.ConnectedTo.Keys)
+                        Map.Territories[conn].ConnectedTo.Add(terrID, null);
 
                 }
 

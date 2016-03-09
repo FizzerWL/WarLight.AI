@@ -8,7 +8,7 @@ namespace WarLight.Shared.AI.Prod
 {
     class FindPath
     {
-        public static List<TerritoryIDType> TryFindShortestPath(BotMain bot, Func<TerritoryIDType, bool> start, TerritoryIDType finish, Func<TerritoryIDType, bool> visitOpt = null)
+        public static List<TerritoryIDType> TryFindShortestPathReversed(BotMain bot, Func<TerritoryIDType, bool> start, TerritoryIDType finish, Func<TerritoryIDType, bool> visitOpt = null)
         {
             var ret = TryFindShortestPath(bot, finish, start, visitOpt);
             if (ret == null)
@@ -61,7 +61,7 @@ namespace WarLight.Shared.AI.Prod
                 if (distances[smallest] == int.MaxValue)
                     return null;
 
-                foreach (var neighbor in bot.Map.Territories[smallest].ConnectedTo.Where(o => visitOpt == null || visitOpt(o)))
+                foreach (var neighbor in bot.Map.Territories[smallest].ConnectedTo.Keys.Where(o => visitOpt == null || visitOpt(o)))
                 {
                     var alt = distances[smallest] + 1;
                     if (alt < distances[neighbor])
@@ -71,6 +71,11 @@ namespace WarLight.Shared.AI.Prod
                     }
                 }
             }
+
+#if CSSCALA
+            throw new Exception();
+#endif
+
         }
 
         //BotMain Bot;

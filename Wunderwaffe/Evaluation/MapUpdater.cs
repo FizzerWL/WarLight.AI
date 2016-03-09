@@ -28,15 +28,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 {
                     var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
                     var attackingArmies = vmTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffensiveKillRate) >= toBeKilledArmies.DefensePower)
+                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
                     {
                         wmTerritory.OwnerPlayerID = BotState.Me.ID;
-                        wmTerritory.Armies = vmTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).DefensePower * BotState.Settings.DefensiveKillRate)));
+                        wmTerritory.Armies = vmTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).DefensePower * BotState.Settings.DefenseKillRate)));
                     }
                     else
                     {
                         // TODO
-                        wmTerritory.Armies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).Subtract(new Armies(SharedUtility.Round(BotState.Settings.OffensiveKillRate * vmTerritory.GetIncomingArmies().AttackPower)));
+                        wmTerritory.Armies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).Subtract(new Armies(SharedUtility.Round(BotState.Settings.OffenseKillRate * vmTerritory.GetIncomingArmies().AttackPower)));
                     }
                 }
             }
@@ -52,7 +52,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
             var attackingArmies = vmTerritory.GetIncomingArmies();
 
-            if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffensiveKillRate) >= toBeKilledArmies.DefensePower)
+            if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
                 wmTerritory.OwnerPlayerID = BotState.Me.ID;
         }
     }

@@ -55,7 +55,7 @@ namespace WarLight.Shared.AI.Cowzow.Map
         {
             get
             {
-                return Details.ConnectedTo.Select(o => Bot.BotMap.Territories[o]).ToList();
+                return Details.ConnectedTo.Keys.Select(o => Bot.BotMap.Territories[o]).ToList();
             }
         }
 

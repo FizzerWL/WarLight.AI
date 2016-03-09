@@ -78,7 +78,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 {
                     var attackingArmies = atm.Armies;
                     var maxOpponentArmies = atm.To.Armies.Add(new Armies(state.GetGuessedOpponentIncome(atm.To.OwnerPlayerID, state.VisibleMap)));
-                    if (attackingArmies.AttackPower > 1 && attackingArmies.AttackPower * state.Settings.OffensiveKillRate <= maxOpponentArmies.DefensePower * state.Settings.DefensiveKillRate)
+                    if (attackingArmies.AttackPower > 1 && attackingArmies.AttackPower * state.Settings.OffenseKillRate <= maxOpponentArmies.DefensePower * state.Settings.DefenseKillRate)
                         return true;
                 }
             }
@@ -96,7 +96,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 {
                     var maxOpponentArmies = atm.To.Armies.Add(new Armies(state.GetGuessedOpponentIncome(atm.To.OwnerPlayerID, state.VisibleMap)));
                     var attackingArmies = atm.Armies;
-                    if (attackingArmies.AttackPower * state.Settings.OffensiveKillRate > maxOpponentArmies.DefensePower * state.Settings.DefensiveKillRate)
+                    if (attackingArmies.AttackPower * state.Settings.OffenseKillRate > maxOpponentArmies.DefensePower * state.Settings.DefenseKillRate)
                         outvar++;
                 }
             }

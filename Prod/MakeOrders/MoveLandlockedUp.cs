@@ -17,7 +17,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var start = Environment.TickCount;
 
             foreach (var landlocked in bot.Standing.Territories.Values.Where(o => o.OwnerPlayerID == bot.PlayerID
-                && bot.Map.Territories[o.ID].ConnectedTo.All(c => bot.IsTeammateOrUs(bot.Standing.Territories[c].OwnerPlayerID))
+                && bot.Map.Territories[o.ID].ConnectedTo.Keys.All(c => bot.IsTeammateOrUs(bot.Standing.Territories[c].OwnerPlayerID))
                 && bot.MakeOrders.GetArmiesAvailable(o.ID) > 0))
             {
                 if (Environment.TickCount - start > 1000)

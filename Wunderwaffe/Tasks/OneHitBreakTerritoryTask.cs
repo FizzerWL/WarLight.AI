@@ -21,7 +21,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         {
             var outvar = new Moves();
             var opponentArmies = opponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
-            var neededAttackArmies = SharedUtility.Ceiling(opponentArmies.DefensePower / state.Settings.OffensiveKillRate);
+            var neededAttackArmies = SharedUtility.Ceiling(opponentArmies.DefensePower / state.Settings.OffenseKillRate);
             var ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
             var presortedOwnedNeighbors = state.TerritoryValueCalculator.SortDefenseValue(ownedNeighbors);
             var sortedOwnedNeighbors = BotMap.GetOrderedListOfTerritoriesByIdleArmies(presortedOwnedNeighbors);

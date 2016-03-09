@@ -61,8 +61,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             double ownKills = 0;
             foreach (var atm_1 in outvar.Orders.OfType<BotOrderAttackTransfer>())
             {
-                var ourKills = Math.Min(currentOpponentArmies, atm_1.Armies.AttackPower * state.Settings.OffensiveKillRate);
-                var opponentKillsAttack = Math.Min(atm_1.Armies.AttackPower, currentOpponentArmies * state.Settings.DefensiveKillRate);
+                var ourKills = Math.Min(currentOpponentArmies, atm_1.Armies.AttackPower * state.Settings.OffenseKillRate);
+                var opponentKillsAttack = Math.Min(atm_1.Armies.AttackPower, currentOpponentArmies * state.Settings.DefenseKillRate);
                 ownKills += ourKills;
                 opponentKills += opponentKillsAttack;
                 currentOpponentArmies = Math.Max(0, currentOpponentArmies - ourKills);

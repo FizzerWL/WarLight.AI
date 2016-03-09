@@ -46,10 +46,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private static void Deploy(BotMain bot, string source, IEnumerable<TerritoryIDType> terrs, int armies)
         {
-            var allMoves = bot.MakeOrders.DefendAttack.WeightedMoves;
+            var allMoves = bot.MakeOrders.DefendAttack.WeightedMoves.Where(o => terrs.Contains(o.From)).ToList();
 
             //Filter down unimportant ones.  Don't do this when there's only 1, since their weights get normallized and the smallest one will always be 1 even if it's super important
-            if (allMoves.Count > 1)
+            if (bot.MakeOrders.DefendAttack.WeightedMoves.Count > 1)
                 allMoves = allMoves.Where(o => o.HighestImportance > 10).ToList();
 
             foreach (var attackOrDefense in allMoves.OrderByDescending(o => o.HighestImportance))
@@ -72,9 +72,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var expandWeights = bot.MakeOrders.Expand.AttackableNeutrals;
 
-            foreach (var helpExpansionTo in terrs.SelectMany(o => bot.Map.Territories[o].ConnectedTo).Where(o => expandWeights.ContainsKey(o)).OrderByDescending(o => expandWeights[o].Weight))
+            foreach (var helpExpansionTo in terrs.SelectMany(o => bot.Map.Territories[o].ConnectedTo.Keys).Where(o => expandWeights.ContainsKey(o)).OrderByDescending(o => expandWeights[o].Weight))
             {
-                var attackOptions = bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.To == helpExpansionTo).ToList();
+                var attackOptions = bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => terrs.Contains(o.From) && o.To == helpExpansionTo).ToList();
 
                 if (attackOptions.Count > 0)
                 {

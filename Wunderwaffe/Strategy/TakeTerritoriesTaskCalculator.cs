@@ -84,7 +84,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 var missingTerritoryArmies = missingTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
                 // int missingTerritoryArmies = missingTerritory.getArmiesAfterDeployment(conservativeLevel);
                 // int missingTerritoryArmies = missingTerritory.getArmiesAfterDeployment(conservativeLevel);
-                var neededAttackArmies = (int)Math.Round(missingTerritoryArmies.DefensePower / BotState.Settings.OffensiveKillRate);
+                var neededAttackArmies = (int)Math.Round(missingTerritoryArmies.DefensePower / BotState.Settings.OffenseKillRate);
                 var missingArmies = GetMissingArmies(bestNeighborTerritory, missingTerritory, outvar, conservativeLevel);
                 if (missingArmies > stillAvailableDeployment)
                     return null;
@@ -105,7 +105,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var idleArmies = GetOverflowIdleArmies(expandingTerritory, madeExpansionDecisions);
             var toBeTakenTerritoryArmies = toBeTakenTerritory.GetArmiesAfterDeploymentAndIncomingAttacks
                 (conservativeLevel);
-            var neededArmies = (int)Math.Round(toBeTakenTerritoryArmies.DefensePower / BotState.Settings.OffensiveKillRate);
+            var neededArmies = (int)Math.Round(toBeTakenTerritoryArmies.DefensePower / BotState.Settings.OffenseKillRate);
             if (idleArmies.AttackPower >= neededArmies)
                 return 0;
             else

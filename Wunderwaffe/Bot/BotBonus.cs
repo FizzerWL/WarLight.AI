@@ -160,7 +160,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
             while (true)
             {
-                var next = terrs.SelectMany(o => BotState.Map.Territories[o].ConnectedTo).Where(o => terrs.Contains(o) == false).ToList();
+                var next = terrs.SelectMany(o => BotState.Map.Territories[o].ConnectedTo.Keys).Where(o => terrs.Contains(o) == false).ToList();
 
                 if (next.Count == 0)
                     return int.MaxValue;

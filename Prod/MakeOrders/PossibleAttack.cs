@@ -36,10 +36,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             Assert.Fatal(opponentID != TerritoryStanding.NeutralPlayerID);
             Assert.Fatal(!Bot.IsTeammateOrUs(opponentID));
-            Assert.Fatal(weightedNeighbors.ContainsKey(opponentID));
 
             //Seed the border weight with a lessened neighbor weight
-            this.DefenseImportance = this.OffenseImportance = weightedNeighbors[opponentID] / 10.0;
+            this.DefenseImportance = !weightedNeighbors.ContainsKey(opponentID) ? 0 : (weightedNeighbors[opponentID] / 10.0);
+            this.OffenseImportance = this.DefenseImportance;
 
             //Are we defending a bonus we control?
             foreach (var defendingBonus in Bot.Map.Territories[this.From].PartOfBonuses
@@ -61,9 +61,11 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 this.OffenseImportance += Bot.BonusValue(attackingBonus.ID) * (Bot.IsFFA ? 4.0 : 10);  //be conservative in FFAs, but aggressive in heads up.
             }
 
+            var toTs = Bot.Standing.Territories[this.To];
+
             //How is our current ratio
             var ourArmies = Bot.Standing.Territories[this.From].NumArmies.NumArmies;
-            var theirArmies = Bot.Standing.Territories[this.To].NumArmies.DefensePower;
+            var theirArmies = !toTs.NumArmies.Fogged ? toTs.NumArmies.DefensePower : Bot.UseRandomness ? RandomUtility.RandomNumber(ourArmies * 2) : ourArmies / 2;
             var ratio = (double)theirArmies / (double)ourArmies;
 
             if (ourArmies + theirArmies < 10)

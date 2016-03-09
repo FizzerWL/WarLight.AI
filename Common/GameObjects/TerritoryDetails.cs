@@ -9,7 +9,7 @@ namespace WarLight.Shared.AI
     {
         public TerritoryIDType ID;
         public string Name;
-        public HashSet<TerritoryIDType> ConnectedTo;
+        public Dictionary<TerritoryIDType, object> ConnectedTo; //In WarLight's real code, the object contains details about how the connections wrap around the map.  That isn't important for AIs, so it's left out here.
         public HashSet<BonusIDType> PartOfBonuses;
 
         public MapDetails Parent;
@@ -19,7 +19,7 @@ namespace WarLight.Shared.AI
             this.Parent = parent;
             this.ID = id;
             this.PartOfBonuses = new HashSet<BonusIDType>();
-            this.ConnectedTo = new HashSet<TerritoryIDType>();
+            this.ConnectedTo = new Dictionary<TerritoryIDType, object>();
         }
         
     }

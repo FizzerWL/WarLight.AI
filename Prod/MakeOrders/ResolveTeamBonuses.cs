@@ -25,8 +25,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
                     var attacks = bonus.Territories
                         .Where(o => bot.Standing.Territories[o].OwnerPlayerID != bot.PlayerID) //Territories in the bonus by our teammate
-                        .Where(o => bot.Map.Territories[o].ConnectedTo.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID)) //Where we control an adjacent
-                        .Select(o => new PossibleAttack(bot, bot.Map.Territories[o].ConnectedTo.First(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID), o));
+                        .Where(o => bot.Map.Territories[o].ConnectedTo.Keys.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID)) //Where we control an adjacent
+                        .Select(o => new PossibleAttack(bot, bot.Map.Territories[o].ConnectedTo.Keys.First(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID), o));
 
                     if (owners[0].Count() == owners[1].Count())
                     {

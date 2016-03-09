@@ -103,21 +103,23 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             foreach (var attack in orderedAttacks.Take(10))
                 AILog.Log("Offense", " - " + attack);
 
+            var armiesLeft = armiesToOffense;
+
             if (!Bot.UseRandomness)
             {
                 int attackIndex = 0;
-                while (armiesToOffense > 0 && attackIndex < orderedAttacks.Count)
+                while (armiesLeft > 0 && attackIndex < orderedAttacks.Count)
                 {
-                    TryDoAttack(orderedAttacks[attackIndex], ref armiesToOffense);
+                    TryDoAttack(orderedAttacks[attackIndex], ref armiesLeft);
                     attackIndex++;
                 }
             }
             else
             {
-                while (armiesToOffense > 0 && orderedAttacks.Count > 0)
+                while (armiesLeft > 0 && orderedAttacks.Count > 0)
                 {
                     var i = RandomUtility.WeightedRandomIndex(orderedAttacks, o => o.OffenseImportance);
-                    TryDoAttack(orderedAttacks[i], ref armiesToOffense);
+                    TryDoAttack(orderedAttacks[i], ref armiesLeft);
                     orderedAttacks.RemoveAt(i);
                 }
 
@@ -182,7 +184,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             List<PossibleAttack> ret = Bot.Territories
                 .Where(o => o.OwnerPlayerID == Bot.PlayerID)
                 .SelectMany(us =>
-                    Bot.Map.Territories[us.ID].ConnectedTo
+                    Bot.Map.Territories[us.ID].ConnectedTo.Keys
                     .Select(k => Bot.Standing.Territories[k])
                     .Where(k => k.OwnerPlayerID != TerritoryStanding.NeutralPlayerID && !Bot.IsTeammateOrUs(k.OwnerPlayerID))
                     .Select(k => new PossibleAttack(Bot, us.ID, k.ID))).ToList();
@@ -201,17 +203,19 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var ret = Bot.Neighbors.Values
                 .Where(o => !Bot.IsTeammateOrUs(o.ID)) //Exclude teammates
                 .Where(o => o.ID != TerritoryStanding.NeutralPlayerID) //Exclude neutral
-                .ToDictionary(o => o.ID, o => o.NeighboringTerritories.Select(n => n.NumArmies.NumArmies).Sum());  //Sum each army they have on our borders as the initial weight
+                .Where(o => o.ID != TerritoryStanding.FogPlayerID) //only where we can see
+                .ToDictionary(o => o.ID, o => o.NeighboringTerritories.Select(n => n.NumArmies.ArmiesOrZero).Sum());  //Sum each army they have on our borders as the initial weight
 
             foreach (var borderTerr in Bot.BorderTerritories)
             {
                 //Subtract one weight for each defending army we have next to that player
 
-                Bot.Map.Territories[borderTerr.ID].ConnectedTo
+                Bot.Map.Territories[borderTerr.ID].ConnectedTo.Keys
                     .Select(o => Bot.Standing.Territories[o])
                     .Where(o => !Bot.IsTeammateOrUs(o.OwnerPlayerID)) //Ignore our own and teammates
                     .Select(o => o.OwnerPlayerID)
                     .Where(o => o != TerritoryStanding.NeutralPlayerID)
+                    .Where(o => o != TerritoryStanding.FogPlayerID)
                     .Distinct()
                     .ForEach(o => ret[o] = ret[o] - Bot.Standing.Territories[borderTerr.ID].NumArmies.NumArmies);
             }

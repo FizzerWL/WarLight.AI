@@ -22,7 +22,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 return;
 
             //Consider this territory and all adjacent territories.  Which is the furthest from any enemy?
-            var terrDistances = bot.Map.Territories[cmdrTerritory.ID].ConnectedTo.ConcatOne(cmdrTerritory.ID)
+            var terrDistances = bot.Map.Territories[cmdrTerritory.ID].ConnectedTo.Keys.ConcatOne(cmdrTerritory.ID)
                 .Where(o => bot.Standing.Territories[o].OwnerPlayerID == bot.PlayerID || bot.Standing.Territories[o].NumArmies.DefensePower <= 4) //don't go somewhere that's defended heavily
                 .ToDictionary(o => o, o => bot.DistanceFromEnemy(o));
 
