@@ -43,17 +43,53 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 Deploy(bot, "DeployRemainingFreeArmies all", ourTerritories, count);
         }
 
-
+        /// <summary>
+        /// Figure out which one of the territories in terrs most needs deployments, and deploy there.  Will also add to attacks from that territory if necessary.
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="source">Just for debugging</param>
+        /// <param name="terrs"></param>
+        /// <param name="armies">Number of armies to deploy</param>
         private static void Deploy(BotMain bot, string source, IEnumerable<TerritoryIDType> terrs, int armies)
         {
-            var allMoves = bot.MakeOrders.DefendAttack.WeightedMoves.Where(o => terrs.Contains(o.From)).ToList();
-
-            //Filter down unimportant ones.  Don't do this when there's only 1, since their weights get normallized and the smallest one will always be 1 even if it's super important
-            if (bot.MakeOrders.DefendAttack.WeightedMoves.Count > 1)
-                allMoves = allMoves.Where(o => o.HighestImportance > 10).ToList();
-
-            foreach (var attackOrDefense in allMoves.OrderByDescending(o => o.HighestImportance))
+            if (!bot.UseRandomness)
+                DeployExact(bot, source, terrs, armies);
+            else
             {
+                //In randomness, break the deployment up into chunks (we could just call it on every army individually, but that's inefficient when our income gets very high)
+                var chunkSize = Math.Max(1, (int)(armies / 10));
+                var armiesDone = 0;
+                while (armiesDone < armies)
+                {
+                    var deploy = Math.Min(armies - armiesDone, chunkSize);
+                    DeployExact(bot, source, terrs, deploy);
+                    armiesDone += deploy;
+                }
+            }
+        }
+
+        private static void DeployExact(BotMain bot, string source, IEnumerable<TerritoryIDType> terrs, int armies)
+        {
+            var allAttacksOrDefenses = bot.MakeOrders.DefendAttack.WeightedMoves.Where(o => terrs.Contains(o.From)).ToList();
+
+            if (!bot.UseRandomness)
+                allAttacksOrDefenses = allAttacksOrDefenses.OrderByDescending(o => o.HighestImportance).ToList();
+
+            while (allAttacksOrDefenses.Count > 0)
+            {
+                PossibleAttack attackOrDefense;
+                if (bot.UseRandomness)
+                {
+                    var i = RandomUtility.WeightedRandomIndex(allAttacksOrDefenses, o => o.HighestImportance);
+                    attackOrDefense = allAttacksOrDefenses[i];
+                    allAttacksOrDefenses.RemoveAt(i);
+                }
+                else
+                {
+                    attackOrDefense = allAttacksOrDefenses[0];
+                    allAttacksOrDefenses.RemoveAt(0);
+                }
+
                 var attacks = bot.MakeOrders.Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.From == attackOrDefense.From && o.To == attackOrDefense.To).ToList();
 
                 if (attacks.Count > 0)

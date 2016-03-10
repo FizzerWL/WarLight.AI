@@ -30,7 +30,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var meetsFilter = AttackableNeutrals.Where(o => o.Value.Weight > minWeight).ToDictionary(o => o.Key, o => o.Value);  //Don't bother with anything less than the min weight
 
-            AILog.Log("Expand", Bot.PlayerID + " got " + meetsFilter.Count + " items over weight " + minWeight + " (" + AttackableNeutrals.Count + " total), top:");
+            AILog.Log("Expand", meetsFilter.Count + " items over weight " + minWeight + " (" + AttackableNeutrals.Count + " total), top:");
             foreach (var spot in meetsFilter.OrderByDescending(o => o.Value.Weight).Take(10))
                 AILog.Log("Expand", " - " + spot.Value);
 

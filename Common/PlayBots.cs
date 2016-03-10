@@ -20,7 +20,10 @@ namespace WarLight.Shared.AI
 
             Func<string, string, string> getArg = (argName, def) => args.None(o => o.ToLower().StartsWith(argName.ToLower() + "=")) ? def : args.Single(o => o.ToLower().StartsWith(argName.ToLower() + "=")).ToLower().RemoveFromStartOfString(argName + "=");
 
+            //Pass Parallel=true as an argument to make each individual game execute all of the bots in paralell (may cause issues with team games and cards)
             bool parallel = bool.Parse(getArg("parallel", "false"));
+
+            //Pass NumThreads=## as an argument to use multiple threads
             int numThreads = int.Parse(getArg("threads", "1"));
 
             if (numThreads == 1)
@@ -63,6 +66,7 @@ namespace WarLight.Shared.AI
                 gameSettings["Fog"] = "NoFog";
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
+                //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
             });
 
             AILog.Log("PlayBots", "Created game " + gameID);

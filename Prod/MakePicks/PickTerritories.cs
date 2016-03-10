@@ -102,7 +102,7 @@ namespace WarLight.Shared.AI.Prod.MakePicks
 
             var weight = 0.0f;
 
-            weight += td.PartOfBonuses.Count == 0 ? 0 : td.PartOfBonuses.Max(o => bonusWeights.ContainsKey(o) ? bonusWeights[o] : 0);
+            weight += ExpansionHelper.WeighMultipleBonuses(td.PartOfBonuses.Where(o => bonusWeights.ContainsKey(o)).ToDictionary(o => o, o => bonusWeights[o]));
 
             AILog.Log("PickTerritories", "Expansion weight for terr " + bot.TerrString(terrID) + " is " + weight + ". " + td.PartOfBonuses.Select(b => "Bonus " + bot.BonusString(b) + " Weight=" + (bonusWeights.ContainsKey(b) ? bonusWeights[b] : 0) + " TurnsToTake=" + (turnsToTake.ContainsKey(b) ? turnsToTake[b].ToString() : "") + " Path=" + (bonusPaths.ContainsKey(b) ? bonusPaths[b].ToString() : "")).JoinStrings(", "));
 

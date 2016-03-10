@@ -65,7 +65,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             //How is our current ratio
             var ourArmies = Bot.Standing.Territories[this.From].NumArmies.NumArmies;
-            var theirArmies = !toTs.NumArmies.Fogged ? toTs.NumArmies.DefensePower : Bot.UseRandomness ? RandomUtility.RandomNumber(ourArmies * 2) : ourArmies / 2;
+            var theirArmies = !toTs.NumArmies.Fogged ? toTs.NumArmies.DefensePower : Bot.UseRandomness ? RandomUtility.RandomNumber(ourArmies * 2) : (int)(ourArmies / 2);
             var ratio = (double)theirArmies / (double)ourArmies;
 
             if (ourArmies + theirArmies < 10)
