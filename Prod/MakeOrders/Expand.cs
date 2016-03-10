@@ -30,7 +30,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var meetsFilter = AttackableNeutrals.Where(o => o.Value.Weight > minWeight).ToDictionary(o => o.Key, o => o.Value);  //Don't bother with anything less than the min weight
 
-            AILog.Log("Expand", Bot.PlayerID + " got " + meetsFilter.Count + " items over weight " + minWeight + " (" + AttackableNeutrals.Count + " total), top:");
+            AILog.Log("Expand", meetsFilter.Count + " items over weight " + minWeight + " (" + AttackableNeutrals.Count + " total), top:");
             foreach (var spot in meetsFilter.OrderByDescending(o => o.Value.Weight).Take(10))
                 AILog.Log("Expand", " - " + spot.Value);
 
@@ -102,7 +102,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             AILog.Log("Expand", "GetExpansionWeights called with " + terrs.Count + " territories.  Weighted " + bonusWeights.Count + " bonuses:");
             foreach (var bw in bonusWeights.OrderByDescending(o => o.Value).Take(10))
-                AILog.Log("Expand", " - " + Bot.BonusString(bw.Key) + " Weight=" + bw.Value + " " + turnsToTake[bw.Key] + " (infinite armies=" + bonusPaths[bw.Key].TurnsToTakeByDistance + ") CriticalPath=" + bonusPaths[bw.Key].TerritoriesOnCriticalPath.Select(o => Bot.TerrString(o)).JoinStrings(", "));
+                AILog.Log("Expand", " - " + Bot.BonusString(bw.Key) + " Weight=" + bw.Value + " " + turnsToTake[bw.Key] + " TurnsToTakeByDistance=" + bonusPaths[bw.Key].TurnsToTakeByDistance + ") CriticalPath=" + bonusPaths[bw.Key].TerritoriesOnCriticalPath.Select(o => Bot.TerrString(o)).JoinStrings(", "));
 
             var ret = new Dictionary<TerritoryIDType, PossibleExpandTarget>();
 

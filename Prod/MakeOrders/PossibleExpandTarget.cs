@@ -25,7 +25,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         public float WeightFromBonuses
         {
-            get { return Bonuses.Count == 0 ? 0 : Bonuses.Values.Max(o => o.Weight); }
+            get { return ExpansionHelper.WeighMultipleBonuses(Bonuses.ToDictionary(o => o.Key, o => o.Value.Weight)); }
         }
         public float Weight
         {

@@ -97,6 +97,12 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
                 case "compete":
                     Compete.Go(args[1], int.Parse(args[2]));
                     break;
+                case "playcrazy":
+                    PlayCrazy.Go(args.Skip(1).ToArray());
+                    break;
+                case "stresstest":
+                    StressTest.Go(args.Skip(1).ToArray());
+                    break;
                 default:
                     PrintHelp();
                     break;
@@ -129,6 +135,8 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
             return true;
         }
 
+
+        #region Speeds
 
         class Speeds
         {
@@ -178,5 +186,8 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
         {
             AILog.Log("Speeds", _speeds.Select(o => o.Key + " " + o.Value).JoinStrings(", "));
         }
+
+        #endregion
+
     }
 }

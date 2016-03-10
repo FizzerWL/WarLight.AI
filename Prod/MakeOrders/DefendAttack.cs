@@ -229,7 +229,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (!attacks.Any())
                 return;
 
-            var sub = attacks.Select(o => Math.Min(o.OffenseImportance, o.DefenseImportance)).Min() - 1;
+            var sub = attacks.Select(o => Math.Min(o.OffenseImportance, o.DefenseImportance)).Min() - 10;
             foreach (var a in attacks)
             {
                 a.DefenseImportance -= sub;

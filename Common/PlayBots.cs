@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace WarLight.Shared.AI
 {
@@ -15,41 +16,57 @@ namespace WarLight.Shared.AI
     {
         public static void Go(string[] args)
         {
-            //play one with full log to ensure all bots are functional, then suppress log and play games as fast as possible.
-            PlayGame(args);
+            var bots = args.Where(o => o.Contains('=') == false).ToList();
 
-            AILog.DoLog = l => false;
+            Func<string, string, string> getArg = (argName, def) => args.None(o => o.ToLower().StartsWith(argName.ToLower() + "=")) ? def : args.Single(o => o.ToLower().StartsWith(argName.ToLower() + "=")).ToLower().RemoveFromStartOfString(argName + "=");
 
-            var threads = Enumerable.Range(0, 3).Select(o => new Thread(() =>
+            //Pass Parallel=true as an argument to make each individual game execute all of the bots in paralell (may cause issues with team games and cards)
+            bool parallel = bool.Parse(getArg("parallel", "false"));
+
+            //Pass NumThreads=## as an argument to use multiple threads
+            int numThreads = int.Parse(getArg("threads", "1"));
+
+            if (numThreads == 1)
             {
-                try
-                {
-                    while (true)
-                        PlayGame(args);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Thread failed: " + ex);
-                }
+                while (true)
+                    PlayGame(bots, parallel);
+            }
+            else
+            {
+                AILog.DoLog = l => false;
 
-            })).ToList();
+                var threads = Enumerable.Range(0, numThreads).Select(o => new Thread(() =>
+                {
+                    try
+                    {
+                        while (true)
+                            PlayGame(bots, parallel);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Thread failed: " + ex);
+                    }
 
-            threads.ForEach(o => o.Start());
-            Thread.Sleep(int.MaxValue);
+                })).ToList();
+
+                threads.ForEach(o => o.Start());
+                Thread.Sleep(int.MaxValue);
+            }
         }
 
         static ConcurrentDictionary<string, int> _totals = new ConcurrentDictionary<string, int>();
 
-        private static void PlayGame(string[] args)
+        private static void PlayGame(List<string> bots, bool parallel)
         {
-            var bots = args;
-
             AILog.Log("PlayBots", "Creating game...");
-            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Length).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
+            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
                 gameSettings["Fog"] = "NoFog";
+                //gameSettings["OneArmyStandsGuard"] = false;
+                //ZeroAllBonuses(gameSettings);
+                //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
             });
 
             AILog.Log("PlayBots", "Created game " + gameID);
@@ -84,7 +101,7 @@ namespace WarLight.Shared.AI
                         EntryPoint.PlayGame(botsDict[player.ID], pg, player.ID, settings.Item1, settings.Item2, picks => BotGameAPI.SendPicks(pg.ID, player.ID, picks), orders => BotGameAPI.SendOrders(pg.ID, player.ID, orders, pg.NumberOfTurns + 1));
                     };
 
-                    if (args.Any(o => o.ToLower() == "parallel")) //note: Parallel won't work when teammates, cards, and limited holding cards are involved.
+                    if (parallel) //note: Parallel won't work when teammates, cards, and limited holding cards are involved.
                         players.AsParallel().ForAll(play);
                     else
                         players.ForEach(play);
@@ -115,6 +132,18 @@ namespace WarLight.Shared.AI
                 Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, gameID + ".txt"), export);
 
+        }
+
+        /// <summary>
+        /// Sets all bonuses to 0.  Used to verify that bots can still expand even when there are no bonuses
+        /// </summary>
+        /// <param name="gameSettings"></param>
+        private static void ZeroAllBonuses(JObject gameSettings)
+        {
+            //Assumes MME map
+            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0))));
+            gameSettings["DistributionMode"] = 2; //warlords dist.  We can't use random warlords since that gives one territory per bonus, and there are no bonuses
+            gameSettings["BonusArmyPer"] = 1; //extra armies, otherwise games tend to stalemate
         }
     }
 }

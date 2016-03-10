@@ -156,24 +156,6 @@ namespace WarLight.Shared.AI
             else
                 return 0;
         }
-        /// <summary>
-        /// This is needed for haXe, since it does not have an integer max function.  It also can't be called MaxInt since there's already one of those for Linq overload resolution.
-        /// </summary>
-        public static int MathMax(int i1, int i2)
-        {
-            if (i1 > i2)
-                return i1;
-            else
-                return i2;
-        }
-
-        public static int MathMin(int i1, int i2)
-        {
-            if (i1 < i2)
-                return i1;
-            else
-                return i2;
-        }
 
         /// <summary>
         /// Most comparisons work just with f - s, however ActionScript only works when -1, 0 and 1 are returned, so define this helper function
