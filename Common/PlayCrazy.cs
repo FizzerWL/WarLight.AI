@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WarLight.Shared.AI
 {
-    public static class PlayAI
+    public static class PlayCrazy
     {
         static int NumWins;
         static int NumLosses;
@@ -19,16 +19,16 @@ namespace WarLight.Shared.AI
         public static void Go(string[] args)
         {
             var botName = args[0];
-            var numOpponents = args.Length > 1 ? int.Parse(args[1]) : 2;
-            var numThreads = args.Length > 2 ? int.Parse(args[2]) : 3;
+            var numThreads = args.Length > 1 ? int.Parse(args[1]) : 3;
 
             if (numThreads == 1)
             {
                 while (true)
-                    PlayGame(botName, numOpponents);
+                    PlayGame(botName);
             }
             else
             {
+
                 AILog.DoLog = l => false;
 
                 var threads = Enumerable.Range(0, numThreads).Select(o => new Thread(() =>
@@ -36,7 +36,7 @@ namespace WarLight.Shared.AI
                     try
                     {
                         while (true)
-                            PlayGame(botName, numOpponents);
+                            PlayGame(botName);
                     }
                     catch (Exception ex)
                     {
@@ -55,12 +55,16 @@ namespace WarLight.Shared.AI
             }
         }
 
-        public static void PlayGame(string botName, int numOpponents)
+        public static void PlayGame(string botName)
         {
-            var players = new[] { PlayerInvite.Create(MeID, (TeamIDType)1, null) }.Concat(Enumerable.Range(0, numOpponents).Select(o => PlayerInvite.Create("AI@warlight.net", (TeamIDType)2, null)));
+            var players = new[] { PlayerInvite.Create(MeID, (TeamIDType)3, null) }.Concat(Enumerable.Range(0, 6).Select(o => PlayerInvite.Create("AI@warlight.net", (TeamIDType)(o % 2), null)));
 
             AILog.Log("PlayAI", "Creating game...");
-            var gameID = BotGameAPI.CreateGame(players, "AI Competition", null, gameSettings => gameSettings["MaxCardsHold"] = 999);
+            var gameID = BotGameAPI.CreateGame(players, "Crazy Challenge", 16, gameSettings =>
+            {
+                gameSettings["MaxCardsHold"] = 999;
+                gameSettings["Fog"] = "NoFog";
+            });
 
             AILog.Log("PlayAI", "Created game " + gameID);
 
@@ -116,7 +120,7 @@ namespace WarLight.Shared.AI
         private static void ExportGame(GameIDType gameID, bool? weWon)
         {
             var export = BotGameAPI.ExportGame(gameID);
-            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "PlayAI");
+            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "PlayCrazy");
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, gameID + (!weWon.HasValue ? "" : weWon.Value ? "_win" : "_loss") + ".txt"), export);

@@ -53,6 +53,7 @@
     <Compile Include="BotFactory.cs" />
     <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
     <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
+    <Compile Include="Common\PlayCrazy.cs" />
     <Compile Include="Common\PlayExported.cs" />
     <Compile Include="Common\PlayBots.cs" />
     <Compile Include="Common\PlayFFA.cs" />
