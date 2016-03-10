@@ -100,6 +100,9 @@ Supported bot names: " + BotFactory.Names.JoinStrings(", "));
                 case "playcrazy":
                     PlayCrazy.Go(args.Skip(1).ToArray());
                     break;
+                case "stresstest":
+                    StressTest.Go(args.Skip(1).ToArray());
+                    break;
                 default:
                     PrintHelp();
                     break;

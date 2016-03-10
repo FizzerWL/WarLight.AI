@@ -7,7 +7,7 @@
     <ProjectGuid>{630A9CC5-328A-4569-8CBB-568410D7ADB3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WarLight.AI</RootNamespace>
+    <RootNamespace>WarLight.Shared.AI</RootNamespace>
     <AssemblyName>WarLight.AI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,6 +53,7 @@
     <Compile Include="BotFactory.cs" />
     <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
     <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
+    <Compile Include="Common\StressTest.cs" />
     <Compile Include="Common\PlayCrazy.cs" />
     <Compile Include="Common\PlayExported.cs" />
     <Compile Include="Common\PlayBots.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="Prod\FindPath.cs" />
     <Compile Include="Prod\MakeOrders\MoveLandlockedUp.cs" />
     <Compile Include="Prod\MakeOrders\PossibleExpandTarget.cs" />
+    <Compile Include="Prod\MakePicks\PickByWeight.cs" />
+    <Compile Include="Prod\MakePicks\PickCluster.cs" />
     <Compile Include="Prod\Neighbor.cs" />
     <Compile Include="Prod\MakeOrders\OrdersManager.cs" />
     <Compile Include="Prod\MakePicks\PickTerritories.cs" />
