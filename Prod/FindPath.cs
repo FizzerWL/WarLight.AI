@@ -19,8 +19,16 @@ namespace WarLight.Shared.AI.Prod
             return ret;
         }
 
+        /// <returns>A list of the territories leading from start to any of finish.  Will not include the start territory in the list, but will include the finish territory.</returns>
         public static List<TerritoryIDType> TryFindShortestPath(BotMain bot, TerritoryIDType start, Func<TerritoryIDType, bool> finish, Func<TerritoryIDType, bool> visitOpt = null)
         {
+            if (finish(start))
+            {
+                var ret = new List<TerritoryIDType>();
+                ret.Add(start);
+                return ret;
+            }
+
             var previous = new Dictionary<TerritoryIDType, TerritoryIDType>();
             var distances = new Dictionary<TerritoryIDType, int>();
             var nodes = new List<TerritoryIDType>();
@@ -53,6 +61,9 @@ namespace WarLight.Shared.AI.Prod
                         ret.Add(smallest);
                         smallest = previous[smallest];
                     }
+
+                    if (ret.Count == 0)
+                        return null;
 
                     ret.Reverse();
                     return ret;

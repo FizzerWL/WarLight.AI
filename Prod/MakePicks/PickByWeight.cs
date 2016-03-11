@@ -54,7 +54,7 @@ namespace WarLight.Shared.AI.Prod.MakePicks
                 bonusPaths.Remove(cannotTake.Key);
             }
 
-            var bonusWeights = bonusPaths.Keys.ToDictionary(o => o, o => ExpansionHelper.WeighBonus(bot, o, bonusPaths[o], ts => ts.ID == terrID, turnsToTake[o]));
+            var bonusWeights = bonusPaths.Keys.ToDictionary(o => o, o => ExpansionHelper.WeighBonus(bot, o, ts => ts.ID == terrID, turnsToTake[o].NumTurns));
 
             var weight = 0.0f;
 

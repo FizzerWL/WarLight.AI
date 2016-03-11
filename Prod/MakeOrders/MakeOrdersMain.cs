@@ -23,7 +23,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         public List<GameOrder> Go()
         {
-            this.Expand = new Expand(Bot);
+            this.Expand = Bot.Settings.MultiAttack ? (Expand)new MultiAttackExpand(Bot) : new ExpandNormal(Bot);
             this.DefendAttack = new DefendAttack(Bot);
 
             PlayCards.Go(Bot);
@@ -34,14 +34,14 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             //Ensure teammates defragment bonuses
             ResolveTeamBonuses.Go(Bot);
 
-            //Expand into good opportunities.  In FFA, focus on expansion even moreso than in headsup
-            Expand.Go(IncomeTracker.RemainingUndeployed, ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? RandomUtility.RandomNumber(4) - 2 : 0));
+            //Expand into good opportunities.  
+            Expand.Go(IncomeTracker.RemainingUndeployed, true);
 
             //Defend/attack
             DefendAttack.Go(IncomeTracker.RemainingUndeployed);
 
             //Expand into anything remaining
-            Expand.Go(IncomeTracker.RemainingUndeployed, int.MinValue);
+            Expand.Go(IncomeTracker.RemainingUndeployed, false);
 
             //If there's still remaining income, deploy it
             DeployRemaining.Go(Bot);
@@ -102,18 +102,22 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             armies += Orders.Orders.OfType<GameOrderDeploy>().Where(o => o.DeployOn == terrID).Sum(o => o.NumArmies);
 
             //Subtract armies we've attacked with
-            armies -= Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.From == terrID).Sum(o => o.NumArmies.NumArmies);
+            foreach (var attack in Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => o.From == terrID))
+            {
+                if (attack.ByPercent)
+                    return 0; //in multi-attack, we attack by percentages.  Just assume they're all used
+                else
+                    armies -= attack.NumArmies.NumArmies;
+            }
 
             //Subtract airlift out's
             armies -= Orders.Orders.OfType<GameOrderPlayCardAirlift>().Where(o => o.FromTerritoryID == terrID).Sum(o => o.GetArmies().NumArmies);
 
             //Subtract 1, since one must remain
-            if (Bot.Settings.OneArmyStandsGuard && armies > 0)
+            if (Bot.Settings.OneArmyStandsGuard)
                 armies -= 1;
 
-            Assert.Fatal(armies >= 0, "Armies went negative");
-
-            return armies;
+            return Math.Max(0, armies);
         }
 
     }

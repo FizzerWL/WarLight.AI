@@ -58,6 +58,26 @@ namespace WarLight.Shared.AI.Prod
             this.IsFFA = Opponents.Count > 1 && (Opponents.Any(o => o.Team == PlayerInvite.NoTeam) || Opponents.GroupBy(o => o.Team).Count() > 1);
         }
 
+        public int ArmiesToTakeMultiAttack(IEnumerable<Armies> defenseArmiesOnManyTerritories)
+        {
+            var list = defenseArmiesOnManyTerritories.ToList();
+            if (list.Count == 0)
+                return 0;
+            list.Reverse();
+
+            var ret = ArmiesToTake(list[0]);
+
+            foreach(var def in list.Skip(1))
+            {
+                var toTake = ArmiesToTake(def);
+                var mustOccupyTerritory = ret + Settings.OneArmyMustStandGuardOneOrZero;
+                var willLoseInFight = SharedUtility.Round(def.DefensePower * Settings.DefenseKillRate);
+                ret = Math.Max(toTake, mustOccupyTerritory + willLoseInFight);
+            }
+
+            return ret;
+        }
+
         public int ArmiesToTake(Armies defenseArmies)
         {
             var ret = SharedUtility.Round((defenseArmies.DefensePower / Settings.OffenseKillRate) - 0.5);
@@ -68,11 +88,11 @@ namespace WarLight.Shared.AI.Prod
             if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom && (!UseRandomness || RandomUtility.RandomNumber(3) != 0))
                 ret++;
 
-            if (Settings.LuckModifier < 1)
+            if (Settings.LuckModifier > 0)
             {
                 //Add up some armies to account for luck
                 var factor = UseRandomness ? RandomUtility.RandomPercentage() * 15 + 2.5 : 10.0;
-                ret += SharedUtility.Round((1.0 - Settings.LuckModifier) / factor * ret); 
+                ret += SharedUtility.Round(Settings.LuckModifier / factor * ret); 
             }
 
             return ret;
@@ -106,6 +126,10 @@ namespace WarLight.Shared.AI.Prod
         {
             get { return Players[PlayerID]; }
         }
+        public bool IsOpponent(PlayerIDType playerID)
+        {
+            return Players.ContainsKey(playerID) && !IsTeammateOrUs(playerID);
+        }
         public bool IsTeammate(PlayerIDType playerID)
         {
             return Players[PlayerID].Team != PlayerInvite.NoTeam && Players.ContainsKey(playerID) && Players[playerID].Team == Players[PlayerID].Team;
@@ -132,15 +156,14 @@ namespace WarLight.Shared.AI.Prod
                     return TeammatesOrders.Values.Where(o => o.Orders != null).SelectMany(o => o.Orders);
             }
         }
+        
 
-        public IEnumerable<TerritoryStanding> Territories
+        public bool IsBorderTerritory(GameStanding standing, TerritoryIDType terrID)
         {
-            get { return Standing.Territories.Values; }
-        }
-
-        public IEnumerable<TerritoryStanding> AttackableTerritories
-        {
-            get { return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Keys.Any(c => Standing.Territories[c].OwnerPlayerID == PlayerID)); }
+            var ts = standing.Territories[terrID];
+            if (ts.OwnerPlayerID != PlayerID)
+                return false;
+            return this.Map.Territories[terrID].ConnectedTo.Keys.Any(c => standing.Territories[c].OwnerPlayerID != this.PlayerID);
         }
 
         /// <summary>
@@ -148,18 +171,12 @@ namespace WarLight.Shared.AI.Prod
         /// </summary>
         public IEnumerable<TerritoryStanding> BorderTerritories
         {
-            get
-            {
-                return Territories
-                    .Where(o => Standing.Territories[o.ID].OwnerPlayerID == PlayerID)
-                    .Where(o => this.Map.Territories[o.ID].ConnectedTo.Keys
-                        .Any(c => this.Standing.Territories[c].OwnerPlayerID != this.PlayerID));
-            }
+            get { return Standing.Territories.Values.Where(o => IsBorderTerritory(Standing, o.ID)); }
         }
 
 
         /// <summary>
-        /// Returns 0 if it is an ememy, and a positive number otherwise signaling how many turns away from an enemy it is
+        /// Returns 0 if it is an ememy, and a positive number otherwise indicating how many turns away from an enemy it is
         /// </summary>
         /// <param name="terrID"></param>
         /// <returns></returns>

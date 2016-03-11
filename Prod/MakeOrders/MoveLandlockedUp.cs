@@ -33,7 +33,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 {
                     var armies = bot.MakeOrders.GetArmiesAvailable(landlocked.ID);
                     AILog.Log("MoveLandlockedUp", "Ordering " + armies + " armies from " + bot.TerrString(landlocked.ID) + " to " + bot.TerrString(moveTowards.Value));
-                    bot.Orders.AddAttack(landlocked.ID, moveTowards.Value, bot.Settings.AllowTransferOnly ? AttackTransferEnum.Transfer : AttackTransferEnum.AttackTransfer, armies, false);
+                    bot.Orders.AddAttack(landlocked.ID, moveTowards.Value, AttackTransferEnum.Transfer, armies, false);
                 }
             }
         }

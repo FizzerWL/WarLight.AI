@@ -38,7 +38,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                             if (bot.Orders.TryDeploy(doAttack1.From, numArmies))
                             {
                                 AILog.Log("ResolveTeamBonuses", "Detected a split bonus " + bot.BonusString(bonus) + ", and we're attempting to break the split by doing a small attack from " + bot.TerrString(doAttack1.From) + " to " + bot.TerrString(doAttack1.To) + " with " + numArmies);
-                                bot.Orders.AddAttack(doAttack1.From, doAttack1.To, bot.Settings.AllowAttackOnly ? AttackTransferEnum.Attack : AttackTransferEnum.AttackTransfer, numArmies, true);
+                                bot.Orders.AddAttack(doAttack1.From, doAttack1.To, AttackTransferEnum.Attack, numArmies, true);
                             }
                         }
                     }
@@ -52,7 +52,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                             if (bot.Orders.TryDeploy(doAttack2.From, numArmies))
                             {
                                 AILog.Log("ResolveTeamBonuses", "Detected we should take bonus " + bot.BonusString(bonus) + ", so we're attacking from " + bot.TerrString(doAttack2.From) + " to " + bot.TerrString(doAttack2.To) + " with " + numArmies);
-                                bot.Orders.AddAttack(doAttack2.From, doAttack2.To, bot.Settings.AllowAttackOnly ? AttackTransferEnum.Attack : AttackTransferEnum.AttackTransfer, 2, true);
+                                bot.Orders.AddAttack(doAttack2.From, doAttack2.To, AttackTransferEnum.Attack, 2, true);
                             }
                         }
                     }

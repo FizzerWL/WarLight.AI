@@ -29,8 +29,10 @@ namespace WarLight.Shared.AI
         public bool AllowTransferOnly;
         public RoundingModeEnum RoundingMode;
         public double LuckModifier;
+        public bool MultiAttack;
+        public bool AllowPercentageAttacks;
 
-        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier)
+        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks)
         {
 
             this.OffenseKillRate = offensiveKillRate;
@@ -48,6 +50,8 @@ namespace WarLight.Shared.AI
             this.AllowTransferOnly = allowTransferOnly;
             this.RoundingMode = roundingMode;
             this.LuckModifier = luckModifier;
+            this.MultiAttack = multiAttack;
+            this.AllowPercentageAttacks = allowPercentageAttacks;
         }
 
         public int OneArmyMustStandGuardOneOrZero

@@ -9,8 +9,12 @@ namespace WarLight.Shared.AI.Prod
     static class ExpansionHelper
     {
         public const float BaseBonusWeight = 1000f;
+        public static float ArmyMultiplier(double defensiveKillRate)
+        {
+            return (float)defensiveKillRate + 0.8f;
+        }
 
-        public static float WeighBonus(BotMain bot, BonusIDType bonusID, BonusPath path, Func<TerritoryStanding, bool> weOwn, CaptureTerritories turnsToTakeOpt)
+        public static float WeighBonus(BotMain bot, BonusIDType bonusID, Func<TerritoryStanding, bool> weOwn, int turnsToTake)
         {
             var bonus = bot.Map.Bonuses[bonusID];
             int bonusValue = bot.BonusValue(bonusID);
@@ -26,14 +30,11 @@ namespace WarLight.Shared.AI.Prod
             weight += bonusValue * (bot.IsFFA ? 7 : 4);
 
             //Subtract value for each additional turn it takes to take over one
-            if (turnsToTakeOpt == null)
-                weight = 0;
-            else
-                weight -= bonusValue * (turnsToTakeOpt.NumTurns - 1);
+            weight -= bonusValue * (turnsToTake - 1);
 
             weight -= bonus.Territories.Count * bot.Settings.OneArmyMustStandGuardOneOrZero;
 
-            float armyMult = (float)bot.Settings.DefenseKillRate + 0.8f;
+            float armyMult = ArmyMultiplier(bot.Settings.DefenseKillRate);
 
             //How many territories do we need to take to get it? Subtract one weight for each army standing in our way
             foreach (var terrInBonus in bonus.Territories)
@@ -60,7 +61,24 @@ namespace WarLight.Shared.AI.Prod
 
         public static Armies GuessNumberOfArmies(BotMain bot, TerritoryIDType terrID)
         {
-            Assert.Fatal(bot.Standing.Territories[terrID].NumArmies.Fogged, "Not fog");
+            return GuessNumberOfArmies(bot, terrID, bot.Standing);
+        }
+
+        public static Armies GuessNumberOfArmies(BotMain bot, TerritoryIDType terrID, GameStanding standing, Func<BotMain, TerritoryStanding, Armies> opponentFoggedTerritoryOpt = null)
+        {
+            var ts = standing.Territories[terrID];
+            if (!ts.NumArmies.Fogged)
+                return ts.NumArmies;
+
+            if (bot.IsOpponent(ts.OwnerPlayerID))
+            {
+                //We can see it's an opponent, but the armies are fogged.  This can happen in light, dense, or heavy fog. We have no way of knowing what's there, so just assume the minimum
+                if (opponentFoggedTerritoryOpt != null)
+                    return opponentFoggedTerritoryOpt(bot, ts);
+                else
+                    return new Armies(bot.Settings.OneArmyMustStandGuardOneOrZero);
+            }
+
             if (bot.DistributionStandingOpt != null)
             {
                 var dist = bot.DistributionStandingOpt.Territories[terrID];
@@ -68,7 +86,7 @@ namespace WarLight.Shared.AI.Prod
                     return dist.NumArmies;
                 Assert.Fatal(dist.OwnerPlayerID == TerritoryStanding.AvailableForDistribution);
 
-                return new Armies(Math.Max(bot.Settings.InitialNeutralsInDistribution, bot.Settings.InitialPlayerArmiesPerTerritory));
+                return new Armies(Math.Max(bot.Settings.InitialNeutralsInDistribution, bot.Settings.InitialPlayerArmiesPerTerritory)); //TODO: If it's not a random distribution, we could check if this territory is in the distribution and be more accurate on whether a player started with it or not.
             }
 
             return new Armies(bot.Settings.InitialNonDistributionArmies);

@@ -44,6 +44,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         public bool TryDeploy(TerritoryIDType terrID, int armies)
         {
             Assert.Fatal(Bot.Standing.Territories[terrID].OwnerPlayerID == Bot.PlayerID);
+
+            if (armies == 0)
+                return true; //just pretend like we did it
             Assert.Fatal(armies > 0);
 
             if (!Bot.MakeOrders.IncomeTracker.TryRecordUsedArmies(terrID, armies))
@@ -60,14 +63,35 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             return true;
         }
 
-        public void AddAttack(TerritoryIDType from, TerritoryIDType to, AttackTransferEnum attackTransfer, int numArmies, bool attackTeammates)
+        public void AddAttack(TerritoryIDType from, TerritoryIDType to, AttackTransferEnum attackTransfer, int numArmies, bool attackTeammates, bool byPercent = false)
         {
+            var actualArmies = numArmies;
+            if (byPercent && Bot.Settings.AllowPercentageAttacks == false)
+            {
+                byPercent = false;
+                actualArmies = 1000000;
+            }
+
+            var actualMode = attackTransfer;
+            if (actualMode == AttackTransferEnum.Transfer && Bot.Settings.AllowTransferOnly == false)
+                actualMode = AttackTransferEnum.AttackTransfer;
+            if (actualMode == AttackTransferEnum.Attack && Bot.Settings.AllowAttackOnly == false)
+                actualMode = AttackTransferEnum.AttackTransfer;
+
             IEnumerable<GameOrderAttackTransfer> attacks = Orders.OfType<GameOrderAttackTransfer>();
             var existingFrom = attacks.Where(o => o.From == from).ToList();
             var existingFromTo = existingFrom.Where(o => o.To == to).ToList();
 
             if (existingFromTo.Any())
-                existingFromTo.Single().NumArmies = existingFromTo.Single().NumArmies.Add(new Armies(numArmies));
+            {
+                var existing = existingFromTo.Single();
+                existing.ByPercent = byPercent;
+                existing.AttackTransfer = actualMode;
+                existing.NumArmies = existing.NumArmies.Add(new Armies(actualArmies));
+
+                if (byPercent && existing.NumArmies.NumArmies > 100)
+                    existing.NumArmies = existing.NumArmies.Subtract(new Armies(existing.NumArmies.NumArmies - 100));
+            }
             else
             {
                 var specials = Bot.Standing.Territories[from].NumArmies.SpecialUnits;
@@ -77,7 +101,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     specials = specials.Where(o => used.Contains(o.ID) == false).ToArray();
                 }
 
-                AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, attackTransfer, false, new Armies(numArmies, false, specials), attackTeammates));
+                AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, actualMode, byPercent, new Armies(actualArmies, false, specials), attackTeammates));
             }
         }
     }

@@ -26,7 +26,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             }
 
             //Divide between offense and defense.  Defense armies could still be used for offense if we happen to attack there
-            var offenseRatio = (Bot.IsFFA ? 0.3 : 0.6) + (Bot.UseRandomness ? RandomUtility.RandomPercentage() * .3 - .15 : 0);
+            var baseOffenseRatio = (Bot.IsFFA ? 0.3 : 0.6);
+            if (Bot.Settings.MultiAttack)
+                baseOffenseRatio = 0; //in MA, our expansion routine is actually our primary attack weapon.  Therefore, set offense ratio to 0 so that we skip the routine that tries to attack one territory at a time.
+            var offenseRatio = baseOffenseRatio + (Bot.UseRandomness ? RandomUtility.RandomPercentage() * .3 - .15 : 0);
             int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio);
             int armiesToDefense = incomeToUse - armiesToOffense;
 
@@ -108,7 +111,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (!Bot.UseRandomness)
             {
                 int attackIndex = 0;
-                while (armiesLeft > 0 && attackIndex < orderedAttacks.Count)
+                while (attackIndex < orderedAttacks.Count)
                 {
                     TryDoAttack(orderedAttacks[attackIndex], ref armiesLeft);
                     attackIndex++;
@@ -116,7 +119,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             }
             else
             {
-                while (armiesLeft > 0 && orderedAttacks.Count > 0)
+                while (orderedAttacks.Count > 0)
                 {
                     var i = RandomUtility.WeightedRandomIndex(orderedAttacks, o => o.OffenseImportance);
                     TryDoAttack(orderedAttacks[i], ref armiesLeft);
@@ -181,7 +184,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var weightedNeighbors = WeightNeighbors();
 
             //build all possible attacks
-            List<PossibleAttack> ret = Bot.Territories
+            List<PossibleAttack> ret = Bot.Standing.Territories.Values
                 .Where(o => o.OwnerPlayerID == Bot.PlayerID)
                 .SelectMany(us =>
                     Bot.Map.Territories[us.ID].ConnectedTo.Keys

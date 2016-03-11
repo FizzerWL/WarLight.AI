@@ -151,7 +151,9 @@ namespace WarLight.Shared.AI
                 (bool)settingsNode["AllowTransferOnly"],
                 (int)settingsNode["InitialPlayerArmiesPerTerritory"],
                 roundingMode,
-                (double)settingsNode["LuckModifier"]
+                (double)settingsNode["LuckModifier"],
+                (bool)settingsNode["MultiAttack"],
+                (bool)settingsNode["AllowPercentageAttacks"]
                 );
 
         }

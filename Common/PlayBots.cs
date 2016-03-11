@@ -37,6 +37,7 @@ namespace WarLight.Shared.AI
 
                 var threads = Enumerable.Range(0, numThreads).Select(o => new Thread(() =>
                 {
+                    Thread.Sleep(100 * o); //stagger them
                     try
                     {
                         while (true)
@@ -67,6 +68,7 @@ namespace WarLight.Shared.AI
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
+                //gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
             });
 
             AILog.Log("PlayBots", "Created game " + gameID);
@@ -140,8 +142,7 @@ namespace WarLight.Shared.AI
         /// <param name="gameSettings"></param>
         private static void ZeroAllBonuses(JObject gameSettings)
         {
-            //Assumes MME map
-            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0))));
+            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0)))); //Assumes MME map
             gameSettings["DistributionMode"] = 2; //warlords dist.  We can't use random warlords since that gives one territory per bonus, and there are no bonuses
             gameSettings["BonusArmyPer"] = 1; //extra armies, otherwise games tend to stalemate
         }
