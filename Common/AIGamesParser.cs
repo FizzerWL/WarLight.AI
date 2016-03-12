@@ -194,7 +194,7 @@ namespace WarLight.Shared.AI
                 //Map is now done being read
                 DistributionStanding = new GameStanding();
                 foreach (var terr in Map.Territories.Values)
-                    DistributionStanding.Territories.Add(terr.ID, new TerritoryStanding(terr.ID, TerritoryStanding.NeutralPlayerID, new Armies(2)));
+                    DistributionStanding.Territories.Add(terr.ID, TerritoryStanding.Create(terr.ID, TerritoryStanding.NeutralPlayerID, new Armies(2)));
             }
             else if (mapInput[1] == "wastelands")
             {
@@ -209,7 +209,7 @@ namespace WarLight.Shared.AI
 
         private static GameStanding ReadMap(string[] mapInput)
         {
-            var ret = new GameStanding(Map.Territories.Values.Select(o => new TerritoryStanding(o.ID, TerritoryStanding.FogPlayerID, new Armies(fogged: true))));
+            var ret = new GameStanding(Map.Territories.Values.Select(o => TerritoryStanding.Create(o.ID, TerritoryStanding.FogPlayerID, new Armies(fogged: true))));
 
             for (var i = 1; i < mapInput.Length; i++)
             {

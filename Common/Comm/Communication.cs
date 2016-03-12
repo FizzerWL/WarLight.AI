@@ -208,7 +208,7 @@ namespace WarLight.Shared.AI
                 var terrID = (TerritoryIDType)(int)terr["terrID"];
                 var playerID = ToPlayerID((string)terr["ownedBy"]);
                 var armies = ToArmies((string)terr["armies"]);
-                ret.Territories.Add(terrID, new TerritoryStanding(terrID, playerID, armies));
+                ret.Territories.Add(terrID, TerritoryStanding.Create(terrID, playerID, armies));
             }
 
             return ret;

@@ -23,7 +23,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         {
             this.Bot = bot;
             this.Normal = new ExpandNormal(bot);
-            this.MultiAttackStanding = bot.Standing.Clone();
+            this.MultiAttackStanding = (GameStanding)bot.Standing.Clone();
         }
 
         public override void Go(int remainingUndeployed, bool highlyWeightedOnly)
@@ -99,7 +99,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     armiesLeft -= actualArmiesNeedToDeploy;
 
 
-                    AILog.Log("ExpandMultiAttack", " - Attempting to capture. actualArmiesNeedToDeploy=" + actualArmiesNeedToDeploy + " plan=" + plan.JoinToStrings(" -> "));
+                    AILog.Log("ExpandMultiAttack", " - Attempting to capture. actualArmiesNeedToDeploy=" + actualArmiesNeedToDeploy + " plan=" + plan.Select(o => o.ToString()).JoinStrings(" -> "));
 
                     var terr = borderTerritory.ID;
                     foreach(var planStep in plan)
@@ -110,7 +110,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                         if (planStep.Type == MultiAttackPlanType.MainStack)
                         {
                             Bot.Orders.AddAttack(terr, planStep.To, AttackTransferEnum.AttackTransfer, 100, false, true);
-                            MultiAttackStanding.Territories[planStep.To] = new TerritoryStanding(planStep.To, Bot.PlayerID, MultiAttackStanding.Territories[terr].NumArmies.Subtract(new Armies(defendersKill)));
+                            MultiAttackStanding.Territories[planStep.To] = TerritoryStanding.Create(planStep.To, Bot.PlayerID, MultiAttackStanding.Territories[terr].NumArmies.Subtract(new Armies(defendersKill)));
                             MultiAttackStanding.Territories[terr].NumArmies = new Armies(Bot.Settings.OneArmyMustStandGuardOneOrZero);
 
                             terr = planStep.To;
@@ -120,7 +120,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                             var attackWith = Bot.ArmiesToTake(ExpansionHelper.GuessNumberOfArmies(Bot, planStep.To));
                             Bot.Orders.AddAttack(terr, planStep.To, AttackTransferEnum.AttackTransfer, attackWith, false, false);
                             
-                            MultiAttackStanding.Territories[planStep.To] = new TerritoryStanding(planStep.To, Bot.PlayerID, new Armies(attackWith - defendersKill));
+                            MultiAttackStanding.Territories[planStep.To] = TerritoryStanding.Create(planStep.To, Bot.PlayerID, new Armies(attackWith - defendersKill));
                             MultiAttackStanding.Territories[terr].NumArmies = MultiAttackStanding.Territories[terr].NumArmies.Subtract(new Armies(attackWith));
                         }
 
