@@ -150,7 +150,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
             // Sort according to the amount of idle armies
             var outvar = new List<BotTerritory>();
-            while (!unsortedNeighbors.IsEmpty())
+            while (unsortedNeighbors.Count > 0)
             {
                 var biggestIdleArmyTerritory = unsortedNeighbors[0];
                 foreach (var territory in unsortedNeighbors)

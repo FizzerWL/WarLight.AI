@@ -29,7 +29,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         public override void Go(int remainingUndeployed, bool highlyWeightedOnly)
         {
             //don't search more than 10% of the map. We won't cross the entire map to get a bonus, we're looking for ones near us.  For small maps, never search fewer than 5.
-            var maxDistance = highlyWeightedOnly ? 1 : Math.Max(5, Bot.Map.Territories.Count / 10);
+            var maxDistance = highlyWeightedOnly ? 1 : Math.Max(5, (int)(Bot.Map.Territories.Count / 10));
 
             var armyMult = ExpansionHelper.ArmyMultiplier(Bot.Settings.DefenseKillRate);
             var bonusWeights = Bot.Map.Bonuses.Keys.Where(o => Bot.BonusValue(o) > 0).ToDictionary(o => o, o => ExpansionHelper.WeighBonus(Bot, o, ts => ts.OwnerPlayerID == Bot.PlayerID, 1)); //assume 1 turn to take for now, which is wrong, but it gives us an even baseline. We'll adjust for turnsToTake in adjustedBonusWeights.

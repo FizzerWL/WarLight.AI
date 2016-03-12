@@ -30,11 +30,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                     return Details.Amount;
             }
         }
-
-        public override int GetHashCode()
-        {
-            return (int)ID;
-        }
+        
 
         public BonusIDType ID;
         public int AttackValue = 0;
@@ -174,6 +170,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                 if (distance >= max)
                     return max;
             }
+
+
+#if CS2HX || CSSCALA
+            throw new Exception("Never");
+#endif
         }
 
         public List<BotTerritory> GetOwnedTerritoriesAndNeighbors()

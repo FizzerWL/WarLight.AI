@@ -67,7 +67,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
         }
 
         // TODO
-        public static IDictionary<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
+        public static Dictionary<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
         {
             List<BotTerritory> Territories = opponentBonus.Territories;
             var annotadedTerritories = CalculateDistances(mapToUse, Territories, null);
@@ -82,7 +82,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
                     minDistanceTerritory = territory;
                 }
             }
-            IDictionary<BotTerritory, int> returnTerritory = new Dictionary<BotTerritory, int>();
+            var returnTerritory = new Dictionary<BotTerritory, int>();
             returnTerritory.Add(minDistanceTerritory, minDistance);
             return returnTerritory;
         }

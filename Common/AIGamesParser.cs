@@ -49,7 +49,7 @@ namespace WarLight.Shared.AI
                         LatestTurnStanding = DistributionStanding; //during picking, LatestStanding and DistributionStanding are the same thing
                         InitBot();
                         PickedTerritories = Bot.GetPicks();
-                        AILog.Log("AIGamesParser", "Bot picked " + PickedTerritories.JoinToStrings(" "));
+                        AILog.Log("AIGamesParser", "Bot picked " + PickedTerritories.Select(o => o.ToString()).JoinStrings(" "));
                     }
 
                     var timeout = long.Parse(parts[1]);

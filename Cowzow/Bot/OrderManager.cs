@@ -16,7 +16,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         public Dictionary<TerritoryIDType, EdgeHashSet> Orders;
         public CowzowBot Bot;
 
-        public OrderManager(CowzowBot bot, IEnumerable<TerritoryIDType> myTerritories)
+        public OrderManager(CowzowBot bot, HashSet<TerritoryIDType> myTerritories)
         {
             this.Bot = bot;
             Orders = new Dictionary<TerritoryIDType, EdgeHashSet>();
@@ -35,7 +35,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         {
             var edges = new List<Edge>();
             foreach (var entry in Orders)
-                edges.AddRange(entry.Value);
+                edges.AddRange(entry.Value.Edges);
 
             var list = new List<BotOrderAttackTransfer>();
             foreach (var e in edges)
@@ -57,7 +57,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 var attacker = entry.Key;
                 var moves = entry.Value;
                 var sum = 0;
-                foreach (var e in moves)
+                foreach (var e in moves.Edges)
                     sum += e.Flow;
 
                 var remaining = Bot.BotMap.Territories[attacker].Armies - 1 - sum;
@@ -79,7 +79,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 edges.Add(candidate);
             else
             {
-                foreach (var e in edges)
+                foreach (var e in edges.Edges)
                     if (e.End.ID == target.ID)
                     {
                         e.Flow += troops;

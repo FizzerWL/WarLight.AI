@@ -113,6 +113,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 visited.AddRange(expand);
             }
 
+#if CS2HX || CSSCALA
+            throw new Exception("Never");
+#endif
 
 
         }

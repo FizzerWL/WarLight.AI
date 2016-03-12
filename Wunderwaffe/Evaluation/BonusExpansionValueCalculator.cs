@@ -29,7 +29,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var allBonuses = mapToUse.Bonuses.Values.ToList();
             var sortedBonuses = new List<BotBonus>();
             //mapToUse.SetOpponentExpansionValue();
-            while (!allBonuses.IsEmpty())
+            while (allBonuses.Count > 0)
             {
                 var bestBonus = allBonuses[0];
                 double bestValue = 0;
@@ -64,7 +64,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var copy = new List<BotBonus>();
             copy.AddRange(mapToUse.Bonuses.Values);
             var outvar = new HashSet<BotBonus>();
-            while (!copy.IsEmpty())
+            while (copy.Count > 0)
             {
                 var highestPrioBonus = copy[0];
                 foreach (BotBonus bonus in copy)

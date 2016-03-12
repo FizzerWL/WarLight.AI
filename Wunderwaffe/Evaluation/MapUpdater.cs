@@ -28,7 +28,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 {
                     var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
                     var attackingArmies = vmTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
+                    if (SharedUtility.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
                     {
                         wmTerritory.OwnerPlayerID = BotState.Me.ID;
                         wmTerritory.Armies = vmTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).DefensePower * BotState.Settings.DefenseKillRate)));
@@ -52,7 +52,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
             var attackingArmies = vmTerritory.GetIncomingArmies();
 
-            if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
+            if (SharedUtility.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
                 wmTerritory.OwnerPlayerID = BotState.Me.ID;
         }
     }

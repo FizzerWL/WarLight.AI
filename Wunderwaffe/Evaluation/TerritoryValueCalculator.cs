@@ -79,7 +79,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                     visibleFlankingTerritories.Add(visibleNeutral);
                 }
             }
-            while (!visibleFlankingTerritories.IsEmpty())
+            while (visibleFlankingTerritories.Count > 0)
             {
                 var bestTerritory = visibleFlankingTerritories[0];
                 foreach (var territory in visibleFlankingTerritories)
@@ -99,7 +99,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var opponentTerritories = BotState.VisibleMap.Territories.Values.Where(o => BotState.IsOpponent(o.OwnerPlayerID)).ToList();
             var copy = new List<BotTerritory>();
             copy.AddRange(opponentTerritories);
-            while (!copy.IsEmpty())
+            while (copy.Count > 0)
             {
                 var maxAttackValue = 0;
                 var maxAttackValueTerritory = copy[0];

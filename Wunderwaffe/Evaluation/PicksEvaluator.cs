@@ -48,7 +48,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             //TODO: Take the top numPicks * 2, then normalize their values and do a weighted random.
             var ret = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
 
-            AILog.Log("PicksEvaluator", "Final picks: " + ret.JoinToStrings(","));
+            AILog.Log("PicksEvaluator", "Final picks: " + ret.Select(o => o.ToString()).JoinStrings(","));
             return ret;
         }
 

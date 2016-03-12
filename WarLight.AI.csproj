@@ -80,7 +80,6 @@
     <Compile Include="Cowzow\Map\BotBonus.cs" />
     <Compile Include="Cowzow\Map\BotMap.cs" />
     <Compile Include="Cowzow\Map\BotTerritory.cs" />
-    <Compile Include="Cowzow\Map\MapUtils.cs" />
     <Compile Include="Cowzow\Move\BotOrder.cs" />
     <Compile Include="Cowzow\Move\BotOrderAttackTransfer.cs" />
     <Compile Include="Cowzow\Move\BotOrderDeploy.cs" />

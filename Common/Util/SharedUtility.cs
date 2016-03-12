@@ -39,15 +39,6 @@ namespace WarLight.Shared.AI
             foreach (var r in rem)
                 col.Remove(r);
         }
-        public static bool IsEmpty<T>(this ICollection<T> col)
-        {
-            return (col.Count == 0);
-        }
-
-        public static bool IsEmpty<T>(this Stack<T> col)
-        {
-            return (col.Count == 0);
-        }
         public static bool None<T>(this IEnumerable<T> a)
         {
             return !a.Any();
@@ -92,11 +83,6 @@ namespace WarLight.Shared.AI
             else
                 return c + 1;
         }
-        public static string JoinToStrings<T>(this IEnumerable<T> a, string seperator = "")
-        {
-            return string.Join(seperator, a.Select(o => o.ToString()).ToArray());
-        }
-
         public static string JoinStrings(this IEnumerable<string> a, string seperator = "")
         {
             return string.Join(seperator, a.ToArray());

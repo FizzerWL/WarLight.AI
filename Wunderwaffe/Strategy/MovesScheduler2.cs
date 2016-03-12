@@ -291,7 +291,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
 
                         if (atm.Message == AttackMessage.Snipe)
                             SnipeMoves.Add(atm);
-                        else if (Math.Round(atm.Armies.AttackPower * BotState.Settings.OffenseKillRate) < mmToTerritory.Armies.DefensePower)
+                        else if (SharedUtility.Round(atm.Armies.AttackPower * BotState.Settings.OffenseKillRate) < mmToTerritory.Armies.DefensePower)
                             TransferingExpansionMoves.Add(atm);
                         else if (atm.Armies.AttackPower > 3 && !CanAnyOpponentAttackTerritory(mmFromTerritory))
                             BigExpansionMovesNonAttack.Add(atm);
@@ -316,7 +316,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var opponentArmies = atm.To.Armies.DefensePower + opponentIncome;
             // Heuristic since the opponent might have more income than expected
             opponentArmies += 3;
-            return Math.Round(atm.Armies.AttackPower * BotState.Settings.OffenseKillRate) >= Math.Round(opponentArmies * BotState.Settings.DefenseKillRate);
+            return SharedUtility.Round(atm.Armies.AttackPower * BotState.Settings.OffenseKillRate) >= SharedUtility.Round(opponentArmies * BotState.Settings.DefenseKillRate);
         }
 
         /// <remarks>
@@ -329,7 +329,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             List<BotTerritory> territoriesOpponentMightBreak = new List<BotTerritory>();
             var opponentIncome = BotState.GetGuessedOpponentIncome(slipperyOpponentTerritory.OwnerPlayerID, BotState.VisibleMap);
             var opponentAttackingArmies = opponentIncome + slipperyOpponentTerritory.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
-            var neededArmiesForDefense = (int)Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate);
+            var neededArmiesForDefense = SharedUtility.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate);
             foreach (var ownedNeighbor in slipperyOpponentTerritory.GetOwnedNeighbors())
             {
                 if (ownedNeighbor.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower < neededArmiesForDefense)
@@ -348,7 +348,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var maximumOpponentArmies = attack.To.Armies.DefensePower + BotState
                 .GetGuessedOpponentIncome(attack.To.OwnerPlayerID, BotState.VisibleMap);
             var adjustedOpponentArmies = Math.Max(guessedOpponentArmies, maximumOpponentArmies - 2);
-            var isCrushingMove = Math.Round(attack.Armies.AttackPower * BotState.Settings.OffenseKillRate) >= adjustedOpponentArmies;
+            var isCrushingMove = SharedUtility.Round(attack.Armies.AttackPower * BotState.Settings.OffenseKillRate) >= adjustedOpponentArmies;
             return isCrushingMove;
         }
 
@@ -367,7 +367,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 foreach (var opponentNeighbor in group)
                     opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
-                if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= ourArmies.DefensePower)
+                if (SharedUtility.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= ourArmies.DefensePower)
                     return true;
             }
 
@@ -389,7 +389,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 foreach (var opponentNeighbor in group)
                     opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
-                if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
+                if (SharedUtility.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= SharedUtility.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
                     return true;
             }
             return false;
@@ -409,7 +409,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 foreach (var opponentNeighbor in group)
                     opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
-                if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
+                if (SharedUtility.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= SharedUtility.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
                     return true;
             }
 
@@ -426,7 +426,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             foreach (var opponentNeighbor in ourTerritory.GetOpponentNeighbors())
                 opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
 
-            return Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate);
+            return SharedUtility.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= SharedUtility.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate);
         }
 
         /// <summary>

@@ -39,7 +39,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (vmNeutralTerritory.IsVisible)
                 {
                     var attackingArmies = vmNeutralTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= vmNeutralTerritory.Armies.DefensePower)
+                    if (SharedUtility.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= vmNeutralTerritory.Armies.DefensePower)
                         vmNeutralTerritoriesThatWeTake.Add(vmNeutralTerritory);
                 }
             }

@@ -24,12 +24,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             get { return BotState.Map.Territories[ID]; }
         }
 
-
-        public override int GetHashCode()
-        {
-            return (int)this.ID;
-        }
-
+        
         public override string ToString()
         {
             return ID + " " + Details.Name + " Armies=" + Armies + " Owner=" + OwnerPlayerID + " ExpansionValue=" + ExpansionTerritoryValue;
@@ -92,7 +87,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                 remainingArmies = remainingArmies.Subtract(new Armies(SharedUtility.Ceiling(atm.Armies.NumArmies * BotState.Settings.OffenseKillRate)));
 
             if (!remainingArmies.Fogged && remainingArmies.NumArmies < 1)
-                remainingArmies = new Armies(1, specialUnits: remainingArmies.SpecialUnits);
+                remainingArmies = new Armies(1, false, remainingArmies.SpecialUnits);
             return remainingArmies;
         }
 

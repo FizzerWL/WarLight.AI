@@ -64,7 +64,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (GetAdjustedFactor(bonus) > 0)
                     copy.Add(bonus);
             }
-            while (!copy.IsEmpty())
+            while (copy.Count > 0)
             {
                 var bestBonus = copy[0];
                 foreach (BotBonus bonus_1 in copy)

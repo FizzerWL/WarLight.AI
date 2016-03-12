@@ -23,8 +23,8 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
         public TerritoryBipartiteNetwork(CowzowBot bot, EdgePriorityComparator eval)
             : base(bot)
         {
-            Start = new BotTerritory(bot);
-            End = new BotTerritory(bot);
+            Start = new BotTerritory(bot, BotTerritory.DummyID);
+            End = new BotTerritory(bot, BotTerritory.DummyID);
             AddVertex(Start);
             AddVertex(End);
             Attackers = new HashSet<TerritoryIDType>();
@@ -79,7 +79,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
         {
             var residual = CreateResidual();
             var resourceMap = new Dictionary<TerritoryIDType, Edge>();
-            foreach (var e in residual[Start.ID])
+            foreach (var e in residual[Start.ID].Edges)
                 resourceMap[e.End.ID] = e;
             var path = FindStrictPath(Start, End, residual);
             while (path.Count > 0)
@@ -93,7 +93,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
             }
             var result = new EdgeHashSet();
             foreach (var attacker in Attackers)
-                foreach (var e_1 in residual[attacker])
+                foreach (var e_1 in residual[attacker].Edges)
                     if (e_1.Flow > 0)
                         result.Add(e_1);
             return result;
@@ -119,7 +119,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
             e.Flow += flow;
             if (residual.ContainsKey(e.End.ID))
             {
-                foreach (var candidate in residual[e.End.ID])
+                foreach (var candidate in residual[e.End.ID].Edges)
                     if (candidate.End.ID == e.Start.ID)
                         candidate.Flow -= flow;
             }
@@ -128,7 +128,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
         public List<Edge> FindStrictPathWithStart(Edge startEdge, EdgeHashSet visited, Dictionary<TerritoryIDType, EdgeHashSet> residual)
         {
             var resourceMap = new Dictionary<TerritoryIDType, int>();
-            foreach (var entryPoint in residual[Start.ID])
+            foreach (var entryPoint in residual[Start.ID].Edges)
                 resourceMap[entryPoint.End.ID] = entryPoint.RemainingFlow();
             var discoveredMap = new Dictionary<string, Edge>();
             var pushFlow = startEdge.RemainingFlow();
@@ -156,7 +156,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
                     while (temp != null)
                     {
                         candidate.Insert(0, temp);
-                        temp = discoveredMap.GetOr(temp.ID, null);
+                        temp = discoveredMap.ContainsKey(temp.ID) ? discoveredMap[temp.ID] : null;
                     }
                     if (candidate.Count > 2)
                     {
@@ -167,9 +167,9 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
                 else
                 {
                     visited.Add(curr);
-                    var edges = new List<Edge>(residual[curr.End.ID]);
+                    var edges = new List<Edge>(residual[curr.End.ID].Edges);
                     if (IsPositive(curr) && Eval != null)
-                        edges.Sort(Eval);
+                        edges.Sort((a,b) => Eval.Compare(a, b));
                     for (var i = edges.Count - 1; i >= 0; i--)
                     {
                         var neighbor = edges[i];
@@ -188,7 +188,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
         {
             var bestPath = new List<Edge>();
             var visited = new EdgeHashSet();
-            foreach (var path in residual[Start.ID])
+            foreach (var path in residual[Start.ID].Edges)
                 if (path.RemainingFlow() > 0)
                 {
                     var candidate = FindStrictPathWithStart(path, visited, residual);
@@ -212,7 +212,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
             foreach (var attacker in Attackers)
             {
                 var attackerEdges = residual[attacker];
-                foreach (var forward in attackerEdges)
+                foreach (var forward in attackerEdges.Edges)
                 {
                     var backward = new Edge(forward.End, forward.Start, forward.Capacity, forward.IsStrict);
                     backward.Flow = backward.Capacity;

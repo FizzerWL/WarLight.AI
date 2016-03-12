@@ -26,11 +26,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.BotState = state;
         }
 
-        public BotMap(List<BotTerritory> terrs, List<BotBonus> bonuses)
-        {
-            this.Territories = terrs.ToDictionary(o => o.ID, o => o);
-            this.Bonuses = bonuses.ToDictionary(o => o.ID, o => o);
-        }
 
         //private Dictionary<PlayerIDType, PlayerExpansionValueHeuristic> _opponentExpansionValue = new Dictionary<PlayerIDType, PlayerExpansionValueHeuristic>();
 
@@ -214,7 +209,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             List<BotTerritory> outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
             copy.AddRange(inTerritories);
-            while (!copy.IsEmpty())
+            while (copy.Count > 0)
             {
                 var lowestDistanceTerritory = copy[0];
                 foreach (var territory in copy)
@@ -268,12 +263,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> @in)
+        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> bonuses)
         {
             var outvar = new List<BotBonus>();
             var copy = new List<BotBonus>();
-            copy.AddRange(@in);
-            while (!copy.IsEmpty())
+            copy.AddRange(bonuses);
+            while (copy.Count > 0)
             {
                 var highestRewardBonus = copy[0];
                 foreach (BotBonus bonus in copy)
@@ -287,12 +282,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> @in)
+        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> bonuses)
         {
             var outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
-            copy.AddRange(@in);
-            while (!copy.IsEmpty())
+            copy.AddRange(bonuses);
+            while (copy.Count > 0)
             {
                 var highestIdleArmiesTerritory = copy[0];
                 foreach (var territory in copy)

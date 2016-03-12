@@ -83,7 +83,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var attackableNeutrals = new List<BotTerritory>();
             attackableNeutrals.AddRange(bonusToPrevent.GetVisibleNeutralTerritories());
             var sortedAttackableNeutrals = new List<BotTerritory>();
-            while (!attackableNeutrals.IsEmpty())
+            while (attackableNeutrals.Count > 0)
             {
                 var bestNeutral = attackableNeutrals[0];
                 foreach (var neutral in attackableNeutrals)

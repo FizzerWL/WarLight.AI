@@ -84,7 +84,8 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         public List<TerritoryIDType> GetPicks()
         {
             var territoryList = DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => BotMap.Territories[o.ID]).ToList();
-            territoryList.Sort(new StartingTerritoryComparator(this));
+            var stc = new StartingTerritoryComparator(this);
+            territoryList.Sort((a,b) => stc.Compare(a, b));
 
             AILog.Log("Cowzow", "Picking " + territoryList.Count + " territories: ");
             foreach (var terr in territoryList)
@@ -98,7 +99,9 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             var deploys = GetPlaceArmiesMoves();
             var attacks = GetAttackTransferMoves();
 
-            var final = deploys.Cast<BotOrder>().Concat(attacks).ToList();
+            var final = new List<BotOrder>();
+            deploys.ForEach(o => final.Add(o));
+            attacks.ForEach(o => final.Add(o));
 
             AILog.Log("Cowzow", "Final " + final.Count + " orders: ");
             foreach (var order in final)
@@ -141,7 +144,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             }
 
             // v185
-            totalAttackPaths.Sort(Eval);
+            totalAttackPaths.Sort((a,b) => Eval.Compare(a, b));
 
             foreach (var attackPath in totalAttackPaths.Take(10))
                 AILog.Log("Cowzow", "Top attack path: " + attackPath + " score=" + Eval.GetScore(attackPath));
@@ -165,7 +168,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                     else
                     {
                         if (Eval.DumpSet.ContainsKey(curr.ID) || curr.End.Bonuses.Any(Analyzer.MightBeOwned))
-                            armiesNeeded = Math.Max(armiesLeft * 3 / 5, armiesNeeded * 3 / 2);
+                            armiesNeeded = Math.Max((int)(armiesLeft * 3 / 5), (int)(armiesNeeded * 3 / 2));
                     }
                     if (armiesInReserve >= armiesNeeded)
                         reserveTroops[curr.Start.ID] = armiesInReserve - armiesNeeded;
@@ -218,7 +221,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                     attackerChoices.Add(new Edge(attacker, neighbor, 0));
 
                 attackerChoices.Add(new Edge(attacker, attacker, 0));
-                attackerChoices.Sort(Eval);
+                attackerChoices.Sort((a,b) => Eval.Compare(a, b));
                 network.AddAttacker(attacker, attacker.Armies - Settings.OneArmyMustStandGuardOneOrZero);
                 var firstEnemy = false;
                 foreach (var e in attackerChoices)
@@ -255,7 +258,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             var destinations = new HashSet<TerritoryIDType>();
             var orders = network.GenerateStrictFlow();
 
-            foreach (var order in orders)
+            foreach (var order in orders.Edges)
             {
                 manager.AddOrder(order.Start, order.End, order.Flow);
                 destinations.Add(order.End.ID);
@@ -266,7 +269,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 var terr = BotMap.Territories[terrID];
 
                 var existingEnemyOrders = new List<Edge>();
-                foreach (var e in manager.GetOrders(terrID))
+                foreach (var e in manager.GetOrders(terrID).Edges)
                     existingEnemyOrders.Add(e); //enemy orders???
                 foreach (var e_1 in terr.GetFromPaths())
                     if (destinations.Contains(e_1.End.ID) && remainder[e_1.Start.ID] > CaptureCosts[e_1.End.ID])
@@ -321,7 +324,8 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 }
             }
             var formalOrders = manager.GetFormalOrders();
-            formalOrders.Sort(new AttackOrderComparator(this));
+            var aoc = new AttackOrderComparator(this);
+            formalOrders.Sort((a, b) => aoc.Compare(a, b));
             return formalOrders;
         }
 
@@ -373,7 +377,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                                 foreach (var tmp in BotMap.VisibleTerritories)
                                     if (IsOpponent(tmp.OwnerPlayerID))
                                         count++;
-                                var est = ArmiesNeededToCapture(r.Armies + Math.Min(2, Analyzer.GetEffectiveTroops() / Math.Max(count, 1)));
+                                var est = ArmiesNeededToCapture(r.Armies + Math.Min(2, (int)(Analyzer.GetEffectiveTroops() / Math.Max(count, 1))));
                                 captureCosts[r.ID] = est;
                             }
                             else
@@ -385,7 +389,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                                 foreach (var move in Bot.PreviousTurn.OfType<GameOrderAttackTransfer>().Where(o => o.PlayerID == Bot.Me.ID))
                                     if (move.To == r.ID)
                                     {
-                                        guess += oppDeployed / 2;
+                                        guess += (int)(oppDeployed / 2);
                                         break;
                                     }
 
@@ -399,7 +403,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                     else
                     {
                         var est = (int)Math.Max(ArmiesNeededToCapture(r.Armies), r.GetStrongestNearestEnemy() + 2);
-                        est = Math.Max(est, r.Armies + Analyzer.TroopEstimate / 2);
+                        est = Math.Max(est, r.Armies + (int)(Analyzer.TroopEstimate / 2));
                         captureCosts[r.ID] = est;
                     }
                 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WarLight.Shared.AI.Cowzow.Fulkerson2
 {
-    public class EdgeHashSet : IEnumerable<Edge>
+    public class EdgeHashSet
     {
         private Dictionary<string, Edge> _edges;
 
@@ -29,14 +29,10 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
             return _edges.ContainsKey(edge.ID);
         }
 
-        public IEnumerator<Edge> GetEnumerator()
+        public IEnumerable<Edge> Edges
         {
-            return _edges.Values.GetEnumerator();
+            get { return _edges.Values; }
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _edges.Values.GetEnumerator();
-        }
+        
     }
 }
