@@ -1,16 +1,11 @@
-﻿/*
-* This code was auto-converted from a java project.
-
-*/
-
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
 
 
-namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
+namespace WarLight.AI.Wunderwaffe.BasicAlgorithms
 {
     public static class DistanceCalculator
     {

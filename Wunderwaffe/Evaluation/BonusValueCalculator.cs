@@ -1,15 +1,10 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI;
 
-
-
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     public enum BonusPlan
     {
@@ -89,10 +84,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         private const int BonusTakeOverFactor = 6;
         private const int BonusPreventTakeOverFactor = 15;
 
-        // private final int Bonus_ATTACK_FACTOR = 5;
-        // private final int SUPERREGIOIN_DEFENSE_FACTOR = 3;
-        // private final int Bonus_TAKE_OVER_FACTOR = 3;
-        // private final int Bonus_PREVENT_TAKE_OVER_FACTOR = 5;
         public void CalculateBonusValues(BotMap mapToUse, BotMap mapToWriteIn)
         {
             var ownBonusesUnderAttack = new List<BotBonus>();

@@ -1,13 +1,7 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
+﻿using System.Linq;
+using WarLight.Shared.AI;
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     /// <summary>
     /// HistoryTracker is responsible for storing the whole history of what has happened on the board so far and our thoughts about it.
@@ -24,7 +18,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public DeploymentHistory DeploymentHistory;
 
-        // public int opponentDeployment;
         public int GetOpponentDeployment(PlayerIDType opponentID)
         {
             return BotState.PrevTurn.Where(o => o.PlayerID == opponentID).OfType<GameOrderDeploy>().Sum(o => o.NumArmies);

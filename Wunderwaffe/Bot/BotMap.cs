@@ -1,16 +1,12 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Heuristics;
+using WarLight.AI.Wunderwaffe.Bot;
 
 using System;
+using WarLight.Shared.AI;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotMap
     {
@@ -32,29 +28,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.Bonuses = bonuses.ToDictionary(o => o.ID, o => o);
         }
 
-        //private Dictionary<PlayerIDType, PlayerExpansionValueHeuristic> _opponentExpansionValue = new Dictionary<PlayerIDType, PlayerExpansionValueHeuristic>();
-
-        //public void SetOpponentExpansionValue(PlayerIDType opponentID)
-        //{
-        //    _opponentExpansionValue[opponentID] = new PlayerExpansionValueHeuristic(BotState, this, opponentID);
-        //}
-
-        //public PlayerExpansionValueHeuristic OpponentExpansionValue(PlayerIDType opponentID)
-        //{
-        //    if (_opponentExpansionValue.ContainsKey(opponentID) == false)
-        //        SetOpponentExpansionValue(opponentID);
-
-        //    return _opponentExpansionValue[opponentID];
-        //}
-
-        private PlayerExpansionValueHeuristic _myExpansionValue;
-        public PlayerExpansionValueHeuristic MyExpansionValue()
-        {
-            if (_myExpansionValue == null)
-                _myExpansionValue = new PlayerExpansionValueHeuristic(BotState, this, BotState.Me.ID);
-            return _myExpansionValue;
-        }
-
         /// <returns>: a new Map object exactly the same as this one</returns>
         public BotMap GetMapCopy()
         {
@@ -63,7 +36,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             {
                 var newBonus = new BotBonus(newMap, bonus.ID);
                 newBonus.ExpansionValueCategory = bonus.ExpansionValueCategory;
-                // newBonus.setExpansionValue(sr.ExpansionValue);
                 newMap.Bonuses.Add(newBonus.ID, newBonus);
             }
             foreach (var territory in Territories.Values)
@@ -111,7 +83,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public static BotMap FromStanding(BotMain state, GameStanding stand)
         {
-            var map = state.FullMap.GetMapCopy();
+            var map = state.VisibleMap.GetMapCopy();
             foreach (var terr in stand.Territories.Values)
             {
                 var territory = map.Territories[terr.ID];

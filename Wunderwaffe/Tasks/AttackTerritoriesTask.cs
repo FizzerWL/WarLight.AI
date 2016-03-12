@@ -1,16 +1,13 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>AttackTerritoryTask is responsible for attacking a single territory.</summary>
     /// <remarks>
@@ -22,8 +19,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         /// <param name="opponentTerritory"></param>
         /// <param name="maxDeployment"></param>
         /// <returns></returns>
-        public static Moves CalculateAttackTerritoryTask(BotMain state, BotTerritory opponentTerritory, int maxDeployment
-        )
+        public static Moves CalculateAttackTerritoryTask(BotMain state, BotTerritory opponentTerritory, int maxDeployment)
         {
             var outvar = new Moves();
             var ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
@@ -56,12 +52,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
             // Check if we are killing more or equal armies than the opponent
             // double currentOpponentArmies = opponentTerritory.ArmiesAfterDeployment;
-            var currentOpponentArmies = (double)opponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Normal).DefensePower;
+            var currentOpponentArmies = opponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Normal).DefensePower;
             double opponentKills = 0;
             double ownKills = 0;
             foreach (var atm_1 in outvar.Orders.OfType<BotOrderAttackTransfer>())
             {
-                var ourKills = Math.Min(currentOpponentArmies, atm_1.Armies.AttackPower * state.Settings.OffenseKillRate);
+                int ourKills = opponentTerritory.getOwnKills(atm_1.Armies.AttackPower, currentOpponentArmies);
+                //var ourKills = Math.Min(currentOpponentArmies, atm_1.Armies.AttackPower * state.Settings.OffensiveKillRate);
                 var opponentKillsAttack = Math.Min(atm_1.Armies.AttackPower, currentOpponentArmies * state.Settings.DefenseKillRate);
                 ownKills += ourKills;
                 opponentKills += opponentKillsAttack;

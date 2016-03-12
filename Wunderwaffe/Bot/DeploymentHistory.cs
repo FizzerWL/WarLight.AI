@@ -1,14 +1,7 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
+﻿using System.Collections.Generic;
+using WarLight.Shared.AI;
 
-using System;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
-
-
-
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class DeploymentHistory
     {

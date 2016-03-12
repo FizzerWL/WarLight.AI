@@ -1,13 +1,7 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
+﻿using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
 
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI.Wunderwaffe.Strategy;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     public class TakeBonusOverTask
     {

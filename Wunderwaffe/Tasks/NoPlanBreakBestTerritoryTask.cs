@@ -1,17 +1,11 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>NoPlanBreakBestTerritoryTask is responsible for breaking the best opponent territory without following a specified plan.
     /// </summary>

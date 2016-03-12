@@ -16,6 +16,9 @@ namespace WarLight.Shared.AI
                 Console.Error.WriteLine(DateTime.Now + " " + area + ": " + message);
         }
 
-
+        internal static void LogXXX(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,13 +1,9 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
+﻿using WarLight.AI.Wunderwaffe.Bot;
 
-using System;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     public class MapUpdater
     {
@@ -28,7 +24,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 {
                     var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
                     var attackingArmies = vmTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
+                    if (vmTerritory.getOwnKills(attackingArmies.AttackPower, toBeKilledArmies.DefensePower) >= vmTerritory.Armies.DefensePower)
+                    //if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffensiveKillRate) >= toBeKilledArmies.DefensePower)
                     {
                         wmTerritory.OwnerPlayerID = BotState.Me.ID;
                         wmTerritory.Armies = vmTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal).DefensePower * BotState.Settings.DefenseKillRate)));
@@ -51,9 +48,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var vmTerritory = BotState.VisibleMap.Territories[toTerritoryID];
             var toBeKilledArmies = vmTerritory.GetArmiesAfterDeployment(BotTerritory.DeploymentType.Normal);
             var attackingArmies = vmTerritory.GetIncomingArmies();
-
-            if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= toBeKilledArmies.DefensePower)
+            if (vmTerritory.getOwnKills(attackingArmies.AttackPower, toBeKilledArmies.DefensePower) >= toBeKilledArmies.DefensePower)
+            {
                 wmTerritory.OwnerPlayerID = BotState.Me.ID;
+            }
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿using System.Linq;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     public static class PlayCardsTask
     {
@@ -25,7 +22,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             foreach (var card in state.Cards)
             {
                 if (cardsPlayedByTeammate.Contains(card.ID))
-                    continue; //Teammate played it
+                {
+                    continue;
+                }
 
                 if (card is ReinforcementCardInstance)
                 {

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-
 using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Move;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Strategy
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
+
+namespace WarLight.AI.Wunderwaffe.Strategy
 {
-    public class MovesScheduler2
+    public class MovesScheduler
     {
         public BotMain BotState;
-        public MovesScheduler2(BotMain state)
+        public MovesScheduler(BotMain state)
         {
             this.BotState = state;
         }
@@ -42,6 +43,138 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
         {
             return GetSortedMoves(movesSoFar.Orders);
         }
+
+
+        private Moves GetSortedMoves(List<BotOrder> movesSoFar)
+        {
+            Moves sortedMoves = new Moves();
+            sortedMoves.Orders.AddRange(GetSortedDeployment(movesSoFar));
+
+            List<BotOrder> unhandledMoves = movesSoFar.Where(o => !(o is BotOrderDeploy)).ToList();
+            BotMap movesMap = BotState.VisibleMap.GetMapCopy();
+
+            while (unhandledMoves.Count > 0)
+            {
+                var nextMove = GetNextMove(unhandledMoves, movesMap);
+                unhandledMoves.Remove(nextMove);
+                sortedMoves.AddOrder(nextMove);
+
+                if (nextMove is BotOrderAttackTransfer)
+                {
+                    BotState.MapUpdater.UpdateMap((BotOrderAttackTransfer)nextMove, movesMap, BotTerritory.DeploymentType.Conservative);
+                }
+            }
+            return sortedMoves;
+        }
+
+        private List<BotOrderDeploy> GetSortedDeployment(List<BotOrder> allOrders)
+        {
+            List<BotOrderDeploy> deploymentsNextOpponent = new List<BotOrderDeploy>();
+            List<BotOrderDeploy> deploymentsInBackground = new List<BotOrderDeploy>();
+
+            foreach (var deploy in allOrders.OfType<BotOrderDeploy>())
+            {
+                if (deploy.Territory.GetOpponentNeighbors().Count == 0)
+                {
+                    deploymentsInBackground.Add(deploy);
+                }
+                else
+                {
+                    deploymentsNextOpponent.Add(deploy);
+                }
+            }
+            List<BotOrderDeploy> allDeployments = new List<BotOrderDeploy>();
+            allDeployments.AddRange(deploymentsNextOpponent);
+            allDeployments.AddRange(deploymentsInBackground);
+            return allDeployments;
+        }
+
+
+
+        private BotOrder GetNextMove(List<BotOrder> unhandledMoves, BotMap movesMap)
+        {
+            ClearMoves();
+            FillMoveTypes(unhandledMoves, movesMap);
+            var semiSortedMoves = new List<BotOrderAttackTransfer>();
+            EarlyAttacks = ScheduleAttacksAttackingArmies(EarlyAttacks);
+            SupportMovesWhereOpponentMightBreak = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightBreak);
+            CrushingAttackMovesToSlipperyTerritories = ScheduleAttacksAttackingArmies(CrushingAttackMovesToSlipperyTerritories);
+            CrushingAttackMovesToSlipperyTerritories = ScheduleCrushingAttackToSlipperyTerritory(CrushingAttackMovesToSlipperyTerritories);
+            SupportMovesWhereOpponentMightGetAGoodAttack = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightGetAGoodAttack);
+            SupportMovesWhereOpponentMightAttack = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightAttack);
+            DelayAttackMoves = ScheduleDelayAttacks(DelayAttackMoves);
+            SafeAttackMovesWithGoodAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithGoodAttack);
+            NormalSupportMoves = ScheduleAttacksAttackingArmies(NormalSupportMoves);
+            BigExpansionMovesNonAttack = SortExpansionMovesOpponentDistance(BigExpansionMovesNonAttack, false);
+            BigExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(BigExpansionMovesNonAttack);
+            NonOpponentBorderingSmallExpansionMovesNonAttack = SortExpansionMovesOpponentDistance(NonOpponentBorderingSmallExpansionMovesNonAttack, true);
+            NonOpponentBorderingSmallExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(NonOpponentBorderingSmallExpansionMovesNonAttack);
+            OpponentBorderingSmallExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(OpponentBorderingSmallExpansionMovesNonAttack);
+            BigExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(BigExpansionMovesWithAttack, false);
+            BigExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(BigExpansionMovesWithAttack);
+            NonOpponentBorderingSmallExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(NonOpponentBorderingSmallExpansionMovesWithAttack, true);
+            NonOpponentBorderingSmallExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(NonOpponentBorderingSmallExpansionMovesWithAttack);
+            OpponentBorderingSmallExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(OpponentBorderingSmallExpansionMovesWithAttack, true);
+            OpponentBorderingSmallExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(OpponentBorderingSmallExpansionMovesWithAttack);
+            SafeAttackMovesWithPossibleBadAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithPossibleBadAttack);
+            RiskyAttackMoves = ScheduleAttacksAttackingArmies(RiskyAttackMoves);
+            semiSortedMoves.AddRange(EarlyAttacks);
+            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightBreak);
+            semiSortedMoves.AddRange(CrushingAttackMovesToSlipperyTerritories);
+            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightGetAGoodAttack);
+            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightAttack);
+            semiSortedMoves.AddRange(DelayAttackMoves);
+            semiSortedMoves.AddRange(SafeAttackMovesWithGoodAttack);
+            semiSortedMoves.AddRange(NormalSupportMoves);
+            semiSortedMoves.AddRange(BigExpansionMovesNonAttack);
+            semiSortedMoves.AddRange(TransferMoves);
+            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesNonAttack);
+            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesNonAttack);
+            semiSortedMoves.AddRange(BigExpansionMovesWithAttack);
+            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesWithAttack);
+            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesWithAttack);
+            semiSortedMoves.AddRange(TransferingExpansionMoves);
+            semiSortedMoves.AddRange(SnipeMoves);
+            semiSortedMoves.AddRange(SafeAttackMovesWithPossibleBadAttack);
+            semiSortedMoves.AddRange(RiskyAttackMoves);
+
+            if (semiSortedMoves.Count == 0)
+                return unhandledMoves[0];
+
+            var nextMove = semiSortedMoves[0];
+            if (movesMap.Territories[nextMove.To.ID].GetOpponentNeighbors().Count > 0)
+            {
+                var substituteMove = GetSubstituteMove(nextMove, movesMap, unhandledMoves);
+                if (substituteMove != null)
+                    nextMove = substituteMove;
+            }
+            return nextMove;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void ClearMoves()
         {
@@ -131,88 +264,27 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             return outvar;
         }
 
-        private Moves GetSortedMoves(List<BotOrder> movesSoFar)
+        private List<BotOrderDeploy> GetSortedDeployment(List<BotOrderDeploy> unsortedDeployment)
         {
-            var sortedMoves = new Moves();
+            unsortedDeployment = unsortedDeployment.OrderBy(o => o.Territory.ID).ToList();
 
-            foreach (var deploy in movesSoFar.OfType<BotOrderDeploy>())
-                sortedMoves.AddOrder(deploy);
-
-
-
-            var unhandledMoves = movesSoFar.Where(o => !(o is BotOrderDeploy)).ToList();
-            var movesMap = BotState.VisibleMap.GetMapCopy();
-            
-            while (unhandledMoves.Count > 0)
+            List<BotOrderDeploy> deploymentsNextOpponent = new List<BotOrderDeploy>();
+            List<BotOrderDeploy> deploymentsInBackground = new List<BotOrderDeploy>();
+            foreach (var deploy in unsortedDeployment)
             {
-                var nextMove = GetNextMove(unhandledMoves, movesMap);
-                unhandledMoves.Remove(nextMove);
-                sortedMoves.AddOrder(nextMove);
-
-                if (nextMove is BotOrderAttackTransfer)
-                    BotState.MapUpdater.UpdateMap((BotOrderAttackTransfer)nextMove, movesMap, BotTerritory.DeploymentType.Conservative);
+                if (deploy.Territory.GetOpponentNeighbors().Count == 0)
+                {
+                    deploymentsInBackground.Add(deploy);
+                }
+                else
+                {
+                    deploymentsNextOpponent.Add(deploy);
+                }
             }
-            return sortedMoves;
-        }
-
-        private BotOrder GetNextMove(List<BotOrder> unhandledMoves, BotMap movesMap)
-        {
-            ClearMoves();
-            FillMoveTypes(unhandledMoves, movesMap);
-            var semiSortedMoves = new List<BotOrderAttackTransfer>();
-            EarlyAttacks = ScheduleAttacksAttackingArmies(EarlyAttacks);
-            SupportMovesWhereOpponentMightBreak = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightBreak);
-            CrushingAttackMovesToSlipperyTerritories = ScheduleAttacksAttackingArmies(CrushingAttackMovesToSlipperyTerritories);
-            CrushingAttackMovesToSlipperyTerritories = ScheduleCrushingAttackToSlipperyTerritory(CrushingAttackMovesToSlipperyTerritories);
-            SupportMovesWhereOpponentMightGetAGoodAttack = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightGetAGoodAttack);
-            SupportMovesWhereOpponentMightAttack = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightAttack);
-            DelayAttackMoves = ScheduleDelayAttacks(DelayAttackMoves);
-            SafeAttackMovesWithGoodAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithGoodAttack);
-            NormalSupportMoves = ScheduleAttacksAttackingArmies(NormalSupportMoves);
-            BigExpansionMovesNonAttack = SortExpansionMovesOpponentDistance(BigExpansionMovesNonAttack, false);
-            BigExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(BigExpansionMovesNonAttack);
-            NonOpponentBorderingSmallExpansionMovesNonAttack = SortExpansionMovesOpponentDistance(NonOpponentBorderingSmallExpansionMovesNonAttack, true);
-            NonOpponentBorderingSmallExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(NonOpponentBorderingSmallExpansionMovesNonAttack);
-            OpponentBorderingSmallExpansionMovesNonAttack = ScheduleAttacksAttackingArmies(OpponentBorderingSmallExpansionMovesNonAttack);
-            BigExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(BigExpansionMovesWithAttack, false);
-            BigExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(BigExpansionMovesWithAttack);
-            NonOpponentBorderingSmallExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(NonOpponentBorderingSmallExpansionMovesWithAttack, true);
-            NonOpponentBorderingSmallExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(NonOpponentBorderingSmallExpansionMovesWithAttack);
-            OpponentBorderingSmallExpansionMovesWithAttack = SortExpansionMovesOpponentDistance(OpponentBorderingSmallExpansionMovesWithAttack, true);
-            OpponentBorderingSmallExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(OpponentBorderingSmallExpansionMovesWithAttack);
-            SafeAttackMovesWithPossibleBadAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithPossibleBadAttack);
-            RiskyAttackMoves = ScheduleAttacksAttackingArmies(RiskyAttackMoves);
-            semiSortedMoves.AddRange(EarlyAttacks);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightBreak);
-            semiSortedMoves.AddRange(CrushingAttackMovesToSlipperyTerritories);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightGetAGoodAttack);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightAttack);
-            semiSortedMoves.AddRange(DelayAttackMoves);
-            semiSortedMoves.AddRange(SafeAttackMovesWithGoodAttack);
-            semiSortedMoves.AddRange(NormalSupportMoves);
-            semiSortedMoves.AddRange(BigExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(TransferMoves);
-            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(BigExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(TransferingExpansionMoves);
-            semiSortedMoves.AddRange(SnipeMoves);
-            semiSortedMoves.AddRange(SafeAttackMovesWithPossibleBadAttack);
-            semiSortedMoves.AddRange(RiskyAttackMoves);
-
-            if (semiSortedMoves.Count == 0)
-                return unhandledMoves[0];
-
-            var nextMove = semiSortedMoves[0];
-            if (movesMap.Territories[nextMove.To.ID].GetOpponentNeighbors().Count > 0)
-            {
-                var substituteMove = GetSubstituteMove(nextMove, movesMap, unhandledMoves);
-                if (substituteMove != null)
-                    nextMove = substituteMove;
-            }
-            return nextMove;
+            List<BotOrderDeploy> sortedDeployment = new List<BotOrderDeploy>();
+            sortedDeployment.AddRange(deploymentsNextOpponent);
+            sortedDeployment.AddRange(deploymentsInBackground);
+            return sortedDeployment;
         }
 
         /// <summary>Tries to find an attack move to make the support move obsolete.</summary>
@@ -232,8 +304,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                     {
                         if (unhandledMove.Armies.AttackPower * BotState.Settings.OffenseKillRate > mmOpponentTerritory.Armies.DefensePower + BotState.GetGuessedOpponentIncome(mmOpponentTerritory.OwnerPlayerID, BotState.VisibleMap) + 3)
                         {
-                            AILog.Log("MovesScheduler2", "found substitute move: " + unhandledMove);
-                            AILog.Log("MovesScheduler2", unhandledMove.To.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative) + " | " + mmOpponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(BotTerritory.DeploymentType.Conservative));
                             return unhandledMove;
                         }
                     }
@@ -322,7 +392,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
         {
             List<BotTerritory> territoriesOpponentMightBreak = new List<BotTerritory>();
             var opponentIncome = BotState.GetGuessedOpponentIncome(slipperyOpponentTerritory.OwnerPlayerID, BotState.VisibleMap);
-            var opponentAttackingArmies = opponentIncome + slipperyOpponentTerritory.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+            var opponentAttackingArmies = opponentIncome + slipperyOpponentTerritory.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
             var neededArmiesForDefense = (int)Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate);
             foreach (var ownedNeighbor in slipperyOpponentTerritory.GetOwnedNeighbors())
             {
@@ -359,7 +429,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.GetArmiesAfterDeploymentAndIncomingMoves();
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= ourArmies.DefensePower)
                     return true;
@@ -381,7 +451,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.GetArmiesAfterDeploymentAndIncomingMoves();
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
                     return true;
@@ -401,7 +471,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 var ourArmies = ourTerritory.Armies;
                 var opponentAttackingArmies = opponentIncome;
                 foreach (var opponentNeighbor in group)
-                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+                    opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
 
                 if (Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate))
                     return true;
@@ -418,7 +488,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var ourArmies = ourTerritory.Armies;
             var opponentAttackingArmies = opponentIncome;
             foreach (var opponentNeighbor in ourTerritory.GetOpponentNeighbors())
-                opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+                opponentAttackingArmies += opponentNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
 
             return Math.Round(opponentAttackingArmies * BotState.Settings.OffenseKillRate) >= Math.Round(ourArmies.DefensePower * BotState.Settings.DefenseKillRate);
         }

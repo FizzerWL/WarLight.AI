@@ -1,14 +1,8 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
+﻿using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI;
 
-using System;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-
-
-
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     /// <summary>This class is responsible for updating the ExpansionMap.</summary>
     /// <remarks>
@@ -39,7 +33,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (vmNeutralTerritory.IsVisible)
                 {
                     var attackingArmies = vmNeutralTerritory.GetIncomingArmies();
-                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= vmNeutralTerritory.Armies.DefensePower)
+                    if (vmNeutralTerritory.getOwnKills(attackingArmies.AttackPower, vmNeutralTerritory.Armies.DefensePower) >= vmNeutralTerritory.Armies.DefensePower)
                         vmNeutralTerritoriesThatWeTake.Add(vmNeutralTerritory);
                 }
             }

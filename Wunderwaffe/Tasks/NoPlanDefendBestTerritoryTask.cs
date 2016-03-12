@@ -1,14 +1,8 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
+﻿using WarLight.AI.Wunderwaffe.Bot;
 
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Move;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// NoPlanDefendBestTerritoryTask is responsible for defending the highest priority territory without following a specified plan.

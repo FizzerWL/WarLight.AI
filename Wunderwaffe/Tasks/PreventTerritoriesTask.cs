@@ -1,16 +1,12 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// This class is responsible for preventing the opponent from taking all of some territories. This is needed to prevent him from completely taking over a Bonus.
@@ -41,7 +37,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
             var currentArmies = highestDefenceValueTerritory.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
             var attackingArmies = CalculateOpponentAttackingArmies(highestDefenceValueTerritory, opponentAttacks);
-            var minimumNeededArmies = SharedUtility.Ceiling(attackingArmies.AttackPower * state.Settings.OffenseKillRate);
+
+            var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPower * state.Settings.OffenseKillRate);
+            //var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPower * state.Settings.OffensiveKillRate);
             var maximumNeededArmies = minimumNeededArmies;
             var maximumMissingArmies = Math.Max(0, maximumNeededArmies - currentArmies);
             var minimumMissingArmies = Math.Max(0, minimumNeededArmies - currentArmies);
@@ -110,9 +108,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     continue;
 
                 var stilIdleArmies = CalculateStillOpponentIdleArmies(state, attackingOpponentTerritory, outvar);
-                var attackingOpponentArmies = SharedUtility.Ceiling(ownedTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel).DefensePower / state.Settings.OffenseKillRate);
-                // int attackingOpponentArmies = (int) Math.ceil(ownedTerritory.Armies / 0.6);
-                // int attackingOpponentArmies = (int) Math.ceil(ownedTerritory.Armies / 0.6);
+                var attackingOpponentArmies = SharedUtility.Round(ownedTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel).DefensePower / state.Settings.OffenseKillRate);
                 var opponentDeployment = Math.Max(0, attackingOpponentArmies - stilIdleArmies.DefensePower);
                 if (opponentDeployment > 0)
                     outvar.AddOrder(new BotOrderDeploy(opponentID, attackingOpponentTerritory, opponentDeployment));
@@ -160,7 +156,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 
         private static Armies CalculateStillOpponentIdleArmies(BotMain state, BotTerritory territory, Moves alreadyMadeMoves)
         {
-            var idleArmies = territory.Armies.Subtract(new Armies(state.Settings.OneArmyMustStandGuardOneOrZero));
+            var idleArmies = territory.Armies.Subtract(new Armies(state.MustStandGuardOneOrZero));
             foreach (var pam in alreadyMadeMoves.Orders.OfType<BotOrderDeploy>())
             {
                 if (pam.Territory.ID == territory.ID)

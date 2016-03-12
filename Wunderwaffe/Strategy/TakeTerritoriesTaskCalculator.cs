@@ -1,17 +1,11 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-
-namespace WarLight.Shared.AI.Wunderwaffe.Strategy
+namespace WarLight.AI.Wunderwaffe.Strategy
 {
     public class TakeTerritoriesTaskCalculator
     {
@@ -27,15 +21,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             if (maxDeployment == -1)
                 maxDeployment = 1000;
 
-            var visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories().ToHashSet(false);
-            var territoriesToRemove = new List<BotTerritory>();
+            List<BotTerritory> visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories();
+            List<BotTerritory> territoriesToRemove = new List<BotTerritory>();
             foreach (var territory in visibleNeutralTerritories)
             {
                 if (workingMap.Territories[territory.ID].OwnerPlayerID == BotState.Me.ID)
                     territoriesToRemove.Add(territory);
             }
 
-            visibleNeutralTerritories.RemoveAll(territoriesToRemove);
+
+            //  visibleNeutralTerritories.RemoveAll(territoriesToRemove);
+            visibleNeutralTerritories.RemoveAll(i => territoriesToRemove.Contains(i));
+
             if (visibleNeutralTerritories.Count == 0)
                 return null;
 
@@ -52,11 +49,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                         var territoryToDeploy = takeTerritoryMoves.Orders.OfType<BotOrderDeploy>().First().Territory;
                         var pam = new BotOrderDeploy(BotState.Me.ID, territoryToDeploy, maxDeployment);
                         outvar.AddOrder(pam);
+                        return outvar;
                     }
-                    return outvar;
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
+                {
                     return null;
+                }
             }
             else
             {
@@ -82,9 +85,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             {
                 var bestNeighborTerritory = GetBestNeighborTerritory(missingTerritory, outvar, territoriesToTake);
                 var missingTerritoryArmies = missingTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
-                // int missingTerritoryArmies = missingTerritory.getArmiesAfterDeployment(conservativeLevel);
-                // int missingTerritoryArmies = missingTerritory.getArmiesAfterDeployment(conservativeLevel);
-                var neededAttackArmies = (int)Math.Round(missingTerritoryArmies.DefensePower / BotState.Settings.OffenseKillRate);
+                var neededAttackArmies = missingTerritory.getNeededBreakArmies(missingTerritory.Armies.DefensePower);
+                //var neededAttackArmies = (int)Math.Round(missingTerritoryArmies.DefensePower / BotState.Settings.OffensiveKillRate);
                 var missingArmies = GetMissingArmies(bestNeighborTerritory, missingTerritory, outvar, conservativeLevel);
                 if (missingArmies > stillAvailableDeployment)
                     return null;
@@ -105,7 +107,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var idleArmies = GetOverflowIdleArmies(expandingTerritory, madeExpansionDecisions);
             var toBeTakenTerritoryArmies = toBeTakenTerritory.GetArmiesAfterDeploymentAndIncomingAttacks
                 (conservativeLevel);
-            var neededArmies = (int)Math.Round(toBeTakenTerritoryArmies.DefensePower / BotState.Settings.OffenseKillRate);
+            var neededArmies = toBeTakenTerritory.getNeededBreakArmies(toBeTakenTerritory.Armies.DefensePower);
             if (idleArmies.AttackPower >= neededArmies)
                 return 0;
             else

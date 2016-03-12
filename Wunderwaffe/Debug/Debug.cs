@@ -1,57 +1,89 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-
-
-using WarLight.Shared.AI.Wunderwaffe.Strategy;
-using System;
+﻿using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Strategy;
 using System.Text;
+using WarLight.Shared.AI;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Debug
+namespace WarLight.AI.Wunderwaffe.Debug
 {
     public class Debug
     {
 
-        
+
         public static void PrintDebugOutputBeginTurn(BotMain state)
         {
-            AILog.Log("Debug", "========================= NumTurns=" + state.NumberOfTurns + " ==========================");
+            AILog.Log("Debug","========================= NumTurns=" + state.NumberOfTurns + " ==========================");
         }
 
         public static void PrintDebugOutput(BotMain state)
         {
-            foreach(var opp in state.Opponents)
+            foreach (var opp in state.Opponents)
                 PrintOpponentBonuses(opp.ID, state);
         }
 
-        // printDistances();
-        // System.err.println();
-        // printBonusValues();
-        // System.err.println();
-        // System.err.println("StartingPicksAmount: " + BotState.StartingPicksAmount);
-        // System.err.println("Known opponent spots: ");
-        // for (Territory territory : BotState.VisibleMap.OpponentTerritories) {
-        // System.err.print(territory.ID + ", ");
-        // }
-        // System.err.println();
+
         private static void PrintDistances(BotMain state)
         {
             AILog.Log("Debug", "Territory distances:");
             foreach (var territory in state.VisibleMap.GetOwnedTerritories())
             {
-                var message = territory.ID + " --> " + territory.DirectDistanceToOpponentBorder + " | " + territory.DistanceToUnimportantSpot + " | " + territory.DistanceToImportantSpot  + " | " + territory.DistanceToHighlyImportantSpot + " | " + territory.DistanceToOpponentBorder + " | " + territory.DistanceToImportantOpponentBorder + " || " + TransferMovesChooser.GetAdjustedDistance(territory);
+                var message = territory.ID + " --> " + territory.DirectDistanceToOpponentBorder + " | " + territory.DistanceToUnimportantSpot + " | " + territory.DistanceToImportantSpot + " | " + territory.DistanceToHighlyImportantSpot + " | " + territory.DistanceToOpponentBorder + " | " + territory.DistanceToImportantOpponentBorder + " || " + TransferMovesChooser.GetAdjustedDistance(territory);
 
                 AILog.Log("Debug", message);
             }
         }
 
-        private static void PrintAllTerritories(BotMain state)
+
+        public static void printExpandBonusValues(BotMap map, BotMain BotState)
+        {
+            AILog.Log("Debug", "Bonus expansion values:");
+            foreach (BotBonus bonus in map.Bonuses.Values)
+            {
+                if(bonus.GetOwnedTerritoriesAndNeighbors().Count > 0 && !bonus.IsOwnedByMyself())
+                {
+                    AILog.Log("Debug", bonus.Details.Name + ": " + bonus.GetExpansionValue());
+                }
+            }
+        }
+
+        public static void PrintTerritoryValues(BotMap map, BotMain BotState)
+        {
+            AILog.Log("Debug", "Territory attack values:");
+            foreach (BotTerritory territory in map.Territories.Values)
+            {
+                if (territory.IsVisible && BotState.IsOpponent(territory.OwnerPlayerID))
+                {
+                    AILog.Log("Debug", territory.Details.Name + ": " + territory.AttackTerritoryValue);
+                }
+            }
+
+            AILog.Log("Debug", "Territory expansion values:");
+            foreach (BotTerritory territory in map.Territories.Values)
+            {
+                if (territory.IsVisible &&  territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
+                {
+                    AILog.Log("Debug", territory.Details.Name + ": " + territory.ExpansionTerritoryValue);
+                }
+            }
+
+            AILog.Log("Debug", "Territory defend values:");
+            foreach (BotTerritory territory in map.Territories.Values)
+            {
+                if (territory.OwnerPlayerID == BotState.Me.ID && territory.GetOpponentNeighbors().Count > 0)
+                {
+                    AILog.Log("Debug", territory.Details.Name + ": " + territory.DefenceTerritoryValue);
+                }
+            }
+
+
+
+
+
+        }
+
+        public static void PrintAllTerritories(BotMain state, BotMap map)
         {
             AILog.Log("Debug", "Territories:");
-            foreach (var territory in state.VisibleMap.Territories.Values)
+            foreach (var territory in map.Territories.Values)
             {
                 var id = territory.ID;
                 var player = territory.OwnerPlayerID;

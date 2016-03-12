@@ -1,16 +1,10 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
+﻿using System.Linq;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// NoPlanAttackBestTerritoryTask is responsible for attacking the best opponent territory with good attacks and without following a specific plan.
@@ -34,7 +28,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                         return attackTerritoryMoves;
 
                     // If we can't truly attack then attack with 1's
-                    var allowedSmallAttacks = territory.Armies.NumArmies - state.Settings.OneArmyMustStandGuardOneOrZero;
+                    var allowedSmallAttacks = territory.Armies.NumArmies - state.MustStandGuardOneOrZero;
                     allowedSmallAttacks -= GetAlreadyPresentSmallAttacks(territory);
                     foreach (var ownedNeighbor in territory.GetOwnedNeighbors())
                     {

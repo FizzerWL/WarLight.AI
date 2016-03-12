@@ -1,11 +1,6 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Bot;
 
 
 namespace WarLight.Shared.AI.Wunderwaffe.Evaluation

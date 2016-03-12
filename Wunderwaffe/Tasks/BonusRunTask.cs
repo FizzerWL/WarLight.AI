@@ -1,12 +1,7 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
+﻿using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
 
-
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>BonusRunTaks is responsible for moving in the direction of an opponent bonus.
     /// </summary>

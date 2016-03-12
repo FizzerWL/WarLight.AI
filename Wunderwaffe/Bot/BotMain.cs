@@ -1,38 +1,34 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
-using WarLight.Shared.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI.Wunderwaffe.Strategy;
-using WarLight.Shared.AI.Wunderwaffe.Tasks;
+using WarLight.AI.Wunderwaffe.BasicAlgorithms;
+using WarLight.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Strategy;
+using WarLight.AI.Wunderwaffe.Tasks;
+using WarLight.Shared.AI;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotMain : IWarLightAI
     {
+        // Gets called multiple times during the game...
         public BotMain()
         {
+            this.FogRemover = new FogRemover(this);
             this.HistoryTracker = new HistoryTracker(this);
-            this.MovesScheduler2 = new MovesScheduler2(this);
+            this.MovesScheduler2 = new MovesScheduler(this);
             this.MovesCalculator = new MovesCalculator(this);
-            this.GameState = new GameStateEvaluator(this);
             this.DeleteBadMovesTask = new DeleteBadMovesTask(this);
             this.TerritoryValueCalculator = new TerritoryValueCalculator(this);
             this.ExpansionMapUpdater = new ExpansionMapUpdater(this);
             this.BreakTerritoryTask = new BreakTerritoryTask(this);
             this.BonusValueCalculator = new BonusValueCalculator(this);
+            this.ExpansionTask = new ExpansionTask(this);
             this.BonusExpansionValueCalculator = new BonusExpansionValueCalculator(this);
             this.DefendTerritoryTask = new DefendTerritoryTask(this);
             this.DefendTerritoriesTask = new DefendTerritoriesTask(this);
             this.MapUpdater = new MapUpdater(this);
             this.PreventOpponentExpandBonusTask = new PreventOpponentExpandBonusTask(this);
             this.TakeTerritoriesTaskCalculator = new TakeTerritoriesTaskCalculator(this);
-            this.LastVisibleMapUpdater = new LastVisibleMapUpdater(this);
             this.OpponentDeploymentGuesser = new OpponentDeploymentGuesser(this);
             this.PicksEvaluator = new PicksEvaluator(this);
         }
@@ -44,20 +40,23 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.Settings = settings;
 
             this.Map = map;
-            this.FullMap = new BotMap(this);
-            foreach(var bonus in this.Map.Bonuses.Values)
-                FullMap.Bonuses.Add(bonus.ID, new BotBonus(FullMap, bonus.ID));
+            this.VisibleMap = new BotMap(this);
+            foreach (var bonus in this.Map.Bonuses.Values)
+            {
+                VisibleMap.Bonuses.Add(bonus.ID, new BotBonus(VisibleMap, bonus.ID));
+            }
 
             foreach (var terr in this.Map.Territories.Values)
-                FullMap.Territories.Add(terr.ID, new BotTerritory(FullMap, terr.ID, TerritoryStanding.FogPlayerID, new Armies(0)));
+            {
+                VisibleMap.Territories.Add(terr.ID, new BotTerritory(VisibleMap, terr.ID, TerritoryStanding.FogPlayerID, new Armies(0)));
+            }
+
+            VisibleMap = BotMap.FromStanding(this, latestTurnStanding);
 
             this.DistributionStanding = distributionStanding;
 
             this.NumberOfTurns = numTurns;
             this.PlayerIncomes = playerIncomes;
-
-            VisibleMap = latestTurnStanding == null ? null : BotMap.FromStanding(this, latestTurnStanding);
-            LastVisibleMap = previousTurnStanding == null ? null : BotMap.FromStanding(this, previousTurnStanding);
 
             this.PrevTurn = prevTurn;
             this.TeammatesOrders = teammatesOrders ?? new Dictionary<PlayerIDType, TeammateOrders>();
@@ -65,26 +64,31 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.CardsMustPlay = cardsMustPlay;
         }
 
+
+        public FogRemover FogRemover;
         public PicksEvaluator PicksEvaluator;
         public OpponentDeploymentGuesser OpponentDeploymentGuesser;
-        public LastVisibleMapUpdater LastVisibleMapUpdater;
         public TakeTerritoriesTaskCalculator TakeTerritoriesTaskCalculator;
         public PreventOpponentExpandBonusTask PreventOpponentExpandBonusTask;
         public HistoryTracker HistoryTracker;
-        public MovesScheduler2 MovesScheduler2;
+        public MovesScheduler MovesScheduler2;
         public MovesCalculator MovesCalculator;
         public GameSettings Settings;
         public List<CardInstance> Cards;
         public int CardsMustPlay;
 
-        public GameStateEvaluator GameState;
         public DeleteBadMovesTask DeleteBadMovesTask;
         public TerritoryValueCalculator TerritoryValueCalculator;
         public ExpansionMapUpdater ExpansionMapUpdater;
         public BreakTerritoryTask BreakTerritoryTask;
+        public ExpansionTask ExpansionTask;
         public BonusValueCalculator BonusValueCalculator;
         public BonusExpansionValueCalculator BonusExpansionValueCalculator;
 
+        public int MustStandGuardOneOrZero
+        {
+            get { return Settings.OneArmyMustStandGuardOneOrZero; }
+        }
 
         public DefendTerritoryTask DefendTerritoryTask;
         public DefendTerritoriesTask DefendTerritoriesTask;
@@ -112,9 +116,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             get { return Players.Values.Where(o => IsOpponent(o.ID)); }
         }
 
-        public BotMap FullMap;
         public BotMap VisibleMap;
-        public BotMap LastVisibleMap; //VisibleMap from the previous turn?
+        public static BotMap LastVisibleMap;
 
         public MapDetails Map;
 
@@ -147,12 +150,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             return PicksEvaluator.GetPicks();
         }
+
+
+        // TODO hier
         public List<GameOrder> GetOrders()
         {
-            if (this.NumberOfTurns > 1)
-                this.LastVisibleMapUpdater.StoreOpponentDeployment();
-
             Debug.Debug.PrintDebugOutputBeginTurn(this);
+            FogRemover.RemoveFog();
             this.HistoryTracker.ReadOpponentDeployment();
             this.WorkingMap = this.VisibleMap.GetMapCopy();
             DistanceCalculator.CalculateDistanceToBorder(this, this.VisibleMap, this.WorkingMap);
@@ -162,18 +166,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.BonusExpansionValueCalculator.ClassifyBonuses(this.VisibleMap, this.VisibleMap);
             this.TerritoryValueCalculator.CalculateTerritoryValues(this.VisibleMap, this.WorkingMap);
 
-            foreach(var opp in this.Opponents)
+            foreach (var opp in this.Opponents)
+            {
                 this.OpponentDeploymentGuesser.GuessOpponentDeployment(opp.ID);
+            }
             this.MovesCalculator.CalculateMoves();
             Debug.Debug.PrintDebugOutput(this);
-            
-            // TODO debug
-            //Debug.Debug.PrintBonusExpansionValues(this.VisibleMap);
 
-
-
-            this.MovesCalculator.CalculatedMoves.DumpToLog();
-
+            Debug.Debug.printExpandBonusValues(VisibleMap, this);
+            Debug.Debug.PrintTerritoryValues(VisibleMap, this);
+            //this.MovesCalculator.CalculatedMoves.DumpToLog();
+            LastVisibleMap = VisibleMap.GetMapCopy();
             return this.MovesCalculator.CalculatedMoves.Convert();
         }
 

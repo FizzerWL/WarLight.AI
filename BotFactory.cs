@@ -15,7 +15,7 @@ namespace WarLight.Shared.AI
             switch (name.ToLower())
             {
                 case "wunderwaffe":
-                    return new Wunderwaffe.Bot.BotMain();
+                    return new WarLight.AI.Wunderwaffe.Bot.BotMain();
                 case "prod":
                     return new Prod.BotMain(false);
                 case "prodrandom":

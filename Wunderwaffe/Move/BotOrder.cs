@@ -1,4 +1,6 @@
-﻿namespace WarLight.Shared.AI.Wunderwaffe.Move
+﻿using WarLight.Shared.AI;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     public abstract class BotOrder
     {

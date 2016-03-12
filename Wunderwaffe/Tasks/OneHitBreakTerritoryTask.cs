@@ -1,15 +1,10 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
+﻿using System;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using System;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// OneHitBreakTerritoryTask is responsible for calculating an attack plan to break a single territory with a single attack
@@ -21,7 +16,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         {
             var outvar = new Moves();
             var opponentArmies = opponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
-            var neededAttackArmies = SharedUtility.Ceiling(opponentArmies.DefensePower / state.Settings.OffenseKillRate);
+            var neededAttackArmies = opponentTerritory.getNeededBreakArmies(opponentArmies.DefensePower);
             var ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
             var presortedOwnedNeighbors = state.TerritoryValueCalculator.SortDefenseValue(ownedNeighbors);
             var sortedOwnedNeighbors = BotMap.GetOrderedListOfTerritoriesByIdleArmies(presortedOwnedNeighbors);

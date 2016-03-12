@@ -1,16 +1,11 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// This class is responsible for preventing the opponent from expanding in a Bonus in which we have no foothold  yet. Preventing the opponent from expanding can happen either by attacking a neutral territory there or by directly attacking the opponent there.
@@ -54,7 +49,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             {
                 if (bonus != bestOpponentBonus && bonus.Amount == bestOpponentBonus.Amount && bonus.NeutralArmies.DefensePower == bestOpponentBonus.NeutralArmies.DefensePower)
                 {
-                    AILog.Log("PreventOpponentExpandBonusTask", "To many options for snipe");
                     return null;
                 }
             }
@@ -76,7 +70,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             outvar = BreakTerritoriesTask.CalculateBreakTerritoriesTask(BotState, possibleBreakTerritories, maxDeployment, BotTerritory.DeploymentType.Normal, BotTerritory.DeploymentType.Normal);
             if (outvar != null)
             {
-                AILog.Log("PreventOpponentExpandBonusTask", "snipe opponent");
                 return outvar;
             }
             // Step 2: Try to hit a neutral territory there
@@ -99,7 +92,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 var attackTerritoryMoves = CalculateAttackNeutralMoves(attackableNeutral, maxDeployment);
                 if (attackTerritoryMoves != null)
                 {
-                    AILog.Log("PreventOpponentExpandBonusTask", "snipe neutral");
                     return attackTerritoryMoves;
                 }
             }
@@ -121,7 +113,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         private Moves CalculateAttackNeutralMoves(BotTerritory neutralTerritory, int maxDeployment)
         {
             Moves outvar = null;
-            var neededAttackArmies = SharedUtility.Round(neutralTerritory.Armies.DefensePower / BotState.Settings.OffenseKillRate);
+            var neededAttackArmies = neutralTerritory.getNeededBreakArmies(neutralTerritory.Armies.DefensePower);
             var ownedNeighbors = neutralTerritory.GetOwnedNeighbors();
             var bestNeighbor = ownedNeighbors[0];
             foreach (var ownedNeighbor in ownedNeighbors)

@@ -1,15 +1,10 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI;
 
-
-
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     /// <summary>This class is responsible for calculating territory values for each territory.
     /// </summary>
@@ -69,8 +64,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         public List<BotTerritory> GetSortedFlankingValueTerritories()
         {
             List<BotTerritory> outvar = new List<BotTerritory>();
-            var visibleNeutrals = BotState.VisibleMap.GetVisibleNeutralTerritories
-                ();
+            var visibleNeutrals = BotState.VisibleMap.GetVisibleNeutralTerritories();
             List<BotTerritory> visibleFlankingTerritories = new List<BotTerritory>();
             foreach (var visibleNeutral in visibleNeutrals)
             {
@@ -210,7 +204,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             return outvar;
         }
 
-        public List<BotTerritory> SortExpansionValue(IEnumerable<BotTerritory> inTerritories)
+        public List<BotTerritory> SortExpansionValue(List<BotTerritory> inTerritories)
         {
             return inTerritories.OrderByDescending(o => o.ExpansionTerritoryValue).ToList();
         }
@@ -220,14 +214,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         /// <param name="mapToUse">the map to use for calculating the values</param>
         public void CalculateTerritoryValues(BotMap mapToWriteIn, BotMap mapToUse)
         {
-            // TODO doesen't work for some reason
-            // BotState.VisibleMap.setOpponentExpansionValue();
-            // BotState.VisibleMap.setMyExpansionValue();
             foreach (BotBonus bonus in mapToUse.Bonuses.Values)
             {
                 bonus.SetMyExpansionValueHeuristic();
-                foreach(var opponent in BotState.Opponents)
-                    bonus.SetOpponentExpansionValueHeuristic(opponent.ID);
             }
             foreach (var territory in mapToUse.Territories.Values)
             {
@@ -325,7 +314,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                     var opponentIsExpanding = false;
                     foreach (var opponentTerritory in vmBonus.GetVisibleOpponentTerritories())
                     {
-                        var lwmTerritory = BotState.LastVisibleMap.Territories[opponentTerritory.ID];
+                        var lwmTerritory = BotMain.LastVisibleMap.Territories[opponentTerritory.ID];
                         if (lwmTerritory.IsVisible&& lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
                             opponentIsExpanding = true;
                     }
@@ -338,21 +327,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                         else
                             currentValue += vmBonus.Amount * 5;
                     }
-                    // Add stuff if it's the most important opponent Bonus
-                    var isMostImportantBonus = true;
 
-                    foreach (var opponent in BotState.Opponents)
-                    {
-                        var bonusExpansionValue = vmBonus.OpponentExpansionValueHeuristics[opponent.ID].ExpansionValue;
-                        foreach (BotBonus bonus in BotState.VisibleMap.Bonuses.Values)
-                        {
-                            if (bonus.OpponentExpansionValueHeuristics[opponent.ID].ExpansionValue > bonusExpansionValue)
-                                isMostImportantBonus = false;
-                        }
-                    }
-
-                    if (isMostImportantBonus && vmBonus.Amount > 0 && !vmBonus.IsOwnedByAnyOpponent() && !vmBonus.ContainsOwnPresence() && vmBonus.NeutralArmies.DefensePower < 8)
-                        currentValue += 1;
                 }
             }
 
@@ -407,10 +382,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
                 // vmBonus.setMyExpansionValueHeuristic();
                 // vmBonus.setMyExpansionValueHeuristic();
-                var bonusExpansionValue = vmBonus.MyExpansionValueHeuristic.ExpansionValue;
+                var bonusExpansionValue = vmBonus.ExpansionValue;
                 foreach (var bonus in BotState.VisibleMap.Bonuses.Values)
                 {
-                    if (bonus.MyExpansionValueHeuristic.ExpansionValue > bonusExpansionValue)
+                    if (bonus.ExpansionValue > bonusExpansionValue)
                         isMostImportantBonus = false;
                 }
                 if (isMostImportantBonus && vmBonus.Amount > 0 && !vmBonus

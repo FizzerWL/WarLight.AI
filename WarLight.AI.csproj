@@ -155,6 +155,7 @@
     <Compile Include="Common\GameObjects\TerritoryStanding.cs" />
     <Compile Include="Wunderwaffe\Debug\Debug.cs" />
     <Compile Include="Wunderwaffe\Evaluation\ExpansionMapUpdater.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\FogRemover.cs" />
     <Compile Include="Wunderwaffe\Evaluation\GameStateEvaluator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\LastVisibleMapUpdater.cs" />
     <Compile Include="Wunderwaffe\Evaluation\MapUpdater.cs" />
@@ -163,8 +164,6 @@
     <Compile Include="Wunderwaffe\Evaluation\TerritoryValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusExpansionValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusValueCalculator.cs" />
-    <Compile Include="Wunderwaffe\Heuristics\PlayerExpansionValueHeuristic.cs" />
-    <Compile Include="Wunderwaffe\Heuristics\BonusExpansionValueHeuristic.cs" />
     <Compile Include="Common\GameObjects\MapDetails.cs" />
     <Compile Include="Common\GameObjects\TerritoryDetails.cs" />
     <Compile Include="Common\GameObjects\BonusDetails.cs" />
@@ -176,6 +175,7 @@
     <Compile Include="Wunderwaffe\Move\MovesCommitter.cs" />
     <Compile Include="Wunderwaffe\Move\BotOrderDeploy.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesCalculator.cs" />
+    <Compile Include="Wunderwaffe\Strategy\MovesScheduler.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesScheduler2.cs" />
     <Compile Include="Wunderwaffe\Strategy\TakeTerritoriesTaskCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\TransferMovesChooser.cs" />
@@ -188,6 +188,7 @@
     <Compile Include="Wunderwaffe\Tasks\DefendBonusTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DelayTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DeleteBadMovesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\ExpansionTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\FlankBonusTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\JoinInAttacksTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\MoveIdleArmiesTask.cs" />

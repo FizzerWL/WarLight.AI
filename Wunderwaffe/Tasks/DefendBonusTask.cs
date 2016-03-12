@@ -1,15 +1,10 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
-
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>DefendBonusTask is responsible for defending a Bonus under threat.
     /// </summary>

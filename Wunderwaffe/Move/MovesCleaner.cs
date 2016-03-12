@@ -1,16 +1,9 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI;
 
-
-
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+namespace WarLight.AI.Wunderwaffe.Move
 {
     /// <summary>This class is responsible for cleaning up moves.</summary>
     /// <remarks>
