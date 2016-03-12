@@ -33,6 +33,7 @@ namespace WarLight.Shared.AI.Prod
         public List<GamePlayer> Opponents;
         public bool IsFFA; //if false, we're in a 1v1, 2v2, 3v3, etc.  If false, there are more than two entities still alive in the game.  A game can change from FFA to non-FFA as players are eliminated.
         public Dictionary<PlayerIDType, Neighbor> Neighbors;
+        public Dictionary<PlayerIDType, int> WeightedNeighbors;
 
 
         //not available during picking:
@@ -56,6 +57,7 @@ namespace WarLight.Shared.AI.Prod
             this.Neighbors = players.Keys.ExceptOne(PlayerID).ConcatOne(TerritoryStanding.NeutralPlayerID).ToDictionary(o => o, o => new Neighbor(this, o));
             this.Opponents = players.Values.Where(o => o.State == GamePlayerState.Playing && !IsTeammateOrUs(o.ID)).ToList();
             this.IsFFA = Opponents.Count > 1 && (Opponents.Any(o => o.Team == PlayerInvite.NoTeam) || Opponents.GroupBy(o => o.Team).Count() > 1);
+            this.WeightedNeighbors = WeightNeighbors();
         }
 
         public int ArmiesToTakeMultiAttack(IEnumerable<Armies> defenseArmiesOnManyTerritories)
@@ -108,7 +110,6 @@ namespace WarLight.Shared.AI.Prod
         {
             return MakePicks.PickTerritories.MakePicks(this);
         }
-
 
         public string TerrString(TerritoryIDType terrID)
         {
@@ -360,6 +361,7 @@ namespace WarLight.Shared.AI.Prod
         }
 
         private Dictionary<BonusIDType, float> _bonusFuzz;
+
         public float BonusFuzz(BonusIDType bonusID)
         {
             if (!UseRandomness)
@@ -372,6 +374,31 @@ namespace WarLight.Shared.AI.Prod
                 _bonusFuzz.Add(bonusID, (float)RandomUtility.BellRandom(-2, 2));
 
             return _bonusFuzz[bonusID];
+        }
+
+
+
+        private Dictionary<PlayerIDType, int> WeightNeighbors()
+        {
+            var ret = Neighbors.Values
+                .Where(o => !IsTeammateOrUs(o.ID)) //Exclude teammates
+                .Where(o => o.ID != TerritoryStanding.NeutralPlayerID) //Exclude neutral
+                .Where(o => o.ID != TerritoryStanding.FogPlayerID) //only where we can see
+                .ToDictionary(o => o.ID, neighbor => neighbor.NeighboringTerritories.Where(o => o.NumArmies.Fogged == false).Sum(n => n.NumArmies.AttackPower));  //Sum each army they have on our borders as the initial weight
+
+            foreach (var borderTerr in BorderTerritories)
+            {
+                //Subtract one weight for each defending army we have next to that player
+
+                Map.Territories[borderTerr.ID].ConnectedTo.Keys
+                    .Select(o => Standing.Territories[o])
+                    .Where(o => ret.ContainsKey(o.OwnerPlayerID))
+                    .Select(o => o.OwnerPlayerID)
+                    .Distinct()
+                    .ForEach(o => ret[o] = ret[o] - Standing.Territories[borderTerr.ID].NumArmies.DefensePower);
+            }
+
+            return ret;
         }
 
 

@@ -181,8 +181,6 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private List<PossibleAttack> WeightAttacks()
         {
-            var weightedNeighbors = WeightNeighbors();
-
             //build all possible attacks
             List<PossibleAttack> ret = Bot.Standing.Territories.Values
                 .Where(o => o.OwnerPlayerID == Bot.PlayerID)
@@ -194,34 +192,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
 
             foreach (PossibleAttack a in ret)
-                a.Weight(weightedNeighbors);
+                a.Weight(Bot.WeightedNeighbors);
 
             NormalizeWeights(ret);
-
-            return ret;
-        }
-
-        private Dictionary<PlayerIDType, int> WeightNeighbors()
-        {
-            var ret = Bot.Neighbors.Values
-                .Where(o => !Bot.IsTeammateOrUs(o.ID)) //Exclude teammates
-                .Where(o => o.ID != TerritoryStanding.NeutralPlayerID) //Exclude neutral
-                .Where(o => o.ID != TerritoryStanding.FogPlayerID) //only where we can see
-                .ToDictionary(o => o.ID, o => o.NeighboringTerritories.Select(n => n.NumArmies.ArmiesOrZero).Sum());  //Sum each army they have on our borders as the initial weight
-
-            foreach (var borderTerr in Bot.BorderTerritories)
-            {
-                //Subtract one weight for each defending army we have next to that player
-
-                Bot.Map.Territories[borderTerr.ID].ConnectedTo.Keys
-                    .Select(o => Bot.Standing.Territories[o])
-                    .Where(o => !Bot.IsTeammateOrUs(o.OwnerPlayerID)) //Ignore our own and teammates
-                    .Select(o => o.OwnerPlayerID)
-                    .Where(o => o != TerritoryStanding.NeutralPlayerID)
-                    .Where(o => o != TerritoryStanding.FogPlayerID)
-                    .Distinct()
-                    .ForEach(o => ret[o] = ret[o] - Bot.Standing.Territories[borderTerr.ID].NumArmies.NumArmies);
-            }
 
             return ret;
         }
