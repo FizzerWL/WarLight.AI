@@ -5,6 +5,7 @@ using WarLight.AI.Wunderwaffe.Evaluation;
 using WarLight.AI.Wunderwaffe.Strategy;
 using WarLight.AI.Wunderwaffe.Tasks;
 using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 namespace WarLight.AI.Wunderwaffe.Bot
 {
@@ -13,6 +14,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
         // Gets called multiple times during the game...
         public BotMain()
         {
+            this.LastVisibleMapUpdater = new LastVisibleMapUpdater(this);
             this.FogRemover = new FogRemover(this);
             this.HistoryTracker = new HistoryTracker(this);
             this.MovesScheduler2 = new MovesScheduler(this);
@@ -64,7 +66,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
             this.CardsMustPlay = cardsMustPlay;
         }
 
-
+        public LastVisibleMapUpdater LastVisibleMapUpdater;
         public FogRemover FogRemover;
         public PicksEvaluator PicksEvaluator;
         public OpponentDeploymentGuesser OpponentDeploymentGuesser;
@@ -152,10 +154,15 @@ namespace WarLight.AI.Wunderwaffe.Bot
         }
 
 
-        // TODO hier
         public List<GameOrder> GetOrders()
         {
             Debug.Debug.PrintDebugOutputBeginTurn(this);
+
+            if (NumberOfTurns > 0)
+            {
+                LastVisibleMapUpdater.StoreOpponentDeployment();
+            }
+
             FogRemover.RemoveFog();
             this.HistoryTracker.ReadOpponentDeployment();
             this.WorkingMap = this.VisibleMap.GetMapCopy();
@@ -173,9 +180,9 @@ namespace WarLight.AI.Wunderwaffe.Bot
             this.MovesCalculator.CalculateMoves();
             Debug.Debug.PrintDebugOutput(this);
 
+            Debug.Debug.PrintGuessedDeployment(VisibleMap, this);
             Debug.Debug.printExpandBonusValues(VisibleMap, this);
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
-            //this.MovesCalculator.CalculatedMoves.DumpToLog();
             LastVisibleMap = VisibleMap.GetMapCopy();
             return this.MovesCalculator.CalculatedMoves.Convert();
         }

@@ -131,7 +131,6 @@
     <Compile Include="WunderwaffeTestVersion\Move\MovesCommitter.cs" />
     <Compile Include="WunderwaffeTestVersion\Strategy\MovesCalculator.cs" />
     <Compile Include="WunderwaffeTestVersion\Strategy\MovesScheduler.cs" />
-    <Compile Include="WunderwaffeTestVersion\Strategy\MovesScheduler2.cs" />
     <Compile Include="WunderwaffeTestVersion\Strategy\TakeTerritoriesTaskCalculator.cs" />
     <Compile Include="WunderwaffeTestVersion\Strategy\TransferMovesChooser.cs" />
     <Compile Include="WunderwaffeTestVersion\Tasks\AttackTerritoriesTask.cs" />

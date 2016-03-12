@@ -28,30 +28,30 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
             }
             else
             {
-                foreach (var vmTerritory_1 in BotState.VisibleMap.OpponentTerritories(opponentID))
+                foreach (var vmTerritory1 in BotState.VisibleMap.OpponentTerritories(opponentID))
                 {
-                    var lvmTerritory = BotMain.LastVisibleMap.Territories[vmTerritory_1.ID];
+                    var lvmTerritory = BotMain.LastVisibleMap.Territories[vmTerritory1.ID];
                     var guessedOpponentDeployment = 0;
                     if (lvmTerritory.IsVisible && lvmTerritory.OwnerPlayerID == opponentID)
                     {
                         var opponentIncome = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap);
                         guessedOpponentDeployment = Math.Min(lvmTerritory.GetTotalDeployment(BotTerritory.DeploymentType.Normal), opponentIncome);
-                        if (HasDeploymentReasonDisapeared(lvmTerritory, vmTerritory_1))
+                        if (HasDeploymentReasonDisapeared(lvmTerritory, vmTerritory1))
                         {
-                            var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory_1);
+                            var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory1);
                             var maxDeployment = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap) - boundDeployment;
                             guessedOpponentDeployment = Math.Min(5, maxDeployment);
                         }
                     }
                     else
                     {
-                        var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory_1);
+                        var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory1);
                         var maxDeployment = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap) - boundDeployment;
                         guessedOpponentDeployment = Math.Max(1, Math.Min(5, maxDeployment));
                     }
-                    var pam = new BotOrderDeploy(opponentID, vmTerritory_1, guessedOpponentDeployment);
+                    var pam = new BotOrderDeploy(opponentID, vmTerritory1, guessedOpponentDeployment);
                     MovesCommitter.CommittPlaceArmiesMove(pam);
-                    var conservativePam = new BotOrderDeploy(opponentID, vmTerritory_1, BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap));
+                    var conservativePam = new BotOrderDeploy(opponentID, vmTerritory1, BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap));
                     MovesCommitter.CommittPlaceArmiesMove(conservativePam, BotTerritory.DeploymentType.Conservative);
                 }
             }

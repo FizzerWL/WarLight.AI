@@ -1,30 +1,30 @@
 ﻿///*
-//* This code was auto-converted from a java project.
+//* this code was auto-converted from a java project.
 //*/
 
-//using WarLight.AI.Wunderwaffe.Bot;
-//using WarLight.Shared.AI.Wunderwaffe.Bot;
+//using warlight.ai.wunderwaffe.bot;
+//using warlight.shared.ai.wunderwaffe.bot;
 
-//using WarLight.Shared.AI.Wunderwaffe.Move;
+//using warlight.shared.ai.wunderwaffe.move;
 
-//namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+//namespace warlight.shared.ai.wunderwaffe.evaluation
 //{
-//    public class LastVisibleMapUpdater
+//    public class lastvisiblemapupdater
 //    {
-//        public BotMain BotState;
-//        public LastVisibleMapUpdater(BotMain state)
+//        public botmain botstate;
+//        public lastvisiblemapupdater(botmain state)
 //        {
-//            this.BotState = state;
+//            this.botstate = state;
 //        }
         
-//        public void StoreOpponentDeployment()
+//        public void storeopponentdeployment()
 //        {
-//            var lastVisibleMap = BotState.LastVisibleMap;
-//            foreach (var opponentTerritory in lastVisibleMap.AllOpponentTerritories)
+//            var lastvisiblemap = botstate.lastvisiblemap;
+//            foreach (var opponentterritory in lastvisiblemap.allopponentterritories)
 //            {
-//                var armiesDeployed = BotState.HistoryTracker.GetOpponentDeployment(opponentTerritory.OwnerPlayerID);
-//                if (armiesDeployed > 0)
-//                    MovesCommitter.CommittPlaceArmiesMove(new BotOrderDeploy(opponentTerritory.OwnerPlayerID, opponentTerritory, armiesDeployed));
+//                var armiesdeployed = botstate.historytracker.getopponentdeployment(opponentterritory.ownerplayerid);
+//                if (armiesdeployed > 0)
+//                    movescommitter.committplacearmiesmove(new botorderdeploy(opponentterritory.ownerplayerid, opponentterritory, armiesdeployed));
 //            }
 //        }
 //    }
