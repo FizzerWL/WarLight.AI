@@ -36,7 +36,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 }
                 else if (card.CardID == CardType.Sanctions.CardID)
                 {
-                    var sanction = bot.UseRandomness ? RandomUtility.WeightedRandom(bot.WeightedNeighbors.Keys, o => bot.WeightedNeighbors[o]) : bot.WeightedNeighbors.OrderByDescending(o => o.Value).First().Key;
+                    var canSanction = bot.Players.Values.Where(o => o.State == GamePlayerState.Playing && bot.IsOpponent(o.ID)).Select(o => o.ID).ToList();
+
+                    var sanction = bot.UseRandomness ? RandomUtility.WeightedRandom(canSanction, o => bot.WeightedNeighbors[o]) : canSanction.OrderByDescending(o => bot.WeightedNeighbors[o]).First();
                     AILog.Log("PlayCards", "Sanctioning " + sanction);
                     bot.Orders.AddOrder(GameOrderPlayCardSanctions.Create(card.ID, bot.PlayerID, sanction));
                 }
