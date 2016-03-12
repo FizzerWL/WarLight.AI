@@ -8,7 +8,7 @@ namespace WarLight.Shared.AI
 {
     public static class BotFactory
     {
-        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "ProdRandom", "Cowzow" };
+        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "ProdRandom", "Cowzow", "wunderwaffetestversion" };
 
         public static IWarLightAI Construct(string name)
         {
@@ -22,6 +22,8 @@ namespace WarLight.Shared.AI
                     return new Prod.BotMain(true);
                 case "cowzow":
                     return new Cowzow.Bot.CowzowBot();
+                case "wunderwaffetestversion":
+                    return new WarLight.AI.WunderwaffeTestVersion.Bot.BotMain();
                 default:
                     throw new Exception("No bot found named " + name + ", supported names are: " + Names.JoinStrings(", "));
             }

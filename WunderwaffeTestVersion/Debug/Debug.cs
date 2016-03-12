@@ -1,10 +1,10 @@
-﻿using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Strategy;
+﻿using WarLight.AI.WunderwaffeTestVersion.Bot;
+using WarLight.AI.WunderwaffeTestVersion.Strategy;
 using System.Text;
 using WarLight.Shared.AI;
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.AI.WunderwaffeTestVersion.Move;
 
-namespace WarLight.AI.Wunderwaffe.Debug
+namespace WarLight.AI.WunderwaffeTestVersion.Debug
 {
     public class Debug
     {

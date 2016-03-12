@@ -1,10 +1,10 @@
 ﻿using System;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.WunderwaffeTestVersion.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.AI.WunderwaffeTestVersion.Move;
 using WarLight.Shared.AI;
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.WunderwaffeTestVersion.Tasks
 {
     /// <summary>
     /// OneHitBreakTerritoryTask is responsible for calculating an attack plan to break a single territory with a single attack

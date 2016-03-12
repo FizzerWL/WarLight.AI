@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.WunderwaffeTestVersion.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.AI.WunderwaffeTestVersion.Move;
 
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.WunderwaffeTestVersion.Tasks
 {
     /// <summary>
     /// MoveIdleArmiesTask is responsible for calculating armies to join in to the

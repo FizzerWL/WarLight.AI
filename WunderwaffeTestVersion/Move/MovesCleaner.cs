@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.WunderwaffeTestVersion.Bot;
 using WarLight.Shared.AI;
 
-namespace WarLight.AI.Wunderwaffe.Move
+namespace WarLight.AI.WunderwaffeTestVersion.Move
 {
     /// <summary>This class is responsible for cleaning up moves.</summary>
     /// <remarks>
