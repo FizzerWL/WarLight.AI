@@ -91,7 +91,7 @@ namespace WarLight.Shared.AI.Prod
             if (Settings.LuckModifier > 0)
             {
                 //Add up some armies to account for luck
-                var factor = UseRandomness ? RandomUtility.RandomPercentage() * 15 + 2.5 : 10.0;
+                var factor = UseRandomness ? RandomUtility.BellRandom(2.5, 17.5) : 10.0;
                 ret += SharedUtility.Round(Settings.LuckModifier / factor * ret); 
             }
 
@@ -369,7 +369,7 @@ namespace WarLight.Shared.AI.Prod
                 _bonusFuzz = new Dictionary<BonusIDType, float>();
 
             if (!_bonusFuzz.ContainsKey(bonusID))
-                _bonusFuzz.Add(bonusID, (float)RandomUtility.RandomPercentage() * 4 - 2);
+                _bonusFuzz.Add(bonusID, (float)RandomUtility.BellRandom(-2, 2));
 
             return _bonusFuzz[bonusID];
         }

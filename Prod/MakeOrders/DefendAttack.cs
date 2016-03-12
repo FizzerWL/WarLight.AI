@@ -29,7 +29,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var baseOffenseRatio = (Bot.IsFFA ? 0.3 : 0.6);
             if (Bot.Settings.MultiAttack)
                 baseOffenseRatio = 0; //in MA, our expansion routine is actually our primary attack weapon.  Therefore, set offense ratio to 0 so that we skip the routine that tries to attack one territory at a time.
-            var offenseRatio = baseOffenseRatio + (Bot.UseRandomness ? RandomUtility.RandomPercentage() * .3 - .15 : 0);
+            var offenseRatio = baseOffenseRatio + (Bot.UseRandomness ? RandomUtility.BellRandom(-.15, .15) : 0);
             int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio);
             int armiesToDefense = incomeToUse - armiesToOffense;
 

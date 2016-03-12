@@ -25,7 +25,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         public override void Go(int useArmies, bool highlyValuedOnly)
         {
             //In FFA, focus on expansion even moreso than in headsup
-            float minWeight = !highlyValuedOnly ? int.MinValue : ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? RandomUtility.RandomNumber(4) - 2 : 0);
+            float minWeight = !highlyValuedOnly ? float.MinValue : ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? (float)RandomUtility.BellRandom(-9, 9) : 0);
 
             AILog.Log("Expand", "Expand called with useArmies=" + useArmies + ", minWeight=" + minWeight);
 
