@@ -5,18 +5,20 @@ using WarLight.AI.Wunderwaffe.Evaluation;
 using WarLight.AI.Wunderwaffe.Strategy;
 using WarLight.AI.Wunderwaffe.Tasks;
 using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Bot.Cards;
 using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotMain : IWarLightAI
     {
-    
+
 
 
         // Gets called multiple times during the game...
         public BotMain()
         {
+            this.CardsHandler = new CardsHandler(this);
             this.LastVisibleMapUpdater = new LastVisibleMapUpdater(this);
             this.FogRemover = new FogRemover(this);
             this.HistoryTracker = new HistoryTracker(this);
@@ -67,8 +69,9 @@ namespace WarLight.AI.Wunderwaffe.Bot
             this.TeammatesOrders = teammatesOrders ?? new Dictionary<PlayerIDType, TeammateOrders>();
             this.Cards = cards;
             this.CardsMustPlay = cardsMustPlay;
+            this.CardsHandler.initCards();
         }
-
+        public CardsHandler CardsHandler;
         public LastVisibleMapUpdater LastVisibleMapUpdater;
         public FogRemover FogRemover;
         public PicksEvaluator PicksEvaluator;

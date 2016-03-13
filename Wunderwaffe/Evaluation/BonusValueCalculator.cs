@@ -81,7 +81,7 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
         private const int BonusAttackFactor = 15;
         private const int BonusDefenseFactor = 10;
-        private const int BonusTakeOverFactor = 6;
+        private const int BonusTakeOverFactor = 4;
         private const int BonusPreventTakeOverFactor = 15;
 
         public void CalculateBonusValues(BotMap mapToUse, BotMap mapToWriteIn)

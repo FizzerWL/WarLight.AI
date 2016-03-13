@@ -2,6 +2,7 @@
 using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.AI.Wunderwaffe.Move;
 using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Bot.Cards;
 
 namespace WarLight.AI.Wunderwaffe.Tasks
 {
@@ -22,6 +23,17 @@ namespace WarLight.AI.Wunderwaffe.Tasks
 
             int numMustPlay = state.CardsMustPlay;
 
+
+            foreach (ReinforcementCard reinforcementCard in state.CardsHandler.GetReinforcementCards())
+            {
+                moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
+                state.MyIncome.FreeArmies += reinforcementCard.Armies;
+                numMustPlay--;
+            }
+
+
+
+
             foreach (var card in state.Cards)
             {
                 if (cardsPlayedByTeammate.Contains(card.ID))
@@ -29,13 +41,14 @@ namespace WarLight.AI.Wunderwaffe.Tasks
                     continue;
                 }
 
-                if (card is ReinforcementCardInstance)
-                {
-                    moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(card.ID, state.Me.ID)));
-                    state.MyIncome.FreeArmies += card.As<ReinforcementCardInstance>().Armies;
-                    numMustPlay--;
-                }
-                else if (numMustPlay > 0) //For now, just discard all non-reinforcement cards if we must use the card
+                //if (card is ReinforcementCardInstance)
+                //{
+                //    moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(card.ID, state.Me.ID)));
+                //    state.MyIncome.FreeArmies += card.As<ReinforcementCardInstance>().Armies;
+                //    numMustPlay--;
+                //}
+                //else
+                if (numMustPlay > 0) //For now, just discard all non-reinforcement cards if we must use the card
                 {
                     moves.AddOrder(new BotOrderGeneric(GameOrderDiscard.Create(state.Me.ID, card.ID)));
                     numMustPlay--;

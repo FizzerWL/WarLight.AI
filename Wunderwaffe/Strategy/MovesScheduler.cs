@@ -4,16 +4,24 @@ using System.Linq;
 using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.AI.Wunderwaffe.Move;
 using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Bot.Cards;
 
 namespace WarLight.AI.Wunderwaffe.Strategy
 {
     public class MovesScheduler
     {
         public BotMain BotState;
+        private bool OrderPrioPlayed = false;
+        private bool OrderDelayPlayed = false;
+
         public MovesScheduler(BotMain state)
         {
             this.BotState = state;
         }
+
+        private List<BotOrderGeneric> OrderPriorityCardPlays = new List<BotOrderGeneric>();
+        private List<BotOrderGeneric> OrderDelayCardPlays = new List<BotOrderGeneric>();
+
         private List<BotOrderAttackTransfer> EarlyAttacks = new List<BotOrderAttackTransfer>();
         private List<BotOrderAttackTransfer> SupportMovesWhereOpponentMightBreak = new List<BotOrderAttackTransfer>();
         private List<BotOrderAttackTransfer> SupportMovesWhereOpponentMightGetAGoodAttack = new List<BotOrderAttackTransfer>();
@@ -94,7 +102,20 @@ namespace WarLight.AI.Wunderwaffe.Strategy
         {
             ClearMoves();
             FillMoveTypes(unhandledMoves, movesMap);
-            var semiSortedMoves = new List<BotOrderAttackTransfer>();
+            var semiSortedMoves = new List<BotOrder>();
+
+            var orderPriorityCards = BotState.CardsHandler.GetCards(Shared.AI.Wunderwaffe.Bot.Cards.CardTypes.OrderPriority);
+            var orderDelayCards = BotState.CardsHandler.GetCards(Shared.AI.Wunderwaffe.Bot.Cards.CardTypes.OrderDelay);
+            foreach (Card orderPrio in orderPriorityCards)
+            {
+                OrderPriorityCardPlays.Add(new BotOrderGeneric(GameOrderPlayCardOrderPriority.Create(orderPrio.CardInstanceId, BotState.Me.ID)));
+            }
+            foreach (Card orderDelay in orderDelayCards)
+            {
+                OrderDelayCardPlays.Add(new BotOrderGeneric(GameOrderPlayCardOrderDelay.Create(orderDelay.CardInstanceId, BotState.Me.ID)));
+            }
+
+
             EarlyAttacks = ScheduleAttacksAttackingArmies(EarlyAttacks);
             SupportMovesWhereOpponentMightBreak = ScheduleAttacksAttackingArmies(SupportMovesWhereOpponentMightBreak);
             CrushingAttackMovesToSlipperyTerritories = ScheduleAttacksAttackingArmies(CrushingAttackMovesToSlipperyTerritories);
@@ -117,11 +138,24 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             OpponentBorderingSmallExpansionMovesWithAttack = ScheduleAttacksAttackingArmies(OpponentBorderingSmallExpansionMovesWithAttack);
             SafeAttackMovesWithPossibleBadAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithPossibleBadAttack);
             RiskyAttackMoves = ScheduleAttacksAttackingArmies(RiskyAttackMoves);
+
+            if (!OrderPrioPlayed && (!EarlyAttacks.IsEmpty() || !SupportMovesWhereOpponentMightAttack.IsEmpty() || !CrushingAttackMovesToSlipperyTerritories.IsEmpty()))
+            {
+                semiSortedMoves.AddRange(OrderPriorityCardPlays);
+            }
+
             semiSortedMoves.AddRange(EarlyAttacks);
             semiSortedMoves.AddRange(SupportMovesWhereOpponentMightBreak);
             semiSortedMoves.AddRange(CrushingAttackMovesToSlipperyTerritories);
             semiSortedMoves.AddRange(SupportMovesWhereOpponentMightGetAGoodAttack);
             semiSortedMoves.AddRange(SupportMovesWhereOpponentMightAttack);
+
+
+            if (!OrderDelayPlayed && !RiskyAttackMoves.IsEmpty())
+            {
+                semiSortedMoves.AddRange(OrderDelayCardPlays);
+            }
+
             semiSortedMoves.AddRange(DelayAttackMoves);
             semiSortedMoves.AddRange(SafeAttackMovesWithGoodAttack);
             semiSortedMoves.AddRange(NormalSupportMoves);
@@ -138,38 +172,32 @@ namespace WarLight.AI.Wunderwaffe.Strategy
             semiSortedMoves.AddRange(RiskyAttackMoves);
 
             if (semiSortedMoves.Count == 0)
+            {
                 return unhandledMoves[0];
+            }
 
             var nextMove = semiSortedMoves[0];
-            if (movesMap.Territories[nextMove.To.ID].GetOpponentNeighbors().Count > 0)
+            if (nextMove is BotOrderGeneric)
             {
-                var substituteMove = GetSubstituteMove(nextMove, movesMap, unhandledMoves);
+                BotOrderGeneric bog = nextMove.As<BotOrderGeneric>();
+                if (bog.Order is GameOrderPlayCardOrderPriority)
+                {
+                    OrderPrioPlayed = true;
+                }
+                else if (bog.Order is GameOrderPlayCardOrderDelay)
+                {
+                    OrderDelayPlayed = true;
+                }
+            }
+
+            if (nextMove is BotOrderAttackTransfer && movesMap.Territories[nextMove.As<BotOrderAttackTransfer>().To.ID].GetOpponentNeighbors().Count > 0)
+            {
+                var substituteMove = GetSubstituteMove(nextMove.As<BotOrderAttackTransfer>(), movesMap, unhandledMoves);
                 if (substituteMove != null)
                     nextMove = substituteMove;
             }
             return nextMove;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="BotFactory.cs" />
     <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
+    <Compile Include="Common\GameObjects\CardType.cs" />
     <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
     <Compile Include="Common\StressTest.cs" />
     <Compile Include="Common\PlayCrazy.cs" />
@@ -161,6 +162,10 @@
     <Compile Include="Wunderwaffe\Bot\BotBonus.cs" />
     <Compile Include="Common\AIGamesParser.cs" />
     <Compile Include="Wunderwaffe\Bot\BotMain.cs" />
+    <Compile Include="Wunderwaffe\Bot\Cards\Card.cs" />
+    <Compile Include="Wunderwaffe\Bot\Cards\CardsHandler.cs" />
+    <Compile Include="Wunderwaffe\Bot\Cards\CardTypes.cs" />
+    <Compile Include="Wunderwaffe\Bot\Cards\ReinforcementCard.cs" />
     <Compile Include="Wunderwaffe\Bot\DeploymentHistory.cs" />
     <Compile Include="Wunderwaffe\Bot\HistoryTracker.cs" />
     <Compile Include="Wunderwaffe\Bot\BotMap.cs" />
@@ -229,7 +234,6 @@
     <Compile Include="Wunderwaffe\Move\BotOrderDeploy.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesScheduler.cs" />
-    <Compile Include="Wunderwaffe\Strategy\MovesScheduler2.cs" />
     <Compile Include="Wunderwaffe\Strategy\TakeTerritoriesTaskCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\TransferMovesChooser.cs" />
     <Compile Include="Wunderwaffe\Tasks\AttackTerritoriesTask.cs" />

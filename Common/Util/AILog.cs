@@ -8,7 +8,7 @@ namespace WarLight.Shared.AI
 {
     public static class AILog
     {
-        private static Boolean WriteLog = true;
+        private static Boolean WriteLog = false;
         public static Func<string, bool> DoLog = null;
         
         public static void Log(string area, string message)

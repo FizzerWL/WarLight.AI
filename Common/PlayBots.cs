@@ -59,7 +59,9 @@ namespace WarLight.Shared.AI
         private static void PlayGame(List<string> bots, bool parallel)
         {
             AILog.Log("PlayBots", "Creating game...");
-            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
+            // 822674 = AI cards test
+            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", 822674, gameSettings =>
+            //var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
@@ -88,7 +90,7 @@ namespace WarLight.Shared.AI
                         _totals.AddOrUpdate(winnerStr, 1, (_, i) => i + 1);
                         Console.WriteLine("Game " + gameID + " finished.  Winner=" + winnerStr + ", totals: " + _totals.OrderByDescending(o => o.Value).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
 
-                        
+
                         break;
                     }
 
