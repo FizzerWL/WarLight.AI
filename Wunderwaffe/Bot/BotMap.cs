@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
-
-using System;
+using System.Text;
 using WarLight.Shared.AI;
 
 namespace WarLight.AI.Wunderwaffe.Bot

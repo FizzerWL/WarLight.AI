@@ -1,8 +1,6 @@
 ﻿using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.AI.Wunderwaffe.Strategy;
-using System.Text;
-using WarLight.Shared.AI;
 using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI;
 
 namespace WarLight.AI.Wunderwaffe.Debug
 {

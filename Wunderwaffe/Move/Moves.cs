@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using WarLight.Shared.AI;
 
 namespace WarLight.AI.Wunderwaffe.Move

@@ -10,6 +10,9 @@ namespace WarLight.AI.Wunderwaffe.Tasks
         public static void PlayCards(BotMain state, Moves moves)
         {
 
+
+
+
             if (state.Me.Team != PlayerInvite.NoTeam && state.Players.Values.Any(o => state.IsTeammate(o.ID) && !o.IsAIOrHumanTurnedIntoAI && o.State == GamePlayerState.Playing && !o.HasCommittedOrders))
                 return; //If there are any humans on our team that have yet to take their turn, do not play cards.
 

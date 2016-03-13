@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI;
 

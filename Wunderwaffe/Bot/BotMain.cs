@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using WarLight.AI.Wunderwaffe.BasicAlgorithms;
 using WarLight.AI.Wunderwaffe.Evaluation;
 using WarLight.AI.Wunderwaffe.Strategy;
@@ -11,6 +11,9 @@ namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotMain : IWarLightAI
     {
+    
+
+
         // Gets called multiple times during the game...
         public BotMain()
         {
@@ -122,6 +125,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
         public static BotMap LastVisibleMap;
 
         public MapDetails Map;
+
 
         /// <summary>
         /// This map is responsible for storing the current situation according to our already made move decisions during the current turn.
