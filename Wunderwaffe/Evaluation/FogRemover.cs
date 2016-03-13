@@ -47,29 +47,6 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
             // Step 3 - Assume for all remaining fog (which previously was neutral) that it stays neutral
             RemoveRemainingNeutralFog();
-
-            //foreach (BotTerritory vmTerritory in visibleMap.Territories.Values)
-            //{
-            //    if (vmTerritory.OwnerPlayerID == TerritoryStanding.FogPlayerID)
-            //    {
-            //        BotTerritory lwmTerritory = lvMap.Territories[vmTerritory.ID];
-            //        if (lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID || lwmTerritory.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
-            //        {
-            //            vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
-            //        }
-            //        else if (lwmTerritory.OwnerPlayerID == BotState.Me.ID)
-            //        {
-            //            vmTerritory.OwnerPlayerID = BotState.Opponents.First().ID;
-            //        }
-            //        // TODO fast and wrong solution for debugging
-            //        else
-            //        {
-            //            vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
-            //        }
-            //        vmTerritory.Armies = new Armies(lwmTerritory.Armies.NumArmies);
-
-            //    }
-            //}
         }
 
 
@@ -140,12 +117,22 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
 
             BotMap lvMap = BotMap.FromStanding(BotState, BotState.DistributionStanding);
-
+            // territories in distribution have first 0 neutrals in the lvMap
+            List<TerritoryIDType> pickableTerritories = BotState.DistributionStanding.Territories.Values.
+                Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).
+                Select(o => o.ID).ToList();
             foreach (BotTerritory vmTerritory in visibleMap.Territories.Values.Where(territory => territory.OwnerPlayerID == TerritoryStanding.FogPlayerID))
             {
                 BotTerritory lvmTerritory = lvMap.Territories[vmTerritory.ID];
                 vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
-                vmTerritory.Armies = new Armies(lvmTerritory.Armies.NumArmies);
+                if (pickableTerritories.Contains(vmTerritory.ID))
+                {
+                    vmTerritory.Armies = new Armies(BotState.Settings.InitialNeutralsInDistribution);
+                }
+                else
+                {
+                    vmTerritory.Armies = new Armies(lvmTerritory.Armies.NumArmies);
+                }
 
             }
 
