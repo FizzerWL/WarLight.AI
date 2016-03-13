@@ -27,7 +27,7 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
             var pickableTerritories = BotState.DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => o.ID).ToList();
 
-            
+
             var weights = pickableTerritories.ToDictionary(o => o, terrID =>
             {
                 var map = BotMap.FromStanding(BotState, BotState.DistributionStanding);
@@ -39,9 +39,10 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
                 return r;
             });
 
-            var ret = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
+            List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
+            FogRemover.PickedTerritories = picks;
 
-            return ret;
+            return picks;
         }
 
     }

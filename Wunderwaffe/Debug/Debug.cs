@@ -1,4 +1,6 @@
-﻿using WarLight.AI.Wunderwaffe.Bot;
+﻿using System.Collections.Generic;
+using System.Linq;
+using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.AI.Wunderwaffe.Move;
 using WarLight.Shared.AI;
 
@@ -32,17 +34,44 @@ namespace WarLight.AI.Wunderwaffe.Debug
             //}
         }
 
+
+
+        public static void PrintTerritories(BotMap map, BotMain BotState)
+        {
+            List<BotTerritory> territories = map.Territories.Values.ToList();
+            //List<BotTerritory> opponentTerritories = territories.Where(o => o.OwnerPlayerID == BotState.Opponents.First().ID).ToList();
+            AILog.Log("Debug", "Territories:");
+            foreach (BotTerritory territory in territories)
+            {
+                string player = "fog";
+                if (territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
+                {
+                    player = "neutral";
+                }
+                else if (territory.OwnerPlayerID == BotState.Me.ID)
+                {
+                    player = "Me";
+                }
+                else if (territory.OwnerPlayerID == BotState.Opponents.First().ID)
+                {
+                    player = "opponent";
+                }
+
+                AILog.Log("Debug", territory.Details.Name + ": (" + player + ")  --> " + territory.Armies.AttackPower);
+            }
+        }
+
         public static void PrintGuessedDeployment(BotMap map, BotMain BotState)
         {
-            AILog.Log("Debug", "Guessed deployment:");
-            foreach (BotTerritory territory in map.Territories.Values)
-            {
-                if (territory.IsVisible && BotState.IsOpponent(territory.OwnerPlayerID))
-                {
+            //AILog.Log("Debug", "Guessed deployment:");
+            //foreach (BotTerritory territory in map.Territories.Values)
+            //{
+            //    if (territory.IsVisible && BotState.IsOpponent(territory.OwnerPlayerID))
+            //    {
 
-                    AILog.Log("Debug", territory.Details.Name + ": " + territory.GetTotalDeployment(BotTerritory.DeploymentType.Normal) + "  |  " + territory.GetTotalDeployment(BotTerritory.DeploymentType.Conservative));
-                }
-            }
+            //        AILog.Log("Debug", territory.Details.Name + ": " + territory.GetTotalDeployment(BotTerritory.DeploymentType.Normal) + "  |  " + territory.GetTotalDeployment(BotTerritory.DeploymentType.Conservative));
+            //    }
+            //}
         }
 
 

@@ -1,4 +1,6 @@
-﻿using WarLight.AI.Wunderwaffe.Bot;
+﻿using System.Collections.Generic;
+using System.Linq;
+using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI;
 
 namespace WarLight.AI.Wunderwaffe.Evaluation
@@ -6,10 +8,11 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
     public class FogRemover
     {
 
+        public static List<TerritoryIDType> PickedTerritories = null;
+
         private BotMain BotState;
         public FogRemover(BotMain state)
         {
-
             this.BotState = state;
         }
 
@@ -30,27 +33,140 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
             }
 
             BotMap visibleMap = BotState.VisibleMap;
-            foreach (BotTerritory vmTerritory in visibleMap.Territories.Values)
-            {
-                if (vmTerritory.OwnerPlayerID == TerritoryStanding.FogPlayerID)
-                {
-                    BotTerritory lwmTerritory = lvMap.Territories[vmTerritory.ID];
-                    if (lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID || lwmTerritory.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
-                    {
-                        vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
-                    }
-                    // TODO fast and wrong solution for debugging
-                    else
-                    {
-                        vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
-                    }
-                    vmTerritory.Armies = new Armies(lwmTerritory.Armies.NumArmies);
 
+            if (BotState.NumberOfTurns == 0)
+            {
+                RemoveFogAfterPicks();
+                return;
+            }
+            // Step 1 - Save: Remove all fog from known opponent territories and territories that we lost
+            RemoveFogPreviousTurnIntel();
+
+            // Step 2 - Remove fog based on the opponent deployment
+            RemoveFogOpponentDeployment();
+
+            // Step 3 - Assume for all remaining fog (which previously was neutral) that it stays neutral
+            RemoveRemainingNeutralFog();
+
+            //foreach (BotTerritory vmTerritory in visibleMap.Territories.Values)
+            //{
+            //    if (vmTerritory.OwnerPlayerID == TerritoryStanding.FogPlayerID)
+            //    {
+            //        BotTerritory lwmTerritory = lvMap.Territories[vmTerritory.ID];
+            //        if (lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID || lwmTerritory.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
+            //        {
+            //            vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
+            //        }
+            //        else if (lwmTerritory.OwnerPlayerID == BotState.Me.ID)
+            //        {
+            //            vmTerritory.OwnerPlayerID = BotState.Opponents.First().ID;
+            //        }
+            //        // TODO fast and wrong solution for debugging
+            //        else
+            //        {
+            //            vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
+            //        }
+            //        vmTerritory.Armies = new Armies(lwmTerritory.Armies.NumArmies);
+
+            //    }
+            //}
+        }
+
+
+        private void RemoveFogOpponentDeployment()
+        {
+
+        }
+
+        private void RemoveRemainingNeutralFog()
+        {
+            BotMap visibleMap = BotState.VisibleMap;
+            BotMap lastVisibleMap = BotMain.LastVisibleMap;
+            foreach (BotTerritory vmFogTerritory in visibleMap.Territories.Values.Where(territory => territory.OwnerPlayerID == TerritoryStanding.FogPlayerID))
+            {
+                BotTerritory lvmFogTerritory = lastVisibleMap.Territories[vmFogTerritory.ID];
+                if (lvmFogTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
+                {
+                    vmFogTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
+                    vmFogTerritory.Armies = new Armies(lvmFogTerritory.Armies.AttackPower);
+                }
+            }
+        }
+
+        private void RemoveFogPreviousTurnIntel()
+        {
+            BotMap visibleMap = BotState.VisibleMap;
+            BotMap lastVisibleMap = BotMain.LastVisibleMap;
+            foreach (BotTerritory vmFogTerritory in visibleMap.Territories.Values.Where(territory => territory.OwnerPlayerID == TerritoryStanding.FogPlayerID))
+            {
+                BotTerritory lvmFogTerritory = lastVisibleMap.Territories[vmFogTerritory.ID];
+                if (lvmFogTerritory.OwnerPlayerID == BotState.Me.ID)
+                {
+                    vmFogTerritory.OwnerPlayerID = BotState.Opponents.First().ID;
+                    vmFogTerritory.Armies = new Armies(1);
+                }
+                else if (lvmFogTerritory.OwnerPlayerID == BotState.Opponents.First().ID)
+                {
+                    vmFogTerritory.OwnerPlayerID = BotState.Opponents.First().ID;
+                    vmFogTerritory.Armies = new Armies(lvmFogTerritory.Armies.AttackPower);
+                }
+            }
+        }
+
+
+        private void RemoveFogAfterPicks()
+        {
+            BotMap visibleMap = BotState.VisibleMap;
+            List<BotTerritory> ownedTerritories = visibleMap.GetOwnedTerritories();
+            int maxPickNumber = 0;
+            for (int i = 0; i < PickedTerritories.Count; i++)
+            {
+                TerritoryIDType pickedTerritoryId = PickedTerritories[i];
+                if (visibleMap.Territories[pickedTerritoryId].OwnerPlayerID == BotState.Me.ID)
+                {
+                    maxPickNumber = i;
+                }
+            }
+            for (int i = 0; i < maxPickNumber; i++)
+            {
+                BotTerritory pickedTerritory = visibleMap.Territories[PickedTerritories[i]];
+                if (pickedTerritory.OwnerPlayerID == TerritoryStanding.FogPlayerID)
+                {
+
+                    pickedTerritory.OwnerPlayerID = BotState.Opponents.First().ID;
+                    pickedTerritory.Armies = new Armies(1);
                 }
             }
 
 
+            BotMap lvMap = BotMap.FromStanding(BotState, BotState.DistributionStanding);
+
+            foreach (BotTerritory vmTerritory in visibleMap.Territories.Values.Where(territory => territory.OwnerPlayerID == TerritoryStanding.FogPlayerID))
+            {
+                BotTerritory lvmTerritory = lvMap.Territories[vmTerritory.ID];
+                vmTerritory.OwnerPlayerID = TerritoryStanding.NeutralPlayerID;
+                vmTerritory.Armies = new Armies(lvmTerritory.Armies.NumArmies);
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            PickedTerritories = null;
         }
 
+
     }
+
 }

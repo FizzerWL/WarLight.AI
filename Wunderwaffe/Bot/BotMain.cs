@@ -190,6 +190,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
             Debug.Debug.PrintGuessedDeployment(VisibleMap, this);
             Debug.Debug.printExpandBonusValues(VisibleMap, this);
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
+            Debug.Debug.PrintTerritories(VisibleMap, this);
             LastVisibleMap = VisibleMap.GetMapCopy();
             return this.MovesCalculator.CalculatedMoves.Convert();
         }
