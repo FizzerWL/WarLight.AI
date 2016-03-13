@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using WarLight.AI.Wunderwaffe.Bot;
 using WarLight.AI.Wunderwaffe.Move;
 using WarLight.Shared.AI;
@@ -57,7 +58,7 @@ namespace WarLight.AI.Wunderwaffe.Debug
                     player = "opponent";
                 }
 
-                AILog.Log("Debug", territory.Details.Name + ": (" + player + ")  --> " + territory.Armies.AttackPower);
+                AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPower);
             }
         }
 
@@ -149,14 +150,14 @@ namespace WarLight.AI.Wunderwaffe.Debug
 
         private static void PrintOpponentBonuses(PlayerIDType opponentID, BotMain state)
         {
-            //var message = new StringBuilder();
-            //message.Append("Opponent " + opponentID + " owns Bonuses: ");
-            //foreach (var bonus in state.VisibleMap.Bonuses.Values)
-            //{
-            //    if (bonus.IsOwnedByOpponent(opponentID))
-            //        message.Append(bonus.ID + ", ");
-            //}
-            //AILog.Log("Debug", message.ToString());
+            var message = new StringBuilder();
+            message.Append("Opponent owns Bonuses: ");
+            foreach (var bonus in state.VisibleMap.Bonuses.Values)
+            {
+                if (bonus.IsOwnedByOpponent(opponentID))
+                    message.Append(bonus.Details.Name + ", ");
+            }
+            AILog.Log("Debug", message.ToString());
         }
     }
 }
