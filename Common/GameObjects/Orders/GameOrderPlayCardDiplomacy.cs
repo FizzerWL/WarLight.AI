@@ -26,5 +26,10 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.DiplomacyCards; }
         }
 
+        public bool AffectsPlayer(PlayerIDType p)
+        {
+            return p == PlayerOne || p == PlayerTwo;
+        }
+
     }
 }

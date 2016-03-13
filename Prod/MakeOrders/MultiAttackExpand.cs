@@ -57,7 +57,11 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 if (stackSize == 0 && !canDeployOnBorderTerritory)
                     continue;
 
-                var bonusPaths = Bot.Map.Bonuses.Keys.Where(o => Bot.BonusValue(o) > 0).Select(o => MultiAttackPathToBonus.TryCreate(Bot, borderTerritory.ID, o, MultiAttackStanding, maxDistance)).Where(o => o != null).ToDictionary(o => o.BonusID, o => o);
+                var bonusPaths = Bot.Map.Bonuses.Keys
+                    .Where(o => Bot.BonusValue(o) > 0)
+                    .Select(o => MultiAttackPathToBonus.TryCreate(Bot, borderTerritory.ID, o, MultiAttackStanding, maxDistance))
+                    .Where(o => o != null)
+                    .ToDictionary(o => o.BonusID, o => o);
 
                 var adjustedWeights = bonusPaths.Values.ToDictionary(o => o.BonusID, o => bonusWeights[o.BonusID] - o.ArmiesNeedToKillToGetThere * armyMult);
 

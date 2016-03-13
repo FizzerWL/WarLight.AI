@@ -15,9 +15,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         {
             this.Bot = bot;
 
-            AILog.Log("Expand", "Finding attackable neutrals");
+            var attackableTerritories = Bot.Standing.Territories.Values.
+                Where(o => bot.Map.Territories[o.ID].ConnectedTo.Keys.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID && !bot.AvoidTerritories.Contains(c)));
 
-            var attackableTerritories = Bot.Standing.Territories.Values.Where(o => bot.Map.Territories[o.ID].ConnectedTo.Keys.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID));
             var terrs = attackableTerritories.Where(o => o.IsNeutral).Select(o => o.ID).ToHashSet(false);
             AttackableNeutrals = GetExpansionWeights(terrs);
         }
@@ -46,12 +46,15 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
                 int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[expandTo].NumArmies);
 
-                var attackFrom = Bot.Map.Territories[expandTo].ConnectedTo.Keys
+                var attackFromList = Bot.Map.Territories[expandTo].ConnectedTo.Keys
                     .Select(o => Bot.Standing.Territories[o])
-                    .Where(o => o.OwnerPlayerID == Bot.PlayerID)
+                    .Where(o => o.OwnerPlayerID == Bot.PlayerID && !Bot.AvoidTerritories.Contains(o.ID))
                     .ToDictionary(o => o.ID, o => Bot.MakeOrders.GetArmiesAvailable(o.ID))
-                    .OrderByDescending(o => o.Value).First();
+                    .OrderByDescending(o => o.Value).ToList();
 
+                if (attackFromList.Count == 0)
+                    continue; //nowhere to attack from
+                var attackFrom = attackFromList[0];
 
                 int armiesNeedToDeploy = Math.Max(0, attackWith - attackFrom.Value);
 

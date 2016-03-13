@@ -34,6 +34,7 @@ namespace WarLight.Shared.AI.Prod
         public bool IsFFA; //if false, we're in a 1v1, 2v2, 3v3, etc.  If false, there are more than two entities still alive in the game.  A game can change from FFA to non-FFA as players are eliminated.
         public Dictionary<PlayerIDType, Neighbor> Neighbors;
         public Dictionary<PlayerIDType, int> WeightedNeighbors;
+        public HashSet<TerritoryIDType> AvoidTerritories = new HashSet<TerritoryIDType>(); //we're conducting some sort of operation here, such as a a blockade, so avoid attacking or deploying more here.
 
 
         //not available during picking:

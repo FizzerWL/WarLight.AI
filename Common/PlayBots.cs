@@ -71,7 +71,9 @@ namespace WarLight.Shared.AI
                 //gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
                 //gameSettings["BombCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1));
                 //gameSettings["SanctionsCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1), new JProperty("Duration", 1), new JProperty("Percentage", 0.5));
-                //gameSettings["NumberOfCardsToReceiveEachTurn"] = 5;
+                //gameSettings["BlockadeCard"] = new JObject(new JProperty("InitialPieces", 50), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("MultiplyAmount", 10));
+                //gameSettings["DiplomacyCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("Duration", 1));
+                //gameSettings["NumberOfCardsToReceiveEachTurn"] = 4;
             });
 
             AILog.Log("PlayBots", "Created game " + gameID);

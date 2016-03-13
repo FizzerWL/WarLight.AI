@@ -183,11 +183,11 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         {
             //build all possible attacks
             List<PossibleAttack> ret = Bot.Standing.Territories.Values
-                .Where(o => o.OwnerPlayerID == Bot.PlayerID)
+                .Where(o => o.OwnerPlayerID == Bot.PlayerID && !Bot.AvoidTerritories.Contains(o.ID))
                 .SelectMany(us =>
                     Bot.Map.Territories[us.ID].ConnectedTo.Keys
                     .Select(k => Bot.Standing.Territories[k])
-                    .Where(k => k.OwnerPlayerID != TerritoryStanding.NeutralPlayerID && !Bot.IsTeammateOrUs(k.OwnerPlayerID))
+                    .Where(k => Bot.IsOpponent(k.OwnerPlayerID) && !Bot.AvoidTerritories.Contains(k.ID))
                     .Select(k => new PossibleAttack(Bot, us.ID, k.ID))).ToList();
 
 

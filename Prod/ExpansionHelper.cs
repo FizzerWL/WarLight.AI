@@ -42,7 +42,7 @@ namespace WarLight.Shared.AI.Prod
                 var ts = bot.Standing.Territories[terrInBonus];
 
                 if (weOwn(ts))
-                    continue; //Already own it
+                    weight += ts.NumArmies.AttackPower * armyMult; //Already own it
                 else if (ts.OwnerPlayerID == TerritoryStanding.FogPlayerID)
                     weight -= GuessNumberOfArmies(bot, ts.ID).DefensePower * armyMult;
                 else if (bot.IsTeammate(ts.OwnerPlayerID))
