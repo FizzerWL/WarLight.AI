@@ -30,5 +30,33 @@ namespace WarLight.Shared.AI
         List<TerritoryIDType> GetPicks();
 
         List<GameOrder> GetOrders();
+
+
+        /// <summary>
+        /// Return a general description of this bot, with attribution to the owner if desired.
+        /// </summary>
+        /// <returns></returns>
+        string Description();
+
+        /// <summary>
+        /// Allows an AI to specify if it supports the passed settings or not.  Return true if your bot can successfully submit valid orders on these settings, and false if it will crash or otherwise fail to submit valid orders.
+        /// If you return false, you should give a reason in the "whyNot" parameter describing why your AI does not support these settings.  For example, if your bot does not support Local Deployments, you can return false and assign whyNot to be "This bot does not support games with the Local Deployments setting enabled."
+        /// If there are multiple reasons your bot does not work on these settings, append them to whyNot separated by newlines (\n)
+        /// If you return true, the whyNot parameter will be ignored.
+        /// </summary>
+        /// <returns></returns>
+        bool SupportsSettings(GameSettings settings, out string whyNot);
+
+        /// <summary>
+        /// Allows an AI to specify if it recommends playing on the passed settings or not.  Return true if your bot will produce good orders on these settings, or false if you don't recommend using your bot on the passed settings.
+        /// This will never be called on a bot that returned false to SupportsSettings on the same settings.
+        /// If you return false, you should give a reason in the "whyNot" parameter describing why your AI is not recommended on these settings.  For example, if your bot does not take advantage of multi-attack, you can return false and assign whyNot to be "This bot does not take advantage of multi-attack.  It will simply attack one territory at a time."
+        /// If there are multiple reasons you don't recommend using your bot on these settings, append them to whyNot separated by newlines (\n)
+        /// If you return true, the whyNot parameter will be ignored.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="whyNot"></param>
+        /// <returns></returns>
+        bool RecommendsSettings(GameSettings settings, out string whyNot);
     }
 }

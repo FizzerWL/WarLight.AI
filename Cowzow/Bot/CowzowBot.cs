@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using WarLight.Shared.AI.Cowzow.Comparators;
 using WarLight.Shared.AI.Cowzow.Fulkerson2;
 using WarLight.Shared.AI.Cowzow.Map;
@@ -14,6 +15,63 @@ namespace WarLight.Shared.AI.Cowzow.Bot
 {
     public class CowzowBot : IWarLightAI
     {
+        public string Description()
+        {
+            return "Bot written for an AI competition by Dan Zou";
+        }
+
+
+        public bool SupportsSettings(GameSettings settings, out string whyNot)
+        {
+            var sb = new StringBuilder();
+
+            if (settings.LocalDeployments)
+                sb.AppendLine("This bot does not support Local Deployments");
+            if (settings.OneArmyStandsGuard == false)
+                sb.AppendLine("This bot does not support games without One Army Stands Guard");
+
+            whyNot = sb.ToString();
+            return whyNot.Length == 0;
+        }
+        public bool RecommendsSettings(GameSettings settings, out string whyNot)
+        {
+            var sb = new StringBuilder();
+
+            if (settings.Commanders)
+                sb.AppendLine("This bot does not understand Commanders and won't move or attack with them.");
+            if (settings.MultiAttack)
+                sb.AppendLine("This bot does not understand Multi-Attack and will only attack one territory at a time.");
+            if (settings.Cards.ContainsKey(CardType.Blockade.CardID))
+                sb.AppendLine("This bot does not understand how to play Blockade cards.");
+            if (settings.Cards.ContainsKey(CardType.Bomb.CardID))
+                sb.AppendLine("This bot does not understand how to play Bomb cards.");
+            if (settings.Cards.ContainsKey(CardType.Diplomacy.CardID))
+                sb.AppendLine("This bot does not understand how to play Diplomacy cards.");
+            if (settings.Cards.ContainsKey(CardType.EmergencyBlockade.CardID))
+                sb.AppendLine("This bot does not understand how to play Emergency Blockade cards.");
+            if (settings.Cards.ContainsKey(CardType.Sanctions.CardID))
+                sb.AppendLine("This bot does not understand how to play Sanctions cards.");
+            if (settings.Cards.ContainsKey(CardType.Reinforcement.CardID))
+                sb.AppendLine("This bot does not understand how to play Reinforcement cards.");
+            if (settings.Cards.ContainsKey(CardType.OrderPriority.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Priority cards.");
+            if (settings.Cards.ContainsKey(CardType.OrderDelay.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Delay cards.");
+            if (settings.Cards.ContainsKey(CardType.Airlift.CardID))
+                sb.AppendLine("This bot does not understand how to play Airlift cards.");
+            if (settings.Cards.ContainsKey(CardType.Gift.CardID))
+                sb.AppendLine("This bot does not understand how to play Gift cards.");
+            if (settings.Cards.ContainsKey(CardType.Reconnaissance.CardID))
+                sb.AppendLine("This bot does not understand how to play Reconnaissance cards.");
+            if (settings.Cards.ContainsKey(CardType.Spy.CardID))
+                sb.AppendLine("This bot does not understand how to play Spy cards.");
+            if (settings.Cards.ContainsKey(CardType.Surveillance.CardID))
+                sb.AppendLine("This bot does not understand how to play Surveillance cards.");
+
+            whyNot = sb.ToString();
+            return whyNot.Length == 0;
+        }
+
         public GameSettings Settings;
         public MapDetails Map;
         public GameStanding DistributionStanding;

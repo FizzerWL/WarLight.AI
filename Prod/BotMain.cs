@@ -14,6 +14,39 @@ namespace WarLight.Shared.AI.Prod
             this.UseRandomness = useRandomness;
         }
 
+        public string Description()
+        {
+            return "Version 2.0 of WarLight's production AI.  Currently in beta. " + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable." : "");
+        }
+
+        public bool SupportsSettings(GameSettings settings, out string whyNot)
+        {
+            whyNot = null;
+            return true; //Prod supports all settings
+        }
+        public bool RecommendsSettings(GameSettings settings, out string whyNot)
+        {
+            var sb = new StringBuilder();
+
+            if (settings.Cards.ContainsKey(CardType.OrderPriority.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Priority cards.");
+            if (settings.Cards.ContainsKey(CardType.OrderDelay.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Delay cards.");
+            if (settings.Cards.ContainsKey(CardType.Airlift.CardID))
+                sb.AppendLine("This bot does not understand how to play Airlift cards.");
+            if (settings.Cards.ContainsKey(CardType.Gift.CardID))
+                sb.AppendLine("This bot does not understand how to play Gift cards.");
+            if (settings.Cards.ContainsKey(CardType.Reconnaissance.CardID))
+                sb.AppendLine("This bot does not understand how to play Reconnaissance cards.");
+            if (settings.Cards.ContainsKey(CardType.Spy.CardID))
+                sb.AppendLine("This bot does not understand how to play Spy cards.");
+            if (settings.Cards.ContainsKey(CardType.Surveillance.CardID))
+                sb.AppendLine("This bot does not understand how to play Surveillance cards.");
+
+            whyNot = sb.ToString();
+            return whyNot.Length == 0;
+        }
+
         public bool UseRandomness;
 
         public GameStanding DistributionStandingOpt;

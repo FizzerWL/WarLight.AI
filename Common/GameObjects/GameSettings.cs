@@ -11,7 +11,10 @@ namespace WarLight.Shared.AI
         WeightedRandom, StraightRound
     }
 
-
+    public enum GameFogLevel : byte
+    {
+        NoFog, LightFog, ModerateFog, Foggy, VeryFoggy, ExtremeFog
+    }
     public class GameSettings
     {
         public double OffenseKillRate;
@@ -31,8 +34,11 @@ namespace WarLight.Shared.AI
         public double LuckModifier;
         public bool MultiAttack;
         public bool AllowPercentageAttacks;
+        public Dictionary<CardIDType, object> Cards;
+        public bool LocalDeployments;
+        public GameFogLevel FogLevel;
 
-        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks)
+        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks, Dictionary<CardIDType, object> cards, bool localDeployments, GameFogLevel fog)
         {
 
             this.OffenseKillRate = offensiveKillRate;
@@ -52,6 +58,9 @@ namespace WarLight.Shared.AI
             this.LuckModifier = luckModifier;
             this.MultiAttack = multiAttack;
             this.AllowPercentageAttacks = allowPercentageAttacks;
+            this.Cards = cards;
+            this.LocalDeployments = localDeployments;
+            this.FogLevel = fog;
         }
 
         public int OneArmyMustStandGuardOneOrZero
