@@ -14,6 +14,11 @@ namespace WarLight.Shared.AI.Prod
             this.UseRandomness = useRandomness;
         }
 
+        public string Name()
+        {
+            return "Prod 2.0" + (UseRandomness ? " with randomness" : "");
+        }
+
         public string Description()
         {
             return "Version 2.0 of WarLight's production AI.  Currently in beta. " + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable." : "");

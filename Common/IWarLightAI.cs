@@ -33,6 +33,12 @@ namespace WarLight.Shared.AI
 
 
         /// <summary>
+        /// Return the name of your bot.  It should be short (no more than 20 characters, approximately)
+        /// </summary>
+        /// <returns></returns>
+        string Name();
+
+        /// <summary>
         /// Return a general description of this bot, with attribution to the owner if desired.
         /// </summary>
         /// <returns></returns>

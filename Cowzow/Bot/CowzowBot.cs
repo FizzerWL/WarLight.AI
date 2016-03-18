@@ -15,6 +15,11 @@ namespace WarLight.Shared.AI.Cowzow.Bot
 {
     public class CowzowBot : IWarLightAI
     {
+        public string Name()
+        {
+            return "Cowzow";
+        }
+
         public string Description()
         {
             return "Bot written for an AI competition by Dan Zou";

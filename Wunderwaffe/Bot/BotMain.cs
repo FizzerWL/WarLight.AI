@@ -16,6 +16,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotMain : IWarLightAI
     {
+        public string Name()
+        {
+            return "Wunderwaffe";
+        }
+
         public string Description()
         {
             return "Bot written for an AI competition by Norman";
