@@ -213,12 +213,13 @@
     <Compile Include="Common\GameObjects\TerritoryStanding.cs" />
     <Compile Include="Wunderwaffe\Debug\Debug.cs" />
     <Compile Include="Wunderwaffe\Evaluation\ExpansionMapUpdater.cs" />
-    <Compile Include="Wunderwaffe\Evaluation\FogRemover.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\StatefulFogRemover.cs" />
     <Compile Include="Wunderwaffe\Evaluation\GameStateEvaluator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\LastVisibleMapUpdater.cs" />
     <Compile Include="Wunderwaffe\Evaluation\MapUpdater.cs" />
     <Compile Include="Wunderwaffe\Evaluation\OpponentDeploymentGuesser.cs" />
     <Compile Include="Wunderwaffe\Evaluation\PicksEvaluator.cs" />
+    <Compile Include="Wunderwaffe\Evaluation\StatelessFogRemover.cs" />
     <Compile Include="Wunderwaffe\Evaluation\TerritoryValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusExpansionValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusValueCalculator.cs" />

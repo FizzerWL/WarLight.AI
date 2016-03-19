@@ -20,7 +20,8 @@ namespace WarLight.AI.Wunderwaffe.Bot
         {
             this.CardsHandler = new CardsHandler(this);
             this.LastVisibleMapUpdater = new LastVisibleMapUpdater(this);
-            this.FogRemover = new FogRemover(this);
+            this.StatelessFogRemover = new StatelessFogRemover(this);
+            //this.FogRemover = new StatefulFogRemover(this);
             this.HistoryTracker = new HistoryTracker(this);
             this.MovesScheduler2 = new MovesScheduler(this);
             this.MovesCalculator = new MovesCalculator(this);
@@ -59,6 +60,10 @@ namespace WarLight.AI.Wunderwaffe.Bot
             }
 
             VisibleMap = BotMap.FromStanding(this, latestTurnStanding);
+            if (numTurns > 0)
+            {
+                LastVisibleMapX = BotMap.FromStanding(this, previousTurnStanding);
+            }
 
             this.DistributionStanding = distributionStanding;
 
@@ -73,7 +78,8 @@ namespace WarLight.AI.Wunderwaffe.Bot
         }
         public CardsHandler CardsHandler;
         public LastVisibleMapUpdater LastVisibleMapUpdater;
-        public FogRemover FogRemover;
+        public StatelessFogRemover StatelessFogRemover;
+        //public StatefulFogRemover FogRemover;
         public PicksEvaluator PicksEvaluator;
         public OpponentDeploymentGuesser OpponentDeploymentGuesser;
         public TakeTerritoriesTaskCalculator TakeTerritoriesTaskCalculator;
@@ -125,7 +131,9 @@ namespace WarLight.AI.Wunderwaffe.Bot
         }
 
         public BotMap VisibleMap;
-        public static BotMap LastVisibleMap;
+        //public static BotMap LastVisibleMap;
+        public BotMap LastVisibleMapX;
+
 
         public MapDetails Map;
 
@@ -169,8 +177,8 @@ namespace WarLight.AI.Wunderwaffe.Bot
             {
                 LastVisibleMapUpdater.StoreOpponentDeployment();
             }
-
-            FogRemover.RemoveFog();
+            StatelessFogRemover.RemoveFog();
+            //FogRemover.RemoveFog();
             this.HistoryTracker.ReadOpponentDeployment();
             this.WorkingMap = this.VisibleMap.GetMapCopy();
             DistanceCalculator.CalculateDistanceToBorder(this, this.VisibleMap, this.WorkingMap);
@@ -191,7 +199,7 @@ namespace WarLight.AI.Wunderwaffe.Bot
             Debug.Debug.printExpandBonusValues(VisibleMap, this);
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
             Debug.Debug.PrintTerritories(VisibleMap, this);
-            LastVisibleMap = VisibleMap.GetMapCopy();
+            //LastVisibleMap = VisibleMap.GetMapCopy();
             return this.MovesCalculator.CalculatedMoves.Convert();
         }
 

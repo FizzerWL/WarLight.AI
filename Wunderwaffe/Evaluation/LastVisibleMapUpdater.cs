@@ -14,7 +14,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         }
         public void StoreOpponentDeployment()
         {
-            var lastVisibleMap = BotMain.LastVisibleMap;
+            var lastVisibleMap = BotState.LastVisibleMapX;
             foreach (GamePlayer opponent in BotState.Opponents)
             {
                 List<GameOrderDeploy> opponentDeployments = BotState.PrevTurn.Where(o => o.PlayerID == opponent.ID).OfType<GameOrderDeploy>().ToList();

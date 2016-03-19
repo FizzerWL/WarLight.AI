@@ -40,7 +40,7 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
             });
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
-            FogRemover.PickedTerritories = picks;
+            //StatefulFogRemover.PickedTerritories = picks;
 
             return picks;
         }

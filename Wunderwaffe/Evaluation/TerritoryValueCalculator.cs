@@ -308,13 +308,12 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
 
 
                 // Add stuff if the opponent seems to currently expand in that Bonus
-                if (BotState.NumberOfTurns > 0 && vmBonus.GetOwnedTerritories
-                    ().Count == 0 && vmBonus.Amount > 0 && !vmBonus.IsOwnedByAnyOpponent())
+                if (BotState.NumberOfTurns > 0 && vmBonus.GetOwnedTerritories().Count == 0 && vmBonus.Amount > 0 && !vmBonus.IsOwnedByAnyOpponent())
                 {
                     var opponentIsExpanding = false;
                     foreach (var opponentTerritory in vmBonus.GetVisibleOpponentTerritories())
                     {
-                        var lwmTerritory = BotMain.LastVisibleMap.Territories[opponentTerritory.ID];
+                        var lwmTerritory = BotState.LastVisibleMapX.Territories[opponentTerritory.ID];
                         if (lwmTerritory.IsVisible&& lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
                             opponentIsExpanding = true;
                     }
@@ -327,7 +326,6 @@ namespace WarLight.AI.Wunderwaffe.Evaluation
                         else
                             currentValue += vmBonus.Amount * 5;
                     }
-
                 }
             }
 
