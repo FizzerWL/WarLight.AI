@@ -190,7 +190,6 @@
     <Compile Include="Wunderwaffe\Strategy\TakeTerritoriesTaskCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\TransferMovesChooser.cs" />
     <Compile Include="Wunderwaffe\Tasks\AttackTerritoriesTask.cs" />
-    <Compile Include="Wunderwaffe\Tasks\BonusRunTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\BreakTerritoriesTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\BreakTerritoryTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DefendTerritoriesTask.cs" />

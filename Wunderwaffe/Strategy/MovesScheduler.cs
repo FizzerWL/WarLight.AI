@@ -383,21 +383,30 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                             SnipeMoves.Add(atm);
                         else if (Math.Round(atm.Armies.AttackPower * BotState.Settings.OffenseKillRate) < mmToTerritory.Armies.DefensePower)
                             TransferingExpansionMoves.Add(atm);
-                        else if (atm.Armies.AttackPower > 3 && !CanAnyOpponentAttackTerritory(mmFromTerritory))
+                        else if (IsBigExpansionStep(atm) && !CanAnyOpponentAttackTerritory(mmFromTerritory))
                             BigExpansionMovesNonAttack.Add(atm);
-                        else if (atm.Armies.AttackPower <= 3 && mmToTerritory.GetOpponentNeighbors().Count == 0 && !CanAnyOpponentAttackTerritory(mmFromTerritory))
+                        else if (!IsBigExpansionStep(atm) && mmToTerritory.GetOpponentNeighbors().Count == 0 && !CanAnyOpponentAttackTerritory(mmFromTerritory))
                             NonOpponentBorderingSmallExpansionMovesNonAttack.Add(atm);
                         else if (atm.Armies.AttackPower <= 3 && mmToTerritory.GetOpponentNeighbors().Count > 0 && !CanAnyOpponentAttackTerritory(mmFromTerritory))
                             OpponentBorderingSmallExpansionMovesNonAttack.Add(atm);
-                        else if (atm.Armies.AttackPower > 3 && CanAnyOpponentAttackTerritory(mmFromTerritory))
+                        else if (IsBigExpansionStep(atm) && CanAnyOpponentAttackTerritory(mmFromTerritory))
                             BigExpansionMovesWithAttack.Add(atm);
-                        else if (atm.Armies.AttackPower <= 3 && mmToTerritory.GetOpponentNeighbors().Count == 0 && CanAnyOpponentAttackTerritory(mmFromTerritory))
+                        else if (!IsBigExpansionStep(atm) && mmToTerritory.GetOpponentNeighbors().Count == 0 && CanAnyOpponentAttackTerritory(mmFromTerritory))
                             NonOpponentBorderingSmallExpansionMovesWithAttack.Add(atm);
-                        else if (atm.Armies.AttackPower <= 3 && mmToTerritory.GetOpponentNeighbors().Count > 0 && CanAnyOpponentAttackTerritory(mmFromTerritory))
+                        else if (!IsBigExpansionStep(atm) && mmToTerritory.GetOpponentNeighbors().Count > 0 && CanAnyOpponentAttackTerritory(mmFromTerritory))
                             OpponentBorderingSmallExpansionMovesWithAttack.Add(atm);
                     }
                 }
             }
+        }
+
+        // an expansion step is big if it leaves more leftovers than the initial neutral armies
+        private bool IsBigExpansionStep(BotOrderAttackTransfer atm)
+        {
+            int attackPower = atm.Armies.AttackPower;
+            int DefendingArmies = atm.To.Armies.AttackPower;
+            int losses = (int)Math.Round(DefendingArmies * BotState.Settings.DefenseKillRate);
+            return attackPower - losses > DefendingArmies;
         }
 
         private bool IsAlwaysGoodAttackMove(BotOrderAttackTransfer atm)
