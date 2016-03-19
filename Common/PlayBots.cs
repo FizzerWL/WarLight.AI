@@ -37,6 +37,7 @@ namespace WarLight.Shared.AI
 
                 var threads = Enumerable.Range(0, numThreads).Select(o => new Thread(() =>
                 {
+                    Thread.Sleep(100 * o); //stagger them
                     try
                     {
                         while (true)
@@ -59,8 +60,6 @@ namespace WarLight.Shared.AI
         private static void PlayGame(List<string> bots, bool parallel)
         {
             AILog.Log("PlayBots", "Creating game...");
-            // 822674 = AI cards test
-            //var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", 822674, gameSettings =>
             var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
@@ -69,6 +68,12 @@ namespace WarLight.Shared.AI
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
+                //gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
+                //gameSettings["BombCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1));
+                //gameSettings["SanctionsCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1), new JProperty("Duration", 1), new JProperty("Percentage", 0.5));
+                //gameSettings["BlockadeCard"] = new JObject(new JProperty("InitialPieces", 50), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("MultiplyAmount", 10));
+                //gameSettings["DiplomacyCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("Duration", 1));
+                //gameSettings["NumberOfCardsToReceiveEachTurn"] = 4;
             });
 
             AILog.Log("PlayBots", "Created game " + gameID);
@@ -90,7 +95,7 @@ namespace WarLight.Shared.AI
                         _totals.AddOrUpdate(winnerStr, 1, (_, i) => i + 1);
                         Console.WriteLine("Game " + gameID + " finished.  Winner=" + winnerStr + ", totals: " + _totals.OrderByDescending(o => o.Value).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
 
-
+                        
                         break;
                     }
 
@@ -142,8 +147,7 @@ namespace WarLight.Shared.AI
         /// <param name="gameSettings"></param>
         private static void ZeroAllBonuses(JObject gameSettings)
         {
-            //Assumes MME map
-            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0))));
+            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0)))); //Assumes MME map
             gameSettings["DistributionMode"] = 2; //warlords dist.  We can't use random warlords since that gives one territory per bonus, and there are no bonuses
             gameSettings["BonusArmyPer"] = 1; //extra armies, otherwise games tend to stalemate
         }

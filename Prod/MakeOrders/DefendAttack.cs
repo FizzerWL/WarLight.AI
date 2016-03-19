@@ -26,7 +26,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             }
 
             //Divide between offense and defense.  Defense armies could still be used for offense if we happen to attack there
-            var offenseRatio = (Bot.IsFFA ? 0.3 : 0.6) + (Bot.UseRandomness ? RandomUtility.RandomPercentage() * .3 - .15 : 0);
+            var baseOffenseRatio = (Bot.IsFFA ? 0.3 : 0.6);
+            if (Bot.Settings.MultiAttack)
+                baseOffenseRatio = 0; //in MA, our expansion routine is actually our primary attack weapon.  Therefore, set offense ratio to 0 so that we skip the routine that tries to attack one territory at a time.
+            var offenseRatio = baseOffenseRatio + (Bot.UseRandomness ? RandomUtility.BellRandom(-.15, .15) : 0);
             int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio);
             int armiesToDefense = incomeToUse - armiesToOffense;
 
@@ -108,7 +111,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (!Bot.UseRandomness)
             {
                 int attackIndex = 0;
-                while (armiesLeft > 0 && attackIndex < orderedAttacks.Count)
+                while (attackIndex < orderedAttacks.Count)
                 {
                     TryDoAttack(orderedAttacks[attackIndex], ref armiesLeft);
                     attackIndex++;
@@ -116,7 +119,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             }
             else
             {
-                while (armiesLeft > 0 && orderedAttacks.Count > 0)
+                while (orderedAttacks.Count > 0)
                 {
                     var i = RandomUtility.WeightedRandomIndex(orderedAttacks, o => o.OffenseImportance);
                     TryDoAttack(orderedAttacks[i], ref armiesLeft);
@@ -178,47 +181,20 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private List<PossibleAttack> WeightAttacks()
         {
-            var weightedNeighbors = WeightNeighbors();
-
             //build all possible attacks
-            List<PossibleAttack> ret = Bot.Territories
-                .Where(o => o.OwnerPlayerID == Bot.PlayerID)
+            List<PossibleAttack> ret = Bot.Standing.Territories.Values
+                .Where(o => o.OwnerPlayerID == Bot.PlayerID && !Bot.AvoidTerritories.Contains(o.ID))
                 .SelectMany(us =>
                     Bot.Map.Territories[us.ID].ConnectedTo.Keys
                     .Select(k => Bot.Standing.Territories[k])
-                    .Where(k => k.OwnerPlayerID != TerritoryStanding.NeutralPlayerID && !Bot.IsTeammateOrUs(k.OwnerPlayerID))
+                    .Where(k => Bot.IsOpponent(k.OwnerPlayerID) && !Bot.AvoidTerritories.Contains(k.ID))
                     .Select(k => new PossibleAttack(Bot, us.ID, k.ID))).ToList();
 
 
             foreach (PossibleAttack a in ret)
-                a.Weight(weightedNeighbors);
+                a.Weight(Bot.WeightedNeighbors);
 
             NormalizeWeights(ret);
-
-            return ret;
-        }
-
-        private Dictionary<PlayerIDType, int> WeightNeighbors()
-        {
-            var ret = Bot.Neighbors.Values
-                .Where(o => !Bot.IsTeammateOrUs(o.ID)) //Exclude teammates
-                .Where(o => o.ID != TerritoryStanding.NeutralPlayerID) //Exclude neutral
-                .Where(o => o.ID != TerritoryStanding.FogPlayerID) //only where we can see
-                .ToDictionary(o => o.ID, o => o.NeighboringTerritories.Select(n => n.NumArmies.ArmiesOrZero).Sum());  //Sum each army they have on our borders as the initial weight
-
-            foreach (var borderTerr in Bot.BorderTerritories)
-            {
-                //Subtract one weight for each defending army we have next to that player
-
-                Bot.Map.Territories[borderTerr.ID].ConnectedTo.Keys
-                    .Select(o => Bot.Standing.Territories[o])
-                    .Where(o => !Bot.IsTeammateOrUs(o.OwnerPlayerID)) //Ignore our own and teammates
-                    .Select(o => o.OwnerPlayerID)
-                    .Where(o => o != TerritoryStanding.NeutralPlayerID)
-                    .Where(o => o != TerritoryStanding.FogPlayerID)
-                    .Distinct()
-                    .ForEach(o => ret[o] = ret[o] - Bot.Standing.Territories[borderTerr.ID].NumArmies.NumArmies);
-            }
 
             return ret;
         }

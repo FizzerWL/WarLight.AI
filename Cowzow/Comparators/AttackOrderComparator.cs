@@ -20,7 +20,7 @@ namespace WarLight.Shared.AI.Cowzow.Comparators
         public AttackOrderComparator(CowzowBot bot)
         {
             this.Bot = bot;
-            Placements = new HashSet<TerritoryIDType>(bot.MyDeployments);
+            Placements = bot.MyDeployments.ToHashSet(true);
             Analyzer = bot.Analyzer;
         }
 

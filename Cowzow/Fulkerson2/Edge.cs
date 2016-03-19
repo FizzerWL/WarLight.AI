@@ -39,16 +39,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
                 return Start.ID + " " + End.ID;
             }
         }
-
-        public override bool Equals(object obj)
-        {
-            throw new NotImplementedException("Equals not supported");
-        }
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException("GetHashCode not supported");
-        }
-
+        
 
         public override string ToString()
         {

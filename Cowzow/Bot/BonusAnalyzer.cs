@@ -12,8 +12,8 @@ namespace WarLight.Shared.AI.Cowzow.Bot
     public class BonusAnalyzer
     {
         private readonly CowzowBot Bot;
-        private readonly Dictionary<BonusIDType, int> BonusBuckets;
-        private readonly Dictionary<BonusIDType, int> BonusCosts;
+        public readonly Dictionary<BonusIDType, int> BonusBuckets;
+        public readonly Dictionary<BonusIDType, int> BonusCosts;
 
         public int TroopEstimate;
 
@@ -58,7 +58,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 if (placedTerritories.Contains(move_1.From))
                 {
                     foreach(var bonusID in Bot.Map.Territories[move_1.To].PartOfBonuses)
-                        BonusBuckets[bonusID] += move_1.NumArmies.ArmiesOrZero;
+                        BonusBuckets[bonusID] = BonusBuckets[bonusID] + move_1.NumArmies.ArmiesOrZero;
                 }
 
             if (TroopEstimate < troopsUsed)
@@ -70,7 +70,9 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             foreach (var bonus in Bot.BotMap.Bonuses.Values)
                 if (UnvisCount(bonus) >= 1 && 2 * VisCount(bonus) <= TroopEstimate)
                     bonusList.Add(bonus);
-            bonusList.Sort(new BonusComparator(this));
+
+            var bc = new BonusComparator(this);
+            bonusList.Sort((f,s) => bc.Compare(f, s));
             // System.out.println(bonusList);
             foreach (var bonus_1 in bonusList)
             {
@@ -99,7 +101,8 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             foreach (var bonus in Bot.BotMap.Bonuses.Values)
                 if (UnvisCount(bonus) >= 1 && 2 * VisCount(bonus) <= TroopEstimate)
                     bonusList.Add(bonus);
-            bonusList.Sort(new BonusComparator(this));
+            var bc = new BonusComparator(this);
+            bonusList.Sort((a,b) => bc.Compare(a, b));
             foreach (var s in bonusList)
             {
                 var score = (double)s.ArmiesReward / BonusCosts[s.ID];
@@ -113,21 +116,21 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         {
             var bonusIds = new List<BonusIDType>(Bot.BotMap.Bonuses.Keys);
             bonusIds.Sort();
-            Console.Out.WriteLine("Expected troops: " + TroopEstimate);
+            AILog.Log("BonusAnalyzer", "Expected troops: " + TroopEstimate);
             foreach (var i in bonusIds)
             {
                 var s = Bot.BotMap.GetBonus(i);
-                Console.Out.WriteLine(s);
+                var msg = s.ToString();
                 if (MightBeOwned(s))
-                    Console.Out.Write("YES:");
+                    msg += "YES:";
                 else
-                    Console.Out.Write("NO:");
+                    msg += "NO:";
 
-                Console.Out.Write(" " + BonusBuckets[s.ID] + " / " + BonusCosts[s.ID]);
+                msg += " " + BonusBuckets[s.ID] + " / " + BonusCosts[s.ID];
                 if (SoonBeOwned(s))
-                    Console.Out.Write(" SOON");
+                    msg += " SOON";
 
-                Console.Out.WriteLine();
+                AILog.Log("BonusAnalyzer", msg);
             }
         }
 
@@ -202,7 +205,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             return s.Territories.Count - UnvisCount(s);
         }
 
-        private int UnvisCount(BotBonus s)
+        public int UnvisCount(BotBonus s)
         {
             var count = 0;
             foreach (var r in s.Territories)
@@ -215,9 +218,9 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         {
             private readonly BonusAnalyzer _enclosing;
 
-            internal BonusComparator(BonusAnalyzer _enclosing)
+            internal BonusComparator(BonusAnalyzer enclosing)
             {
-                this._enclosing = _enclosing;
+                this._enclosing = enclosing;
             }
 
             public int Compare(BotBonus a, BotBonus b)

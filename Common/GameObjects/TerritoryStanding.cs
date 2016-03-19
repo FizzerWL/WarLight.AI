@@ -17,11 +17,14 @@ namespace WarLight.Shared.AI
         public PlayerIDType OwnerPlayerID;
         public Armies NumArmies;
 
-        public TerritoryStanding(TerritoryIDType terrID, PlayerIDType playerID, Armies armies)
+        
+        public static TerritoryStanding Create(TerritoryIDType territoryID, PlayerIDType owner, Armies armies)
         {
-            this.ID = terrID;
-            this.OwnerPlayerID = playerID;
-            this.NumArmies = armies;
+            TerritoryStanding cs = new TerritoryStanding();
+            cs.ID = territoryID;
+            cs.OwnerPlayerID = owner;
+            cs.NumArmies = armies;
+            return cs;
         }
 
         public bool IsNeutral
@@ -36,7 +39,7 @@ namespace WarLight.Shared.AI
 
         public TerritoryStanding Clone()
         {
-            return new TerritoryStanding(this.ID, this.OwnerPlayerID, this.NumArmies);
+            return TerritoryStanding.Create(this.ID, this.OwnerPlayerID, this.NumArmies);
         }
 
 

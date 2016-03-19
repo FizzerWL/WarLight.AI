@@ -106,21 +106,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 }
             }
 
-            var expandWeights = bot.MakeOrders.Expand.AttackableNeutrals;
-
-            foreach (var helpExpansionTo in terrs.SelectMany(o => bot.Map.Territories[o].ConnectedTo.Keys).Where(o => expandWeights.ContainsKey(o)).OrderByDescending(o => expandWeights[o].Weight))
-            {
-                var attackOptions = bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Where(o => terrs.Contains(o.From) && o.To == helpExpansionTo).ToList();
-
-                if (attackOptions.Count > 0)
-                {
-                    var attack = bot.UseRandomness ? attackOptions.Random() : attackOptions[0];
-
-                    Deploy(bot, source + " by expansion weight", attack.From, armies);
-                    attack.NumArmies = attack.NumArmies.Add(new Armies(armies));
-                    return;
-                }
-            }
+            if (bot.MakeOrders.Expand.HelpExpansion(terrs, armies, (terrID, a) => Deploy(bot, source + " from TryHelpExpansion", terrID, a)))
+                return;
 
             if (bot.UseRandomness)
                 Deploy(bot, source + " random", terrs.Random(), armies);

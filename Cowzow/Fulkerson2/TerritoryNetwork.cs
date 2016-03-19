@@ -89,8 +89,9 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
 
                 if (curr.ID == b.ID)
                     break;
-                var adjacencies = new List<Edge>(adjacencyMap[curr.ID]);
-                adjacencies.Sort(new TerritoryPriorityComparator(Bot));
+                var adjacencies = adjacencyMap[curr.ID].Edges.ToList();
+                var tpc = new TerritoryPriorityComparator(Bot);
+                adjacencies.Sort((f, s) => tpc.Compare(f, s));
                 foreach (var e in adjacencies)
                 {
                     var dest = e.End;

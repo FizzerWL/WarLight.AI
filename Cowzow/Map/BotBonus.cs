@@ -9,7 +9,7 @@ using WarLight.Shared.AI.Cowzow.Bot;
 
 namespace WarLight.Shared.AI.Cowzow.Map
 {
-    public class BotBonus : IComparable<BotBonus>
+    public class BotBonus
     {
         public readonly int ArmiesReward;
         public readonly BonusIDType ID;
@@ -33,14 +33,15 @@ namespace WarLight.Shared.AI.Cowzow.Map
             get { return Details.Territories.Select(o => Bot.BotMap.Territories[o]).ToList(); }
         }
 
-        public int CompareTo(BotBonus o)
-        {
-            if (GuessedArmiesNotOwnedByUs < o.GuessedArmiesNotOwnedByUs)
-                return -1;
-            if (GuessedArmiesNotOwnedByUs > o.GuessedArmiesNotOwnedByUs)
-                return 1;
-            return 0;
-        }
+        //Looks like this isn't used anywhere?
+        //public int CompareTo(BotBonus o)
+        //{
+        //    if (GuessedArmiesNotOwnedByUs < o.GuessedArmiesNotOwnedByUs)
+        //        return -1;
+        //    if (GuessedArmiesNotOwnedByUs > o.GuessedArmiesNotOwnedByUs)
+        //        return 1;
+        //    return 0;
+        //}
         
 
         public bool MightBeOwnedByOpponent()
@@ -158,15 +159,6 @@ namespace WarLight.Shared.AI.Cowzow.Map
             }
 
             return true;
-        }
-
-        public override bool Equals(object obj)
-        {
-            throw new NotImplementedException("Equals not supported");
-        }
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException("GetHashCode not supported");
         }
     }
 }

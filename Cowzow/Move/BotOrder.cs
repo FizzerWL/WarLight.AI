@@ -40,5 +40,10 @@ namespace WarLight.Shared.AI.Cowzow.Move
         {
             return GameOrderAttackTransfer.Create(o.PlayerID, o.FromTerritory.ID, o.ToTerritory.ID, AttackTransferEnum.AttackTransfer, false, new Armies(o.Armies), false);
         }
+
+        public override string ToString()
+        {
+            return "BotOrder";
+        }
     }
 }

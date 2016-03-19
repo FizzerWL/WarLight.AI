@@ -17,19 +17,8 @@ namespace WarLight.Shared.AI.Cowzow.Map
         public int Armies;
         public PlayerIDType OwnerPlayerID;
 
-        const int DummyID = -69;
-
-        /// <summary>
-        /// dummy constructor for testing purposes
-        /// </summary>
-        /// <param name="state"></param>
-        public BotTerritory(CowzowBot bot)
-        {
-            this.Bot = bot;
-            ID = (TerritoryIDType)DummyID;
-            OwnerPlayerID = TerritoryStanding.FogPlayerID;
-        }
-
+        public static readonly TerritoryIDType DummyID = (TerritoryIDType)(-69);
+        
         public BotTerritory(CowzowBot bot, TerritoryIDType id)
         {
             this.Bot = bot;
@@ -166,7 +155,7 @@ namespace WarLight.Shared.AI.Cowzow.Map
         public override string ToString()
         {
             
-            return "Territory " + ((int)ID == DummyID ? "dummy" : Details.Name) + " id=" + ID + ", armies=" + Armies + " ownedBy=" + OwnerPlayerID;
+            return "Territory " + (ID == DummyID ? "dummy" : Details.Name) + " id=" + ID + ", armies=" + Armies + " ownedBy=" + OwnerPlayerID;
         }
 
         /// <summary>Get all the edges from this territory to its neighbors</summary>
@@ -203,16 +192,7 @@ namespace WarLight.Shared.AI.Cowzow.Map
                     return Bot.Settings.InitialNonDistributionArmies;
             }
         }
-
-        public override bool Equals(object obj)
-        {
-            throw new NotImplementedException("Equals not supported");
-        }
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException("GetHashCode not supported");
-        }
-
+        
         //public double GetPropScore()
         //{
         //    var score = (double)Bonus.ArmiesReward * Armies / Bonus.ArmiesNotOwnedByUs();

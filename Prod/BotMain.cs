@@ -14,6 +14,44 @@ namespace WarLight.Shared.AI.Prod
             this.UseRandomness = useRandomness;
         }
 
+        public string Name()
+        {
+            return "Prod 2.0" + (UseRandomness ? " with randomness" : "");
+        }
+
+        public string Description()
+        {
+            return "Version 2.0 of WarLight's production AI.  Currently in beta. " + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable." : "");
+        }
+
+        public bool SupportsSettings(GameSettings settings, out string whyNot)
+        {
+            whyNot = null;
+            return true; //Prod supports all settings
+        }
+        public bool RecommendsSettings(GameSettings settings, out string whyNot)
+        {
+            var sb = new StringBuilder();
+
+            if (settings.Cards.ContainsKey(CardType.OrderPriority.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Priority cards.");
+            if (settings.Cards.ContainsKey(CardType.OrderDelay.CardID))
+                sb.AppendLine("This bot does not understand how to play Order Delay cards.");
+            if (settings.Cards.ContainsKey(CardType.Airlift.CardID))
+                sb.AppendLine("This bot does not understand how to play Airlift cards.");
+            if (settings.Cards.ContainsKey(CardType.Gift.CardID))
+                sb.AppendLine("This bot does not understand how to play Gift cards.");
+            if (settings.Cards.ContainsKey(CardType.Reconnaissance.CardID))
+                sb.AppendLine("This bot does not understand how to play Reconnaissance cards.");
+            if (settings.Cards.ContainsKey(CardType.Spy.CardID))
+                sb.AppendLine("This bot does not understand how to play Spy cards.");
+            if (settings.Cards.ContainsKey(CardType.Surveillance.CardID))
+                sb.AppendLine("This bot does not understand how to play Surveillance cards.");
+
+            whyNot = sb.ToString();
+            return whyNot.Length == 0;
+        }
+
         public bool UseRandomness;
 
         public GameStanding DistributionStandingOpt;
@@ -33,6 +71,8 @@ namespace WarLight.Shared.AI.Prod
         public List<GamePlayer> Opponents;
         public bool IsFFA; //if false, we're in a 1v1, 2v2, 3v3, etc.  If false, there are more than two entities still alive in the game.  A game can change from FFA to non-FFA as players are eliminated.
         public Dictionary<PlayerIDType, Neighbor> Neighbors;
+        public Dictionary<PlayerIDType, int> WeightedNeighbors;
+        public HashSet<TerritoryIDType> AvoidTerritories = new HashSet<TerritoryIDType>(); //we're conducting some sort of operation here, such as a a blockade, so avoid attacking or deploying more here.
 
 
         //not available during picking:
@@ -56,6 +96,27 @@ namespace WarLight.Shared.AI.Prod
             this.Neighbors = players.Keys.ExceptOne(PlayerID).ConcatOne(TerritoryStanding.NeutralPlayerID).ToDictionary(o => o, o => new Neighbor(this, o));
             this.Opponents = players.Values.Where(o => o.State == GamePlayerState.Playing && !IsTeammateOrUs(o.ID)).ToList();
             this.IsFFA = Opponents.Count > 1 && (Opponents.Any(o => o.Team == PlayerInvite.NoTeam) || Opponents.GroupBy(o => o.Team).Count() > 1);
+            this.WeightedNeighbors = WeightNeighbors();
+        }
+
+        public int ArmiesToTakeMultiAttack(IEnumerable<Armies> defenseArmiesOnManyTerritories)
+        {
+            var list = defenseArmiesOnManyTerritories.ToList();
+            if (list.Count == 0)
+                return 0;
+            list.Reverse();
+
+            var ret = ArmiesToTake(list[0]);
+
+            foreach(var def in list.Skip(1))
+            {
+                var toTake = ArmiesToTake(def);
+                var mustOccupyTerritory = ret + Settings.OneArmyMustStandGuardOneOrZero;
+                var willLoseInFight = SharedUtility.Round(def.DefensePower * Settings.DefenseKillRate);
+                ret = Math.Max(toTake, mustOccupyTerritory + willLoseInFight);
+            }
+
+            return ret;
         }
 
         public int ArmiesToTake(Armies defenseArmies)
@@ -68,11 +129,11 @@ namespace WarLight.Shared.AI.Prod
             if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom && (!UseRandomness || RandomUtility.RandomNumber(3) != 0))
                 ret++;
 
-            if (Settings.LuckModifier < 1)
+            if (Settings.LuckModifier > 0)
             {
                 //Add up some armies to account for luck
-                var factor = UseRandomness ? RandomUtility.RandomPercentage() * 15 + 2.5 : 10.0;
-                ret += SharedUtility.Round((1.0 - Settings.LuckModifier) / factor * ret); 
+                var factor = UseRandomness ? RandomUtility.BellRandom(2.5, 17.5) : 10.0;
+                ret += SharedUtility.Round(Settings.LuckModifier / factor * ret); 
             }
 
             return ret;
@@ -89,7 +150,6 @@ namespace WarLight.Shared.AI.Prod
             return MakePicks.PickTerritories.MakePicks(this);
         }
 
-
         public string TerrString(TerritoryIDType terrID)
         {
             return Map.Territories[terrID].Name + " (" + terrID + ")";
@@ -105,6 +165,10 @@ namespace WarLight.Shared.AI.Prod
         public GamePlayer GamePlayerReference
         {
             get { return Players[PlayerID]; }
+        }
+        public bool IsOpponent(PlayerIDType playerID)
+        {
+            return Players.ContainsKey(playerID) && !IsTeammateOrUs(playerID);
         }
         public bool IsTeammate(PlayerIDType playerID)
         {
@@ -132,15 +196,14 @@ namespace WarLight.Shared.AI.Prod
                     return TeammatesOrders.Values.Where(o => o.Orders != null).SelectMany(o => o.Orders);
             }
         }
+        
 
-        public IEnumerable<TerritoryStanding> Territories
+        public bool IsBorderTerritory(GameStanding standing, TerritoryIDType terrID)
         {
-            get { return Standing.Territories.Values; }
-        }
-
-        public IEnumerable<TerritoryStanding> AttackableTerritories
-        {
-            get { return Territories.Where(o => Map.Territories[o.ID].ConnectedTo.Keys.Any(c => Standing.Territories[c].OwnerPlayerID == PlayerID)); }
+            var ts = standing.Territories[terrID];
+            if (ts.OwnerPlayerID != PlayerID)
+                return false;
+            return this.Map.Territories[terrID].ConnectedTo.Keys.Any(c => standing.Territories[c].OwnerPlayerID != this.PlayerID);
         }
 
         /// <summary>
@@ -148,18 +211,12 @@ namespace WarLight.Shared.AI.Prod
         /// </summary>
         public IEnumerable<TerritoryStanding> BorderTerritories
         {
-            get
-            {
-                return Territories
-                    .Where(o => Standing.Territories[o.ID].OwnerPlayerID == PlayerID)
-                    .Where(o => this.Map.Territories[o.ID].ConnectedTo.Keys
-                        .Any(c => this.Standing.Territories[c].OwnerPlayerID != this.PlayerID));
-            }
+            get { return Standing.Territories.Values.Where(o => IsBorderTerritory(Standing, o.ID)); }
         }
 
 
         /// <summary>
-        /// Returns 0 if it is an ememy, and a positive number otherwise signaling how many turns away from an enemy it is
+        /// Returns 0 if it is an ememy, and a positive number otherwise indicating how many turns away from an enemy it is
         /// </summary>
         /// <param name="terrID"></param>
         /// <returns></returns>
@@ -343,6 +400,7 @@ namespace WarLight.Shared.AI.Prod
         }
 
         private Dictionary<BonusIDType, float> _bonusFuzz;
+
         public float BonusFuzz(BonusIDType bonusID)
         {
             if (!UseRandomness)
@@ -352,9 +410,34 @@ namespace WarLight.Shared.AI.Prod
                 _bonusFuzz = new Dictionary<BonusIDType, float>();
 
             if (!_bonusFuzz.ContainsKey(bonusID))
-                _bonusFuzz.Add(bonusID, (float)RandomUtility.RandomPercentage() * 4 - 2);
+                _bonusFuzz.Add(bonusID, (float)RandomUtility.BellRandom(-2, 2));
 
             return _bonusFuzz[bonusID];
+        }
+
+
+
+        private Dictionary<PlayerIDType, int> WeightNeighbors()
+        {
+            var ret = Neighbors.Values
+                .Where(o => !IsTeammateOrUs(o.ID)) //Exclude teammates
+                .Where(o => o.ID != TerritoryStanding.NeutralPlayerID) //Exclude neutral
+                .Where(o => o.ID != TerritoryStanding.FogPlayerID) //only where we can see
+                .ToDictionary(o => o.ID, neighbor => neighbor.NeighboringTerritories.Where(o => o.NumArmies.Fogged == false).Sum(n => n.NumArmies.AttackPower));  //Sum each army they have on our borders as the initial weight
+
+            foreach (var borderTerr in BorderTerritories)
+            {
+                //Subtract one weight for each defending army we have next to that player
+
+                Map.Territories[borderTerr.ID].ConnectedTo.Keys
+                    .Select(o => Standing.Territories[o])
+                    .Where(o => ret.ContainsKey(o.OwnerPlayerID))
+                    .Select(o => o.OwnerPlayerID)
+                    .Distinct()
+                    .ForEach(o => ret[o] = ret[o] - Standing.Territories[borderTerr.ID].NumArmies.DefensePower);
+            }
+
+            return ret;
         }
 
 

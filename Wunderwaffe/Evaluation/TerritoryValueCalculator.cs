@@ -40,7 +40,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             List<BotTerritory> outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
             copy.AddRange(unsortedTerritories);
-            while (copy.Any())
+            while (copy.Count != 0)
             {
                 var mostImportantTerritory = copy[0];
                 var mostImportantTerritoryValue = Math.Max(mostImportantTerritory.AttackTerritoryValue, mostImportantTerritory.DefenceTerritoryValue);
@@ -72,7 +72,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                     visibleFlankingTerritories.Add(visibleNeutral);
                 }
             }
-            while (!visibleFlankingTerritories.IsEmpty())
+            while (visibleFlankingTerritories.Count != 0)
             {
                 var bestTerritory = visibleFlankingTerritories[0];
                 foreach (var territory in visibleFlankingTerritories)
@@ -92,7 +92,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var opponentTerritories = BotState.VisibleMap.Territories.Values.Where(o => BotState.IsOpponent(o.OwnerPlayerID)).ToList();
             var copy = new List<BotTerritory>();
             copy.AddRange(opponentTerritories);
-            while (!copy.IsEmpty())
+            while (copy.Count != 0)
             {
                 var maxAttackValue = 0;
                 var maxAttackValueTerritory = copy[0];
@@ -133,7 +133,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var opponentBorderingTerritories = BotState.VisibleMap.GetOpponentBorderingTerritories();
             var copy = new List<BotTerritory>();
             copy.AddRange(opponentBorderingTerritories);
-            while (copy.Any())
+            while (copy.Count != 0)
             {
                 var maxDefenceValue = 0;
                 var maxDefenceValueTerritory = copy[0];

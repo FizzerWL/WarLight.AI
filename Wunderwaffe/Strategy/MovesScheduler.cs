@@ -138,7 +138,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             SafeAttackMovesWithPossibleBadAttack = ScheduleAttacksAttackingArmies(SafeAttackMovesWithPossibleBadAttack);
             RiskyAttackMoves = ScheduleAttacksAttackingArmies(RiskyAttackMoves);
 
-            if (!OrderPrioPlayed && (!EarlyAttacks.IsEmpty() || !SupportMovesWhereOpponentMightAttack.IsEmpty() || !CrushingAttackMovesToSlipperyTerritories.IsEmpty()))
+            if (!OrderPrioPlayed && (EarlyAttacks.Count != 0 || SupportMovesWhereOpponentMightAttack.Count != 0 || CrushingAttackMovesToSlipperyTerritories.Count != 0))
             {
                 semiSortedMoves.AddRange(OrderPriorityCardPlays);
             }
@@ -150,7 +150,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             semiSortedMoves.AddRange(SupportMovesWhereOpponentMightAttack);
 
 
-            if (!OrderDelayPlayed && !RiskyAttackMoves.IsEmpty())
+            if (!OrderDelayPlayed && RiskyAttackMoves.Count != 0)
             {
                 semiSortedMoves.AddRange(OrderDelayCardPlays);
             }
@@ -537,7 +537,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var outvar = new List<BotOrderAttackTransfer>();
             var temp = new List<BotOrderAttackTransfer>();
             temp.AddRange(unsortedMoves);
-            while (temp.Any())
+            while (temp.Count != 0)
             {
                 var extremestDistanceMove = temp[0];
                 foreach (BotOrderAttackTransfer atm in temp)

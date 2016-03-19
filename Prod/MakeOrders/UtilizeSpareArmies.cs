@@ -20,7 +20,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         {
             var attacks = bot.Orders.Orders.OfType<GameOrderAttackTransfer>();
 
-            foreach (var orders in attacks.Select(o => new UtilizeSpareArmies(o, bot.MakeOrders.GetArmiesAvailable(o.From)))
+            foreach (var orders in attacks
+                .Where(o => bot.Standing.Territories[o.From].OwnerPlayerID == bot.PlayerID)
+                .Select(o => new UtilizeSpareArmies(o, bot.MakeOrders.GetArmiesAvailable(o.From)))
                 .Where(o => o.Available > 0)
                 .GroupBy(o => o.Order.From))
             {

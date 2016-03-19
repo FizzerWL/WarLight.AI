@@ -134,7 +134,29 @@ namespace WarLight.Shared.AI
             var overriddenBonuses = settingsNode["OverriddenBonuses"].As<JArray>().ToDictionary(o => (BonusIDType)(int)o["bonusID"], o => (int)o["value"]);
             var terrLimit = settingsNode["TerritoryLimit"].Type == JTokenType.String ? 0 : (int)settingsNode["TerritoryLimit"];
             var roundingMode = (RoundingModeEnum)Enum.Parse(typeof(RoundingModeEnum), (string)settingsNode["RoundingMode"]);
-            
+            var fog = (GameFogLevel)Enum.Parse(typeof(GameFogLevel), (string)settingsNode["Fog"]);
+
+            var cards = new Dictionary<CardIDType, object>();
+            Action<CardType, string> addCard = (cardType, nodeName) =>
+            {
+                var node = settingsNode[nodeName];
+                if (node.Type == JTokenType.Object)
+                    cards.Add(cardType.CardID, null);
+            };
+            addCard(CardType.Airlift, "AirliftCard");
+            addCard(CardType.Blockade, "BlockadeCard");
+            addCard(CardType.Bomb, "BombCard");
+            addCard(CardType.Diplomacy, "DiplomacyCard");
+            addCard(CardType.EmergencyBlockade, "AbandonCard");
+            addCard(CardType.Gift, "GiftCard");
+            addCard(CardType.OrderDelay, "OrderDelayCard");
+            addCard(CardType.OrderPriority, "OrderPriorityCard");
+            addCard(CardType.Reconnaissance, "ReconnaissanceCard");
+            addCard(CardType.Reinforcement, "ReinforcementCard");
+            addCard(CardType.Sanctions, "SanctionsCard");
+            addCard(CardType.Spy, "SpyCard");
+            addCard(CardType.Surveillance, "SurveillanceCard");
+
 
             return new GameSettings(
                 (double)settingsNode["OffensiveKillRate"] / 100.0,
@@ -151,7 +173,12 @@ namespace WarLight.Shared.AI
                 (bool)settingsNode["AllowTransferOnly"],
                 (int)settingsNode["InitialPlayerArmiesPerTerritory"],
                 roundingMode,
-                (double)settingsNode["LuckModifier"]
+                (double)settingsNode["LuckModifier"],
+                (bool)settingsNode["MultiAttack"],
+                (bool)settingsNode["AllowPercentageAttacks"],
+                cards,
+                (bool)settingsNode["LocalDeployments"],
+                fog
                 );
 
         }
@@ -206,7 +233,7 @@ namespace WarLight.Shared.AI
                 var terrID = (TerritoryIDType)(int)terr["terrID"];
                 var playerID = ToPlayerID((string)terr["ownedBy"]);
                 var armies = ToArmies((string)terr["armies"]);
-                ret.Territories.Add(terrID, new TerritoryStanding(terrID, playerID, armies));
+                ret.Territories.Add(terrID, TerritoryStanding.Create(terrID, playerID, armies));
             }
 
             return ret;

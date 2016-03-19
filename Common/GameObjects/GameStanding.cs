@@ -18,12 +18,13 @@ namespace WarLight.Shared.AI
         }
 
         public Dictionary<TerritoryIDType, TerritoryStanding> Territories;
-
+        public List<ActiveCard> ActiveCards = new List<ActiveCard>();
 
         public GameStanding Clone()
         {
             var r = new GameStanding();
             r.Territories = this.Territories.ToDictionary(o => o.Key, o => o.Value.Clone());
+            r.ActiveCards = this.ActiveCards.Select(o => o.Clone()).ToList();
             return r;
         }
     }

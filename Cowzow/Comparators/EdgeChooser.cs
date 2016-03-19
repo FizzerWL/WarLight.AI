@@ -16,7 +16,7 @@ namespace WarLight.Shared.AI.Cowzow.Comparators
         internal EdgePriorityComparator Eval;
         internal Dictionary<TerritoryIDType, int> ResourceMap;
 
-        public EdgeChooser(ICollection<Edge> edges, Dictionary<TerritoryIDType, int> resourceMap, EdgePriorityComparator eval)
+        public EdgeChooser(IEnumerable<Edge> edges, Dictionary<TerritoryIDType, int> resourceMap, EdgePriorityComparator eval)
         {
             this.Edges = edges.ToList();
             this.ResourceMap = resourceMap;

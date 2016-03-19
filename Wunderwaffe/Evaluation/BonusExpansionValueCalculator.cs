@@ -28,7 +28,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         {
             var allBonuses = mapToUse.Bonuses.Values.ToList();
             var sortedBonuses = new List<BotBonus>();
-            while (!allBonuses.IsEmpty())
+            while (allBonuses.Count != 0)
             {
                 var bestBonus = allBonuses[0];
                 double bestValue = 0;
@@ -63,7 +63,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var copy = new List<BotBonus>();
             copy.AddRange(mapToUse.Bonuses.Values);
             List<BotBonus> outvar = new List<BotBonus>();
-            while (!copy.IsEmpty())
+            while (copy.Count != 0)
             {
                 var highestPrioBonus = copy[0];
                 foreach (BotBonus bonus in copy)

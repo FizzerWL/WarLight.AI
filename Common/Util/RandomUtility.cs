@@ -114,6 +114,14 @@ namespace WarLight.Shared.AI
 #endif
         }
 
+        public static double BellRandom(double min, double max)
+        {
+            var range = max - min;
+            var halfRange = range / 2.0;
+            var r = RandomPercentage() * halfRange + RandomPercentage() * halfRange;
+            return r + min;
+        }
+
         public static KeyValuePair<Y, T> PickRandom<Y, T>(Dictionary<Y, T> distributeTo)
         {
             return distributeTo.ElementAt(RandomNumber(distributeTo.Count));
