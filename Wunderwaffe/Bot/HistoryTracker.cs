@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using WarLight.Shared.AI;
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     /// <summary>
     /// HistoryTracker is responsible for storing the whole history of what has happened on the board so far and our thoughts about it.

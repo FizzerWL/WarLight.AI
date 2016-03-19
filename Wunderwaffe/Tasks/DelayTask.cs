@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// MoveIdleArmiesTask is responsible for helping us getting last order. This happens by moving around armies in a semi reasonable way or by small attacks with 1.

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class BotTerritory
     {

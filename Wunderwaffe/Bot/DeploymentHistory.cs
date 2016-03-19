@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using WarLight.Shared.AI;
 
-namespace WarLight.AI.Wunderwaffe.Bot
+namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
     public class DeploymentHistory
     {

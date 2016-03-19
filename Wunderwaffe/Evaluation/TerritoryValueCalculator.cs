@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Bot;
 
-namespace WarLight.AI.Wunderwaffe.Evaluation
+namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 {
     /// <summary>This class is responsible for calculating territory values for each territory.
     /// </summary>

@@ -1,8 +1,8 @@
-﻿using WarLight.AI.Wunderwaffe.Bot;
+﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// JoinInAttacksTask is responsible that territories with idle armies join in

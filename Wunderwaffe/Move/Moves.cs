@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarLight.Shared.AI;
 
-namespace WarLight.AI.Wunderwaffe.Move
+namespace WarLight.Shared.AI.Wunderwaffe.Move
 {
     /// <summary>Moves is a data structure to store all calculated moves.</summary>
     public class Moves

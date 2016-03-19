@@ -1,9 +1,8 @@
-﻿using WarLight.AI.Wunderwaffe.Bot;
+﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
 
-using WarLight.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI;
+using WarLight.Shared.AI.Wunderwaffe.Move;
 
-namespace WarLight.AI.Wunderwaffe.Tasks
+namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// This class is responsible for preventing the opponent from taking over a Bonus. This can be achieved in different ways. We can deploy to a territory there or we can hit the Bonus from outside.
