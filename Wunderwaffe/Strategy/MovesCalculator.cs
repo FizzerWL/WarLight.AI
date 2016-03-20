@@ -26,7 +26,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             CalculatedMoves = new Moves();
             var movesSoFar = new Moves();
 
-            PlayCardsTask.PlayCards(BotState, movesSoFar);
+            PlayCardsTask.PlayCardsBeginTurn(BotState, movesSoFar);
 
             AILog.Log("MovesCalculator","Starting armies: " + BotState.MyIncome.Total);
             CalculateXBonusMoves(movesSoFar, BotTerritory.DeploymentType.Normal, BotTerritory.DeploymentType.Normal);
@@ -113,6 +113,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             CalculateDelayMoves(movesSoFar);
             MovesCleaner.CleanupMoves(BotState, movesSoFar);
             movesSoFar = BotState.MovesScheduler2.ScheduleMoves(movesSoFar);
+
+            PlayCardsTask.DiscardCardsEndTurn(BotState, movesSoFar);
+
             CalculatedMoves = movesSoFar;
         }
 
