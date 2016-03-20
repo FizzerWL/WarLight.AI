@@ -32,10 +32,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 var map = BotMap.FromStanding(BotState, BotState.DistributionStanding);
 
                 map.Territories[terrID].OwnerPlayerID = BotState.Me.ID;
-                BotBonus bonus = map.Territories[terrID].Bonuses[0];
-                bonus.SetMyExpansionValueHeuristic();
-                double r = bonus.ExpansionValue;
-                return r;
+                if(map.Territories[terrID].Bonuses.Count > 0)
+                {
+                    BotBonus bonus = map.Territories[terrID].Bonuses[0];
+                    bonus.SetMyExpansionValueHeuristic();
+                    double r = bonus.ExpansionValue;
+                    return r;
+                }
+                else
+                {
+                    return 0;
+                }
             });
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();

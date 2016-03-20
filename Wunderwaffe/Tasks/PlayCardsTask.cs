@@ -41,8 +41,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 
             int numMustPlay = state.CardsMustPlay - playedCards.Count;
 
-            AILog.Log("PlayCardsTask", "Played cards: " + playedCards.Count);
-
             foreach (var card in state.Cards)
             {
                 if (numMustPlay > 0 && !playedCards.Contains(card.ID))
