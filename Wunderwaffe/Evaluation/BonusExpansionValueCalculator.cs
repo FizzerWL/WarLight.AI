@@ -116,7 +116,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 else if (neutralArmies >= 12 && bonus.Amount <= 1)
                     toMuchNeutrals = true;
 
-                if (bonus.IsOwnedByMyself() || bonus.Amount == 0 || bonus.ContainsOpponentPresence() || toMuchNeutrals)
+                if (bonus.IsOwnedByMyself() || bonus.Amount == 0 || bonus.ContainsOpponentPresence() || bonus.ContainsTeammatePresence() || toMuchNeutrals)
                     mapToWriteIn.Bonuses[bonus.ID].ExpansionValueCategory = 0;
                 else
                     mapToWriteIn.Bonuses[bonus.ID].ExpansionValueCategory = 1;
@@ -297,7 +297,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var neighborBonuses = bonus.GetNeighborBonuses();
             foreach (var neighborBonus in neighborBonuses)
             {
-              if  (neighborBonus.ContainsOpponentPresence()){
+                if (neighborBonus.ContainsOpponentPresence())
+                {
                     amountNeighborBonusesWithOpponent++;
                 }
             }

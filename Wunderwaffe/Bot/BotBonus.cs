@@ -186,6 +186,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return this.GetOwnedTerritories().Count > 0;
         }
 
+        public bool ContainsTeammatePresence()
+        {
+            return this.Territories.Any(o => BotState.IsTeammate(o.OwnerPlayerID));
+        }
+
         public bool ContainsOpponentPresence()
         {
             return this.Territories.Any(o => BotState.IsOpponent(o.OwnerPlayerID));
