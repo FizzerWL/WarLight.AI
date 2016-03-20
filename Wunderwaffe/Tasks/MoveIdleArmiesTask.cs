@@ -1,8 +1,4 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
@@ -41,6 +37,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     }
                 }
                 var idleArmies = ownedTerritory.GetIdleArmies();
+
                 if (mostImportantMove != null && idleArmies.IsEmpty == false)
                 {
                     var atm_1 = new BotOrderAttackTransfer(state.Me.ID, ownedTerritory, mostImportantMove.To, ownedTerritory.GetIdleArmies(), "MoveIdleArmiesTask1");

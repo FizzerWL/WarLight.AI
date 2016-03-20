@@ -1,11 +1,6 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Move
 {
@@ -80,24 +75,24 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
 
         public void DumpToLog()
         {
-            AILog.Log("Moves", "Final " + Orders.Count + " orders:");
+            AILog.Log("MovesCalculator", "Final " + Orders.Count + " orders:");
                 
             foreach (var order in Orders)
             {
                 if (order is BotOrderDeploy)
                 {
                     var dep = (BotOrderDeploy)order;
-                    AILog.Log("Moves", " - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
+                    AILog.Log("MovesCalculator", " - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
                 }
                 else if (order is BotOrderAttackTransfer)
                 {
                     var attack = (BotOrderAttackTransfer)order;
 
-                    AILog.Log("Moves", " - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
+                    AILog.Log("MovesCalculator", " - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
                 }
                 else if (order is BotOrderGeneric)
                 {
-                    AILog.Log("Moves", " - " + order.As<BotOrderGeneric>().Order.ToString());
+                    AILog.Log("MovesCalculator", " - " + order.As<BotOrderGeneric>().Order.ToString());
                 }
                 else
                     throw new Exception("Unexpected order type");

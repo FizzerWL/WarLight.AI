@@ -1,10 +1,5 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
@@ -43,11 +38,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     maximumNewDelays--;
                 }
             }
-            // TODO verschoben
-            // Only add step 2 delays when really needed
-            // if (!isRiskyAttackPresent(movesSoFar)) {
-            // return out;
-            // }
+
             // Step 2: If the minMovesBeforeRiskyAttack constraint isn't fulfilled
             // then also add delay moves next to the opponent
             var stillNeededDelays = Math.Max(0, minMovesBeforeRiskyAttack - (amountOfSafeMoves

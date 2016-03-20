@@ -1,11 +1,4 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-
-
-using System;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Move
 {
@@ -39,10 +32,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
             this.Armies = armies;
             this.Source = source;
         }
-        
+
         public override string ToString()
         {
-            return this.From + " -[" + this.Armies + "]-> " + this.To + " " + this.To.OwnerPlayerID;
+            return this.From + " -[" + this.Armies + "]-> " + this.To + " " + this.To.OwnerPlayerID + " (" + this.Source + ")";
         }
 
         public override TurnPhase OccursInPhase

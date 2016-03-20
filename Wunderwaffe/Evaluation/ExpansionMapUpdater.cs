@@ -1,12 +1,5 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
-
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 {
@@ -39,7 +32,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (vmNeutralTerritory.IsVisible)
                 {
                     var attackingArmies = vmNeutralTerritory.GetIncomingArmies();
-                    if (SharedUtility.Round(attackingArmies.AttackPower * BotState.Settings.OffenseKillRate) >= vmNeutralTerritory.Armies.DefensePower)
+                    if (vmNeutralTerritory.getOwnKills(attackingArmies.AttackPower, vmNeutralTerritory.Armies.DefensePower) >= vmNeutralTerritory.Armies.DefensePower)
                         vmNeutralTerritoriesThatWeTake.Add(vmNeutralTerritory);
                 }
             }

@@ -1,14 +1,7 @@
-﻿/*
-* This code was auto-converted from a java project.
-
-*/
-
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI.Wunderwaffe.Evaluation;
-
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
 {
@@ -67,7 +60,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
         }
 
         // TODO
-        public static Dictionary<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
+        public static IDictionary<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
         {
             List<BotTerritory> Territories = opponentBonus.Territories;
             var annotadedTerritories = CalculateDistances(mapToUse, Territories, null);
@@ -82,7 +75,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
                     minDistanceTerritory = territory;
                 }
             }
-            var returnTerritory = new Dictionary<BotTerritory, int>();
+            IDictionary<BotTerritory, int> returnTerritory = new Dictionary<BotTerritory, int>();
             returnTerritory.Add(minDistanceTerritory, minDistance);
             return returnTerritory;
         }
@@ -168,7 +161,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var opponentTerritory in mapToUse.AllOpponentTerritories)
             {
                 if (opponentTerritory.AttackTerritoryValue >= TerritoryValueCalculator.LOWEST_MEDIUM_PRIORITY_VALUE)
+                {
                     importantOpponentTerritories.Add(opponentTerritory);
+                }
             }
             var blockedTerritories = mapToUse.GetNeutralTerritories();
             var annotadedTerritories = CalculateDistances(mapToUse, importantOpponentTerritories, blockedTerritories);
@@ -199,7 +194,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             {
                 var wmTerritory = mapToUse.Territories[vmTerritory.ID];
                 if (wmTerritory.OwnerPlayerID != state.Me.ID)
+                {
                     nonOwnedTerritories.Add(vmTerritory);
+                }
             }
             var annotadedTerritories = CalculateDistances(mapToWriteIn, nonOwnedTerritories, null);
             foreach (var territory in annotadedTerritories.Keys)
@@ -219,9 +216,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in mapToUse.Territories.Values)
             {
                 if (toTerritories.Contains(territory))
+                {
                     outvar.Add(territory, 0);
+                }
                 else
+                {
                     outvar.Add(territory, int.MaxValue);
+                }
             }
             // Now do the real stuff
             var hasSomethingChanged = true;
@@ -247,14 +248,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var neighbor in inTerritory.Neighbors)
             {
                 if (blockedTerritories == null || !blockedTerritories.Contains(neighbor))
+                {
                     nonBlockedNeighbors.Add(neighbor);
+                }
             }
             var closestNeighbor = inTerritory;
             foreach (var neighbor_1 in nonBlockedNeighbors)
             {
                 var neighborDistance = annotatedTerritories[neighbor_1];
                 if (neighborDistance < annotatedTerritories[closestNeighbor])
+                {
                     closestNeighbor = neighbor_1;
+                }
             }
             return closestNeighbor;
         }

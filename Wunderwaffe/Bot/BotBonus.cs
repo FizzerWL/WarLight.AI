@@ -1,13 +1,6 @@
-﻿ /*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Heuristics;
-
+using System.Linq;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
@@ -30,7 +23,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                     return Details.Amount;
             }
         }
-        
+
+        public override int GetHashCode()
+        {
+            return (int)ID;
+        }
 
         public BonusIDType ID;
         public int AttackValue = 0;
@@ -39,10 +36,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public PlayerIDType? PreventTakeOverOpponent;
         public int ExpansionValueCategory = 0;
         public int DefenseValue = 0;
-
-        public BonusExpansionValueHeuristic MyExpansionValueHeuristic = null;
-
-        public Dictionary<PlayerIDType, BonusExpansionValueHeuristic> OpponentExpansionValueHeuristics = new Dictionary<PlayerIDType, BonusExpansionValueHeuristic>();
+        public double ExpansionValue = 0;
 
         public BotBonus(BotMap parent, BonusIDType id)
         {
@@ -50,49 +44,32 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.ID = id;
         }
 
-        public BotMain BotState {  get { return Parent.BotState;  } }
+        public BotMain BotState { get { return Parent.BotState; } }
 
         public int GetExpansionValue()
         {
-            return (int)this.MyExpansionValueHeuristic.ExpansionValue;
+            // TODO hack
+            if (ExpansionValue == 0)
+            {
+                SetMyExpansionValueHeuristic();
+            }
+            return (int)ExpansionValue;
         }
-        
+
 
         public void SetMyExpansionValueHeuristic()
         {
-            MyExpansionValueHeuristic = new BonusExpansionValueHeuristic(BotState, this, BotState.Me.ID);
+            this.ExpansionValue = BotState.BonusExpansionValueCalculator.GetExpansionValue(this, true);
+
         }
 
-        public void InsertMyExpansionValueHeuristic(BonusExpansionValueHeuristic myValue)
-        {
-            this.MyExpansionValueHeuristic = myValue;
-        }
-        
 
-        public void SetOpponentExpansionValueHeuristic(PlayerIDType opponentID)
-        {
-            OpponentExpansionValueHeuristics[opponentID] = new BonusExpansionValueHeuristic(BotState, this, opponentID);
-        }
-        
-        /// <returns>A string with the name of the player that fully owns this Bonus</returns>
-        //public int? OwnedByPlayer()
-        //{
-        //    var playerID = Parent.Territories[Territories.First()].PlayerName;
-        //    foreach (var terrID in Territories)
-        //    {
-        //        if (playerID != Parent.Territories[terrID].PlayerName)
-        //            return null;
-        //    }
-        //    return playerID;
-        //}
-
-        
         /// <returns>A list with the Territories that are part of this Bonus</returns>
         public List<BotTerritory> Territories
         {
             get
             {
-                return Details.Territories.Select(o => Parent.Territories[o]).ToList();
+                return Details.Territories.Select(o => Parent.Territories[o]).Distinct().ToList();
             }
         }
 
@@ -123,7 +100,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public List<BotBonus> GetNeighborBonuses()
         {
-            return this.Territories.SelectMany(o => o.Neighbors).SelectMany(o => o.Bonuses).Where(o => o.ID != this.ID).ToList();
+            var x = this.Territories.SelectMany(o => o.Neighbors);
+            return this.Territories.SelectMany(o => o.Neighbors).SelectMany(o => o.Bonuses).Where(o => o.ID != this.ID).Distinct().ToList();
         }
 
         public List<BotTerritory> GetOpponentTerritories()
@@ -146,12 +124,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public int DistanceFrom(Func<BotTerritory, bool> pred, int max = int.MaxValue)
+        public int DistanceFrom(Func<BotTerritory, bool> pred)
         {
             if (this.Territories.Any(pred))
                 return 0;
             var terrs = this.Territories.Select(o => o.ID).ToHashSet(true);
-            
+
             int distance = 1;
 
             while (true)
@@ -166,15 +144,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                 terrs.AddRange(next);
 
                 distance++;
-
-                if (distance >= max)
-                    return max;
             }
-
-
-#if CS2HX || CSSCALA
-            throw new Exception("Never");
-#endif
         }
 
         public List<BotTerritory> GetOwnedTerritoriesAndNeighbors()
@@ -214,6 +184,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public bool ContainsOwnPresence()
         {
             return this.GetOwnedTerritories().Count > 0;
+        }
+
+        public bool ContainsTeammatePresence()
+        {
+            return this.Territories.Any(o => BotState.IsTeammate(o.OwnerPlayerID));
         }
 
         public bool ContainsOpponentPresence()
@@ -369,9 +344,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return this.GetOwnedTerritories().Where(owned => owned.Neighbors.Any(z => BotState.IsOpponent(z.OwnerPlayerID))).ToList();
         }
 
-        public List<BotTerritory> GetOwnedTerritoriesBorderingNeighborsOwnedByOpponentOrDistribution()
+        public List<BotTerritory> GetOwnedTerritoriesBorderingOpponent()
         {
-            return this.GetOwnedTerritories().Where(owned => owned.Neighbors.Any(z => z.OwnerPlayerID == TerritoryStanding.AvailableForDistribution || BotState.IsOpponent(z.OwnerPlayerID))).ToList();
+            return this.GetOwnedTerritories().Where(owned => owned.Neighbors.Any(z => BotState.IsOpponent(z.OwnerPlayerID))).ToList();
         }
 
 

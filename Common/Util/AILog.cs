@@ -9,7 +9,7 @@ namespace WarLight.Shared.AI
     public static class AILog
     {
         public static Func<string, bool> DoLog = null;
-        
+
         public static void Log(string area, string message)
         {
             if (DoLog == null || DoLog(area))

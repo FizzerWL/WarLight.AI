@@ -1,8 +1,4 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
 

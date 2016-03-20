@@ -1,11 +1,5 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI.Wunderwaffe.Move;
-using WarLight.Shared.AI.Wunderwaffe.Strategy;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {

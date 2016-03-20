@@ -1,12 +1,4 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
-
-using System;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
-
-
+﻿using System.Collections.Generic;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {

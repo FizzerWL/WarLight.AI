@@ -1,14 +1,9 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.Strategy
 {
@@ -68,7 +63,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             {
                 if (territory.GetIdleArmies().IsEmpty == false && territory.GetOpponentNeighbors().Count == 0)
                 {
-                    // List<Territory> ownedNeighbors = territory.GetOwnedNeighbors();
                     var ownedNeighbors = GetOwnedNeighborsAfterExpansion(state, territory);
                     if (ownedNeighbors.Count > 0)
                     {
@@ -99,6 +93,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             }
             return outvar;
         }
+
+
 
         private static BotTerritory GetCloserTerritory(BotTerritory territory1, BotTerritory territory2)
         {
@@ -136,16 +132,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             return territory2;
         }
 
-        //		if (territory1.ID > territory2.ID) {
-        //			return territory1;
-        //		} else {
-        //			return territory2;
-        //		}
+        // TODO distances are outdated
         public static int GetAdjustedDistance(BotTerritory territory)
         {
-            var distanceToUnimportantSpot = territory.DistanceToUnimportantSpot + 5;
-            var distanceToImportantExpansionSpot = territory.DistanceToImportantSpot + 1;
-            var distanceToHighlyImportantExpansionSpot = territory.DistanceToHighlyImportantSpot;
+            var distanceToUnimportantSpot = territory.DistanceToUnimportantSpot + 6;
+            var distanceToImportantExpansionSpot = territory.DistanceToImportantSpot + 3;
+            var distanceToHighlyImportantExpansionSpot = territory.DistanceToHighlyImportantSpot + 3;
             var distanceToOpponentSpot = territory.DistanceToOpponentBorder;
             var distanceToImportantOpponentSpot = territory.DistanceToImportantOpponentBorder;
             var minDistance = Math.Min(Math.Min(Math.Min(distanceToUnimportantSpot, distanceToImportantExpansionSpot), Math.Min(distanceToHighlyImportantExpansionSpot, distanceToOpponentSpot)), distanceToImportantOpponentSpot);

@@ -1,12 +1,5 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Linq;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
 
@@ -34,7 +27,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                         return attackTerritoryMoves;
 
                     // If we can't truly attack then attack with 1's
-                    var allowedSmallAttacks = territory.Armies.NumArmies - state.Settings.OneArmyMustStandGuardOneOrZero;
+                    var allowedSmallAttacks = territory.Armies.NumArmies - state.MustStandGuardOneOrZero;
                     allowedSmallAttacks -= GetAlreadyPresentSmallAttacks(territory);
                     foreach (var ownedNeighbor in territory.GetOwnedNeighbors())
                     {

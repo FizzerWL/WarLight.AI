@@ -1,11 +1,4 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿using System.Linq;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
@@ -24,7 +17,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public DeploymentHistory DeploymentHistory;
 
-        // public int opponentDeployment;
         public int GetOpponentDeployment(PlayerIDType opponentID)
         {
             return BotState.PrevTurn.Where(o => o.PlayerID == opponentID).OfType<GameOrderDeploy>().Sum(o => o.NumArmies);

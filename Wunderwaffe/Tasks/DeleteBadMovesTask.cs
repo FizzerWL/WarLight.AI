@@ -1,14 +1,8 @@
-﻿ /*
- * This code was auto-converted from a java project.
- */
-
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
-
 using WarLight.Shared.AI.Wunderwaffe.Move;
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
@@ -61,13 +55,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var interestingTransfers = new List<BotOrderAttackTransfer>();
             foreach (var atm in movesSoFar.Orders.OfType<BotOrderAttackTransfer>())
             {
-                // TODO getArmies() > 1 ???
                 if (atm.Armies.AttackPower > 1 && atm.To.OwnerPlayerID == BotState.Me.ID && atm.From.GetTotalDeployment(BotTerritory.DeploymentType.Normal) > 0)
                     interestingTransfers.Add(atm);
-            }
-            if (interestingTransfers.Count > 0)
-            {
-                AILog.Log("DeleteBadMovesTask", "interestingTransfers.size(): " + interestingTransfers.Count);
             }
             foreach (var atm_1 in interestingTransfers)
             {

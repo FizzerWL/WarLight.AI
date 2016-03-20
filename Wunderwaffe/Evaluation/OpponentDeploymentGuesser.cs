@@ -1,13 +1,8 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 {
@@ -32,34 +27,30 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             }
             else
             {
-                foreach (var vmTerritory_1 in BotState.VisibleMap.OpponentTerritories(opponentID))
+                foreach (var vmTerritory1 in BotState.VisibleMap.OpponentTerritories(opponentID))
                 {
-                    var lvmTerritory = BotState.LastVisibleMap.Territories[vmTerritory_1.ID];
+                    var lvmTerritory = BotState.LastVisibleMapX.Territories[vmTerritory1.ID];
                     var guessedOpponentDeployment = 0;
                     if (lvmTerritory.IsVisible && lvmTerritory.OwnerPlayerID == opponentID)
                     {
                         var opponentIncome = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap);
                         guessedOpponentDeployment = Math.Min(lvmTerritory.GetTotalDeployment(BotTerritory.DeploymentType.Normal), opponentIncome);
-                        if (HasDeploymentReasonDisapeared(lvmTerritory, vmTerritory_1))
+                        if (HasDeploymentReasonDisapeared(lvmTerritory, vmTerritory1))
                         {
-                            // guessedOpponentDeployment = Math.min(3, guessedOpponentDeployment);
-                            var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory_1);
+                            var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory1);
                             var maxDeployment = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap) - boundDeployment;
-                            // guessedOpponentDeployment = maxDeployment;
                             guessedOpponentDeployment = Math.Min(5, maxDeployment);
                         }
                     }
                     else
                     {
-                        var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory_1);
+                        var boundDeployment = GetBoundOpponentDeployment(opponentID, vmTerritory1);
                         var maxDeployment = BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap) - boundDeployment;
-                        // guessedOpponentDeployment = maxDeployment;
                         guessedOpponentDeployment = Math.Max(1, Math.Min(5, maxDeployment));
                     }
-                    // guessedOpponentDeployment = 5;
-                    var pam = new BotOrderDeploy(opponentID, vmTerritory_1, guessedOpponentDeployment);
+                    var pam = new BotOrderDeploy(opponentID, vmTerritory1, guessedOpponentDeployment);
                     MovesCommitter.CommittPlaceArmiesMove(pam);
-                    var conservativePam = new BotOrderDeploy(opponentID, vmTerritory_1, BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap));
+                    var conservativePam = new BotOrderDeploy(opponentID, vmTerritory1, BotState.GetGuessedOpponentIncome(opponentID, BotState.VisibleMap));
                     MovesCommitter.CommittPlaceArmiesMove(conservativePam, BotTerritory.DeploymentType.Conservative);
                 }
             }
@@ -102,12 +93,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
             var ourAttackingArmies = 0;
             foreach (var ownedNeighbor in opponentTerritory.GetOwnedNeighbors())
-                ourAttackingArmies += ownedNeighbor.Armies.AttackPower - BotState.Settings.OneArmyMustStandGuardOneOrZero;
+                ourAttackingArmies += ownedNeighbor.Armies.AttackPower - BotState.MustStandGuardOneOrZero;
 
             if (opponentTerritory.AttackTerritoryValue > TerritoryValueCalculator.LOWEST_HIGH_PRIORITY_VALUE)
                 ourAttackingArmies += 5;
 
-            neededDeployment = Math.Max(0, SharedUtility.Round(ourAttackingArmies * BotState.Settings.OffenseKillRate));
+            // TODO adapt to no luck
+            neededDeployment = Math.Max(0, (int)Math.Round(ourAttackingArmies * BotState.Settings.OffenseKillRate));
 
             return neededDeployment;
         }

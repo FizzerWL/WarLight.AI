@@ -64,7 +64,7 @@ namespace WarLight.Shared.AI
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
-                gameSettings["Fog"] = "NoFog";
+                //gameSettings["Fog"] = "NoFog";
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses

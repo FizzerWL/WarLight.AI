@@ -1,14 +1,8 @@
-﻿/*
-* This code was auto-converted from a java project.
-*/
-
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
-
 using WarLight.Shared.AI.Wunderwaffe.Move;
-
 
 namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 {
@@ -48,40 +42,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             return null;
         }
 
-        // int upperOpponentDeployment =
-        // int maxAttackingArmies = 0;
-        // for (Territory opponentNeighbor : territoryToDefend.GetOpponentNeighbors()) {
-        // int opponentArmies = opponentNeighbor.getArmiesAfterDeployment(lowerConservativeLevel);
-        // int idleArmies = opponentArmies - 1;
-        // maxAttackingArmies += idleArmies;
-        // }
-        // int opponentKills = (int) Math.ceil(maxAttackingArmies * 0.6);
-        // int ownArmies = territoryToDefend.GetArmiesAfterDeploymentAndIncomingMoves();
-        // int missingArmies = Math.max(0, opponentKills - ownArmies + 1);
-        //
-        // // First try to pull in more armies
-        // if (missingArmies > 0 && useBackgroundArmies) {
-        // List<Territory> neighborsWithIdleArmies = getNeighborsWithIdleArmies(territoryToDefend);
-        // for (Territory neighbor : neighborsWithIdleArmies) {
-        // int armiesToTransfer = Math.min(missingArmies, neighbor.GetIdleArmies());
-        // if (armiesToTransfer > 0) {
-        // AttackTransferMove atm = new AttackTransferMove(BotState.MyPlayerName,
-        // neighbor, territoryToDefend, armiesToTransfer);
-        // out.attackTransferMoves.add(atm);
-        // missingArmies -= armiesToTransfer;
-        // }
-        // }
-        // }
-        //
-        // // Then try to deploy
-        // if (missingArmies <= maxDeployment && missingArmies > 0) {
-        // PlaceArmiesMove pam = new PlaceArmiesMove(BotState.MyPlayerName, territoryToDefend,
-        // missingArmies);
-        // out.placeArmiesMoves.add(pam);
-        // } else if (missingArmies > maxDeployment) {
-        // return null;
-        // }
-        // return out;
         private Moves CalculateDefendTerritoryMoves(BotTerritory territoryToDefend, int maxDeployment, bool useBackgroundArmies, int step, BotTerritory.DeploymentType lowerConservativeLevel, BotTerritory.DeploymentType upperConservativeLevel)
         {
             var outvar = new Moves();
@@ -109,10 +69,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var maxOpponentDeployment = territoryToDefend.GetOpponentNeighbors().Select(o => o.OwnerPlayerID).Distinct().Max(o => BotState.GetGuessedOpponentIncome(o, BotState.VisibleMap));
             var deploymentDifference_1 = maxOpponentDeployment - currentDeployment;
             maxAttackingArmies -= deploymentDifference_1;
-            // if (deploymentDifference > 0) {
-            // System.err.println("deploymentDifference = " + deploymentDifference + " !!!!!!!!!!!!!!!!!!!!!!!!!");
-            // }
-            var opponentKills = SharedUtility.Ceiling(maxAttackingArmies * BotState.Settings.OffenseKillRate);
+            var opponentKills = SharedUtility.Round(maxAttackingArmies * BotState.Settings.OffenseKillRate);
             var ownArmies = territoryToDefend.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
             var missingArmies = Math.Max(0, opponentKills - ownArmies + 1);
             // First try to pull in more armies
@@ -150,7 +107,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
             // Sort according to the amount of idle armies
             var outvar = new List<BotTerritory>();
-            while (unsortedNeighbors.Count > 0)
+            while (unsortedNeighbors.Count != 0)
             {
                 var biggestIdleArmyTerritory = unsortedNeighbors[0];
                 foreach (var territory in unsortedNeighbors)

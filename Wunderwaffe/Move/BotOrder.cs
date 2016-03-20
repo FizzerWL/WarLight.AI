@@ -6,9 +6,5 @@
 
         public abstract TurnPhase OccursInPhase { get; }
 
-        public override string ToString()
-        {
-            return "BotOrder";
-        }
     }
 }
