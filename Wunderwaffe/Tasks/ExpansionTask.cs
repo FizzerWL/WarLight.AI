@@ -8,9 +8,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
     public class ExpansionTask
     {
         public BotMain BotState;
-        public ExpansionTask(BotMain BotState)
+        public ExpansionTask(BotMain state)
         {
-            this.BotState = BotState;
+            this.BotState = state;
         }
 
 

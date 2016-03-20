@@ -24,6 +24,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         private void RemoveFogAccordingToPickingState()
         {
+            if (BotState.DistributionStanding == null)
+                return; //auto-dist game, skip
+
             BotMap pickingStageMap = BotMap.FromStanding(BotState, BotState.DistributionStanding);
             BotMap visibleMap = BotState.VisibleMap;
 

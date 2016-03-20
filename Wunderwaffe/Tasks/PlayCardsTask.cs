@@ -16,7 +16,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 return;
             }
 
-            foreach (ReinforcementCard reinforcementCard in state.CardsHandler.GetReinforcementCards())
+            foreach (ReinforcementCard reinforcementCard in state.CardsHandler.GetCards(CardTypes.Reinforcement))
             {
                 moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
                 state.MyIncome.FreeArmies += reinforcementCard.Armies;
@@ -33,17 +33,14 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
 
             // Discard as many cards as needed
-            var teammatesOrders = state.TeammatesOrders.Values.Where(o => o.Orders != null).SelectMany(o => o.Orders).ToList();
-            var ownOrders = moves.Convert();
-            List<CardInstanceIDType> playedCards = teammatesOrders.OfType<GameOrderPlayCard>().Select(o => o.CardInstanceID).Concat(teammatesOrders.OfType<GameOrderDiscard>().Select(o => o.CardInstanceID)).ToList();
-            playedCards.AddRange(ownOrders.OfType<GameOrderPlayCard>().Select(o => o.CardInstanceID).ToList());
+            var cardsWePlayed = moves.Convert().OfType<GameOrderPlayCard>().Select(o => o.CardInstanceID).ToHashSet(true);
+            var cardsPlayedByAnyone = state.CardsPlayedByTeammates.Concat(cardsWePlayed).ToHashSet(true);
 
-
-            int numMustPlay = state.CardsMustPlay - playedCards.Count;
+            int numMustPlay = state.CardsMustPlay;
 
             foreach (var card in state.Cards)
             {
-                if (numMustPlay > 0 && !playedCards.Contains(card.ID))
+                if (numMustPlay > 0 && !cardsPlayedByAnyone.Contains(card.ID))
                 {
                     moves.AddOrder(new BotOrderGeneric(GameOrderDiscard.Create(state.Me.ID, card.ID)));
                     numMustPlay--;

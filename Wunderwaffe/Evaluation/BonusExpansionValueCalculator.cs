@@ -131,7 +131,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             neutrals += bonus.Territories.Count(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution) * BotState.Settings.InitialNeutralsInDistribution;
 
             int neutralKills = 0;
-            foreach (BotTerritory territory in bonus.NeutralTerritories)
+            foreach (BotTerritory territory in bonus.NeutralTerritories.Where(o => o.Armies.Fogged == false))
             {
                 neutralKills += (int)Math.Round(territory.Armies.DefensePower * BotState.Settings.DefenseKillRate);
             }

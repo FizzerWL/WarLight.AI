@@ -23,8 +23,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         
         public virtual void Update(PlayerIDType opponentID, int opponentDeployment)
         {
-            OpponentDeployments.Add(opponentID, opponentDeployment);
             AILog.Log("DeploymentHistory", "VisibleDeployment for " + opponentID + ": " + opponentDeployment);
+            OpponentDeployments[opponentID] = opponentDeployment;
         }
         
     }

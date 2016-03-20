@@ -17,13 +17,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.Bonuses = new Dictionary<BonusIDType, BotBonus>();
             this.BotState = state;
         }
-
-        public BotMap(List<BotTerritory> terrs, List<BotBonus> bonuses)
-        {
-            this.Territories = terrs.ToDictionary(o => o.ID, o => o);
-            this.Bonuses = bonuses.ToDictionary(o => o.ID, o => o);
-        }
-
+        
         /// <returns>: a new Map object exactly the same as this one</returns>
         public BotMap GetMapCopy()
         {
@@ -79,6 +73,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public static BotMap FromStanding(BotMain state, GameStanding stand)
         {
+            Assert.Fatal(stand != null, "stand is null");
+
             var map = state.VisibleMap.GetMapCopy();
             foreach (var terr in stand.Territories.Values)
             {
@@ -236,11 +232,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> @in)
+        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> bonuses)
         {
             var outvar = new List<BotBonus>();
             var copy = new List<BotBonus>();
-            copy.AddRange(@in);
+            copy.AddRange(bonuses);
             while (copy.Count != 0)
             {
                 var highestRewardBonus = copy[0];
@@ -255,11 +251,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> @in)
+        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> terrs)
         {
             var outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
-            copy.AddRange(@in);
+            copy.AddRange(terrs);
             while (copy.Count != 0)
             {
                 var highestIdleArmiesTerritory = copy[0];

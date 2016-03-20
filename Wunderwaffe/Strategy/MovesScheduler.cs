@@ -73,10 +73,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             return sortedMoves;
         }
 
-        private List<BotOrderDeploy> GetSortedDeployment(List<BotOrder> allOrders)
+        private List<BotOrder> GetSortedDeployment(List<BotOrder> allOrders)
         {
-            List<BotOrderDeploy> deploymentsNextOpponent = new List<BotOrderDeploy>();
-            List<BotOrderDeploy> deploymentsInBackground = new List<BotOrderDeploy>();
+            var deploymentsNextOpponent = new List<BotOrder>();
+            var deploymentsInBackground = new List<BotOrder>();
 
             foreach (var deploy in allOrders.OfType<BotOrderDeploy>())
             {
@@ -89,7 +89,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                     deploymentsNextOpponent.Add(deploy);
                 }
             }
-            List<BotOrderDeploy> allDeployments = new List<BotOrderDeploy>();
+            var allDeployments = new List<BotOrder>();
             allDeployments.AddRange(deploymentsNextOpponent);
             allDeployments.AddRange(deploymentsInBackground);
             return allDeployments;
@@ -288,29 +288,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 copy.Remove(biggestAttack);
             }
             return outvar;
-        }
-
-        private List<BotOrderDeploy> GetSortedDeployment(List<BotOrderDeploy> unsortedDeployment)
-        {
-            unsortedDeployment = unsortedDeployment.OrderBy(o => o.Territory.ID).ToList();
-
-            List<BotOrderDeploy> deploymentsNextOpponent = new List<BotOrderDeploy>();
-            List<BotOrderDeploy> deploymentsInBackground = new List<BotOrderDeploy>();
-            foreach (var deploy in unsortedDeployment)
-            {
-                if (deploy.Territory.GetOpponentNeighbors().Count == 0)
-                {
-                    deploymentsInBackground.Add(deploy);
-                }
-                else
-                {
-                    deploymentsNextOpponent.Add(deploy);
-                }
-            }
-            List<BotOrderDeploy> sortedDeployment = new List<BotOrderDeploy>();
-            sortedDeployment.AddRange(deploymentsNextOpponent);
-            sortedDeployment.AddRange(deploymentsInBackground);
-            return sortedDeployment;
         }
 
         /// <summary>Tries to find an attack move to make the support move obsolete.</summary>

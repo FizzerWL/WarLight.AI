@@ -6,7 +6,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot.Cards
 {
     public class CardsHandler
     {
-        public List<Card> cards { get; private set; } = new List<Card>();
+        public List<Card> cards = new List<Card>();
         private BotMain BotState;
 
 
@@ -15,14 +15,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot.Cards
             this.BotState = botState;
         }
 
-        public List<ReinforcementCard> GetReinforcementCards()
-        {
-            return cards.Where(o => o.CardType == CardTypes.Reinforcement).Cast<ReinforcementCard>().ToList();
-        }
-
         public List<Card> GetCards(CardTypes cardType)
         {
-            return cards.Where(o => o.CardType == cardType).ToList();
+            return cards.Where(o => o.CardType == cardType && !o.PlayedByTeammate).ToList();
         }
 
 
@@ -31,59 +26,63 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot.Cards
             foreach (CardInstance cardInstance in BotState.Cards)
             {
                 Card card = null;
-                if (cardInstance.CardID == WarLight.Shared.AI.CardType.Reinforcement.CardID)
+                if (cardInstance.CardID == CardType.Reinforcement.CardID)
                 {
                     int armies = cardInstance.As<ReinforcementCardInstance>().Armies;
                     card = new ReinforcementCard(CardTypes.Reinforcement, cardInstance.ID, armies);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Spy.CardID)
+                else if (cardInstance.CardID == CardType.Spy.CardID)
                 {
                     card = new Card(CardTypes.Spy, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.EmergencyBlockade.CardID)
+                else if (cardInstance.CardID == CardType.EmergencyBlockade.CardID)
                 {
                     card = new Card(CardTypes.EmergencyBlockade, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.OrderPriority.CardID)
+                else if (cardInstance.CardID == CardType.OrderPriority.CardID)
                 {
                     card = new Card(CardTypes.OrderPriority, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.OrderDelay.CardID)
+                else if (cardInstance.CardID == CardType.OrderDelay.CardID)
                 {
                     card = new Card(CardTypes.OrderDelay, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Airlift.CardID)
+                else if (cardInstance.CardID == CardType.Airlift.CardID)
                 {
                     card = new Card(CardTypes.Airlift, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Gift.CardID)
+                else if (cardInstance.CardID == CardType.Gift.CardID)
                 {
                     card = new Card(CardTypes.Gift, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Diplomacy.CardID)
+                else if (cardInstance.CardID == CardType.Diplomacy.CardID)
                 {
                     card = new Card(CardTypes.Diplomacy, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Sanctions.CardID)
+                else if (cardInstance.CardID == CardType.Sanctions.CardID)
                 {
                     card = new Card(CardTypes.Sanctions, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Reconnaissance.CardID)
+                else if (cardInstance.CardID == CardType.Reconnaissance.CardID)
                 {
                     card = new Card(CardTypes.Reconnaissance, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Surveillance.CardID)
+                else if (cardInstance.CardID == CardType.Surveillance.CardID)
                 {
                     card = new Card(CardTypes.Surveilance, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Blockade.CardID)
+                else if (cardInstance.CardID == CardType.Blockade.CardID)
                 {
                     card = new Card(CardTypes.Blockade, cardInstance.ID);
                 }
-                else if (cardInstance.CardID == WarLight.Shared.AI.CardType.Bomb.CardID)
+                else if (cardInstance.CardID == CardType.Bomb.CardID)
                 {
                     card = new Card(CardTypes.Bomb, cardInstance.ID);
                 }
+
+                if (BotState.CardsPlayedByTeammates.Contains(cardInstance.ID))
+                    card.PlayedByTeammate = true;
+
                 cards.Add(card);
             }
         }

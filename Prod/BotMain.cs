@@ -298,7 +298,7 @@ namespace WarLight.Shared.AI.Prod
 
             foreach (var immediateNeighbor in Map.Territories[id].ConnectedTo.Keys)
             {
-                var nearestBorder = FindNearestBorder(immediateNeighbor, new Nullable<TerritoryIDType>(id));
+                var nearestBorder = FindNearestBorder(immediateNeighbor, id);
                 if (nearestBorder != null)
                     neighborDistances.Add(immediateNeighbor, nearestBorder.Depth);
             }

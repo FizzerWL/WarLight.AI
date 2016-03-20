@@ -54,6 +54,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public Dictionary<PlayerIDType, GamePlayer> Players;
         public GamePlayer Me;
         public Dictionary<PlayerIDType, TeammateOrders> TeammatesOrders;
+        public HashSet<CardInstanceIDType> CardsPlayedByTeammates;
 
 
 
@@ -81,6 +82,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.TakeTerritoriesTaskCalculator = new TakeTerritoriesTaskCalculator(this);
             this.OpponentDeploymentGuesser = new OpponentDeploymentGuesser(this);
             this.PicksEvaluator = new PicksEvaluator(this);
+
         }
 
         public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings settings, int numTurns, Dictionary<PlayerIDType, PlayerIncome> playerIncomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay)
@@ -114,6 +116,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
             this.PrevTurn = prevTurn;
             this.TeammatesOrders = teammatesOrders ?? new Dictionary<PlayerIDType, TeammateOrders>();
+
+            var allTeammatesOrders = TeammatesOrders.Values.Where(o => o.Orders != null).SelectMany(o => o.Orders).ToList();
+            this.CardsPlayedByTeammates = allTeammatesOrders.OfType<GameOrderPlayCard>().Select(o => o.CardInstanceID).Concat(allTeammatesOrders.OfType<GameOrderDiscard>().Select(o => o.CardInstanceID)).ToHashSet(true);
+
             this.Cards = cards;
             this.CardsMustPlay = cardsMustPlay;
             this.CardsHandler.initCards();
@@ -223,6 +229,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                 sb.AppendLine("This bot does not support Local Deployments");
             if (settings.OneArmyStandsGuard == false)
                 sb.AppendLine("This bot does not support games without One Army Stands Guard");
+            if (settings.FogLevel != GameFogLevel.NoFog && settings.FogLevel != GameFogLevel.LightFog && settings.FogLevel != GameFogLevel.Foggy)
+                sb.AppendLine("This bot only works in no fog, normal fog, or light fog.");
 
             whyNot = sb.ToString();
             return whyNot.Length == 0;
@@ -232,8 +240,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             var sb = new StringBuilder();
 
-            if (settings.FogLevel != GameFogLevel.NoFog)
-                sb.AppendLine("Since bots have to be stateless it's not possible to use intel gathered in previous turns.");
+            //if (settings.FogLevel != GameFogLevel.NoFog) //this is true of all bots, so it's not necessary to call out.
+            //    sb.AppendLine("Since bots have to be stateless it's not possible to use intel gathered in previous turns.");
             if (settings.Commanders)
                 sb.AppendLine("This bot does not understand Commanders and won't move or attack with them.");
             if (settings.MultiAttack)

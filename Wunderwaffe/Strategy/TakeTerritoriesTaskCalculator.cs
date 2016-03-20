@@ -13,11 +13,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             this.BotState = state;
         }
 
-        public Moves CalculateOneStepExpandBonusTask(int maxDeployment, BotBonus bonus, bool acceptStackOnly, BotMap workingMap, BotTerritory.DeploymentType conservativeLevel)
+        public Moves CalculateOneStepExpandBonusTask(int maxDeploymentArg, BotBonus bonus, bool acceptStackOnly, BotMap workingMap, BotTerritory.DeploymentType conservativeLevel)
         {
             var outvar = new Moves();
-            if (maxDeployment == -1)
-                maxDeployment = 1000;
+            var maxDeployment = maxDeploymentArg == -1 ? 1000 : maxDeploymentArg;
 
             List<BotTerritory> visibleNeutralTerritories = bonus.GetVisibleNeutralTerritories();
             List<BotTerritory> territoriesToRemove = new List<BotTerritory>();
@@ -72,11 +71,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
         /// <param name="territoriesToTake">the territories that should be taken this turn.</param>
         /// <returns>the necessary moves to take the territories or null if no solution was found.
         /// </returns>
-        public Moves CalculateTakeTerritoriesTask(int maxDeployment, List<BotTerritory> territoriesToTake, BotTerritory.DeploymentType conservativeLevel, string attackSource)
+        public Moves CalculateTakeTerritoriesTask(int maxDeploymentArg, List<BotTerritory> territoriesToTake, BotTerritory.DeploymentType conservativeLevel, string attackSource)
         {
             var outvar = new Moves();
-            if (maxDeployment == -1)
-                maxDeployment = int.MaxValue;
+            var maxDeployment = maxDeploymentArg == -1 ? int.MaxValue : maxDeploymentArg;
 
             var stillAvailableDeployment = maxDeployment;
             foreach (var missingTerritory in territoriesToTake)

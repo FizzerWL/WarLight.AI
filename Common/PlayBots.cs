@@ -64,7 +64,8 @@ namespace WarLight.Shared.AI
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
-                //gameSettings["Fog"] = "NoFog";
+                //gameSettings["Fog"] = GameFogLevel.NoFog.ToString();
+                //gameSettings["Fog"] = GameFogLevel.ModerateFog.ToString();
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses

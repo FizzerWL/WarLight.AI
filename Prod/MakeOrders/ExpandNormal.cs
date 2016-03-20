@@ -106,7 +106,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             AILog.Log("Expand", "GetExpansionWeights called with " + terrs.Count + " territories.  Weighted " + bonusWeights.Count + " bonuses:");
             foreach (var bw in bonusWeights.OrderByDescending(o => o.Value).Take(10))
-                AILog.Log("Expand", " - " + Bot.BonusString(bw.Key) + " Weight=" + bw.Value + " " + turnsToTake[bw.Key] + " TurnsToTakeByDistance=" + bonusPaths[bw.Key].TurnsToTakeByDistance + ") CriticalPath=" + bonusPaths[bw.Key].TerritoriesOnCriticalPath.Select(o => Bot.TerrString(o)).JoinStrings(", "));
+                AILog.Log("Expand", " - " + Bot.BonusString(bw.Key) + " Weight=" + bw.Value + " " + turnsToTake[bw.Key] + " TurnsToTakeByDistance=" + bonusPaths[bw.Key].TurnsToTakeByDistance + " CriticalPath=" + bonusPaths[bw.Key].TerritoriesOnCriticalPath.Select(o => Bot.TerrString(o)).JoinStrings(", "));
 
             var ret = new Dictionary<TerritoryIDType, PossibleExpandTarget>();
 

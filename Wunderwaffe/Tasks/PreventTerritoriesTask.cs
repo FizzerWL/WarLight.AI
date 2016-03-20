@@ -23,7 +23,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 return outvar;
 
             // Just try to prevent the territory with the highest defense territory value
-            var highestDefenceTerritoryValue = 0d;
+            var highestDefenceTerritoryValue = 0;
             BotTerritory highestDefenceValueTerritory = null;
             foreach (var territory in territoriesToPrevent)
             {

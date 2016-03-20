@@ -13,7 +13,12 @@ namespace WarLight.Shared.AI
 
     public enum GameFogLevel : byte
     {
-        NoFog, LightFog, ModerateFog, Foggy, VeryFoggy, ExtremeFog
+        NoFog,
+        LightFog,
+        ModerateFog, //Dense fog
+        Foggy, //Normal Fog
+        VeryFoggy, //Heavy fog
+        ExtremeFog //Complete fog
     }
     public class GameSettings
     {
