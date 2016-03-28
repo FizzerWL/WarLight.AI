@@ -82,7 +82,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 var bestNeighborTerritory = GetBestNeighborTerritory(missingTerritory, outvar, territoriesToTake);
                 var missingTerritoryArmies = missingTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
                 var neededAttackArmies = missingTerritory.getNeededBreakArmies(missingTerritory.Armies.DefensePower);
-                //var neededAttackArmies = (int)Math.Round(missingTerritoryArmies.DefensePower / BotState.Settings.OffensiveKillRate);
                 var missingArmies = GetMissingArmies(bestNeighborTerritory, missingTerritory, outvar, conservativeLevel);
                 if (missingArmies > stillAvailableDeployment)
                     return null;

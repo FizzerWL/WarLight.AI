@@ -267,11 +267,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public bool CanTakeOver()
         {
             if (this.IsOwnedByMyself())
+            {
                 return false;
+            }
             foreach (var territory in this.Territories)
             {
-                if (territory.OwnerPlayerID != BotState.Me.ID && territory.GetOwnedNeighbors().Count == 0)
+                if (territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID || (territory.OwnerPlayerID != BotState.Me.ID && territory.GetOwnedNeighbors().Count == 0))
+                {
                     return false;
+                }
             }
             return true;
         }

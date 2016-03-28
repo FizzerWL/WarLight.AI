@@ -299,17 +299,24 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
                 return null;
 
             var mmOpponentTerritory = mmTerritoryToDefend.GetOpponentNeighbors()[0];
-            foreach (var unhandledMove in unhandledMoves.OfType<BotOrderAttackTransfer>())
+            List<BotOrderAttackTransfer> unhandledAttacks = unhandledMoves.OfType<BotOrderAttackTransfer>().ToList();
+            unhandledAttacks = unhandledAttacks.OrderByDescending(attack => attack.Armies.AttackPower).ToList();
+
+            foreach (var unhandledMove in unhandledAttacks)
             {
-                if (unhandledMove.To.ID == mmOpponentTerritory.ID)
+                if (unhandledMove.To.ID == mmOpponentTerritory.ID && !CanOpponentAttackTerritory(mmOpponentTerritory.OwnerPlayerID, unhandledMove.From))
                 {
-                    if (!CanOpponentAttackTerritory(mmOpponentTerritory.OwnerPlayerID, unhandledMove.From))
+                    int defenseMoveWorth = supportMove.Armies.AttackPower;
+                    int attackMoveWorth = (int)Math.Round(unhandledMove.Armies.AttackPower * BotState.Settings.OffenseKillRate);
+
+                    Boolean condition1 = unhandledMove.Armies.AttackPower * BotState.Settings.OffenseKillRate > mmOpponentTerritory.Armies.DefensePower + BotState.GetGuessedOpponentIncome(mmOpponentTerritory.OwnerPlayerID, BotState.VisibleMap) + 3;
+                    Boolean condition2 = attackMoveWorth > defenseMoveWorth;
+
+                    if (condition1 || condition2)
                     {
-                        if (unhandledMove.Armies.AttackPower * BotState.Settings.OffenseKillRate > mmOpponentTerritory.Armies.DefensePower + BotState.GetGuessedOpponentIncome(mmOpponentTerritory.OwnerPlayerID, BotState.VisibleMap) + 3)
-                        {
-                            return unhandledMove;
-                        }
+                        return unhandledMove;
                     }
+
                 }
             }
             return null;
