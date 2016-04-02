@@ -28,7 +28,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
 
             PlayCardsTask.PlayCardsBeginTurn(BotState, movesSoFar);
 
-            AILog.Log("MovesCalculator","Starting armies: " + BotState.MyIncome.Total);
+            AILog.Log("MovesCalculator", "Starting armies: " + BotState.MyIncome.Total);
             CalculateXBonusMoves(movesSoFar, BotTerritory.DeploymentType.Normal, BotTerritory.DeploymentType.Normal);
             AILog.Log("MovesCalculator", "Armies used after calculateXBonusMoves type 1: " + movesSoFar.GetTotalDeployment());
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
@@ -63,10 +63,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             BotState.TerritoryValueCalculator.CalculateTerritoryValues(BotState.VisibleMap, BotState.WorkingMap);
             CalculateNoPlanBreakDefendMoves(movesSoFar, false, true, true, BotTerritory.DeploymentType.Normal, BotTerritory.DeploymentType.Conservative);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
+
             BotState.TerritoryValueCalculator.CalculateTerritoryValues(BotState.VisibleMap, BotState.WorkingMap);
             CalculateFlankBonusMoves(movesSoFar);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
             AILog.Log("MovesCalculator", "Armies used after calculateFlankBonusMoves: " + movesSoFar.GetTotalDeployment());
+
+            BotState.TerritoryValueCalculator.CalculateTerritoryValues(BotState.VisibleMap, BotState.VisibleMap);
+            CalculateBonusRunMoves(movesSoFar);
+            AILog.Log("MovesCalculator", "Armies used after BonusRunTask: " + movesSoFar.GetTotalDeployment());
+
+
             BotState.TerritoryValueCalculator.CalculateTerritoryValues(BotState.VisibleMap, BotState.WorkingMap);
             CalculateNoPlanBreakDefendMoves(movesSoFar, true, false, false, BotTerritory.DeploymentType.Normal, BotTerritory.DeploymentType.Normal);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
@@ -77,13 +84,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             CalculateNoPlanAttackTerritoriesMoves(movesSoFar);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
             AILog.Log("MovesCalculator", "Armies used after calculateNoPlanAttackTerritoriesMoves2: " + movesSoFar.GetTotalDeployment());
+
             BotState.TerritoryValueCalculator.CalculateTerritoryValues(BotState.VisibleMap, BotState.VisibleMap);
             CalculateMoveIdleArmiesMoves(movesSoFar);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
+
             CalculateJoinInAttacksMoves(movesSoFar);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
+
             var supportTransferMoves = TransferMovesChooser.CalculateJoinStackMoves(BotState);
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
+
             MovesCommitter.CommittMoves(BotState, supportTransferMoves);
             movesSoFar.MergeMoves(supportTransferMoves);
 
@@ -105,7 +116,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             DistanceCalculator.CalculateDistanceToOpponentBorderCare3(BotState.ExpansionMap, BotState.VisibleMap);
             foreach (BotBonus emBonus in BotState.ExpansionMap.Bonuses.Values)
                 emBonus.ExpansionValue = BotState.VisibleMap.Bonuses[emBonus.ID].ExpansionValue;
-            DistanceCalculator.CalculateDistanceToHighlyImportantExpansionTerritories(BotState.ExpansionMap, BotState.VisibleMap);
+            DistanceCalculator.CalculateDistanceToHighlyImportantExpansionTerritories(BotState.ExpansionMap, BotState.VisibleMap, BotState);
             DistanceCalculator.CalculateDistanceToOpponentBorderCare4(BotState.ExpansionMap, BotState.VisibleMap);
             var transferMoves = TransferMovesChooser.CalculateTransferMoves2(BotState);
             MovesCommitter.CommittMoves(BotState, transferMoves);
@@ -237,6 +248,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             {
                 MovesCommitter.CommittMoves(BotState, flankBonusMoves);
                 moves.MergeMoves(flankBonusMoves);
+            }
+        }
+
+        // TODO hier
+        private void CalculateBonusRunMoves(Moves moves)
+        {
+            int maxDeployment = BotState.MyIncome.Total - moves.GetTotalDeployment();
+            Moves bonusRunMoves = BotState.BonusRunTask.CalculateBonusRunMoves(maxDeployment);
+            if (bonusRunMoves != null)
+            {
+                MovesCommitter.CommittMoves(BotState, bonusRunMoves);
+                moves.MergeMoves(bonusRunMoves);
             }
         }
 

@@ -106,8 +106,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             var importantTerritories = new List<BotTerritory>();
             foreach (var neutralTerritory in mapToUse.GetNeutralTerritories())
                 if (neutralTerritory.Bonuses.Any(o => o.ExpansionValueCategory == 1))
+                {
                     importantTerritories.Add(neutralTerritory);
-
+                }
             var blockedTerritories = mapToUse.AllOpponentTerritories;
             var annotadedTerritories = CalculateDistances(mapToUse, importantTerritories, blockedTerritories);
             foreach (var territory in annotadedTerritories.Keys)
@@ -120,13 +121,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
 
         /// <summary>Care2Spots</summary>
         /// <param name="mapToUse"></param>
-        public static void CalculateDistanceToHighlyImportantExpansionTerritories(BotMap mapToUse, BotMap mapToWriteIn)
+        public static void CalculateDistanceToHighlyImportantExpansionTerritories(BotMap mapToUse, BotMap mapToWriteIn, BotMain botState)
         {
             var highlyImportantTerritories = new List<BotTerritory>();
             foreach (var neutralTerritory in mapToUse.GetNeutralTerritories())
             {
-                if (neutralTerritory.Bonuses.Any(o => o.ExpansionValueCategory == 1 && o.GetExpansionValue() >= 100))
+                // TODO hier
+                //if (neutralTerritory.Bonuses.Any(o => o.ExpansionValueCategory == 1 && o.GetExpansionValue() >= 100))
+
+                if (neutralTerritory.Bonuses.Any(o => botState.ExpansionTask.expandBonuses.Contains(o)))
+                {
                     highlyImportantTerritories.Add(neutralTerritory);
+                }
             }
             var blockedTerritories = mapToUse.AllOpponentTerritories;
             var annotadedTerritories = CalculateDistances(mapToUse, highlyImportantTerritories, blockedTerritories);
