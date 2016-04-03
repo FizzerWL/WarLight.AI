@@ -122,15 +122,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Debug
         public static void PrintMoves(BotMain state, Moves moves)
         {
 
-            //for (int i = 0; i < moves.Orders.Count; i++)
-            //{
-            //    var order = moves.Orders[i];
-            //    if (order is BotOrderAttackTransfer)
-            //    {
-            //        BotOrderAttackTransfer atm = (BotOrderAttackTransfer)order;
-            //        AILog.Log("Debug", atm.ToString());
-            //    }
-            //}
+            for (int i = 0; i < moves.Orders.Count; i++)
+            {
+                var order = moves.Orders[i];
+                if (order is BotOrderAttackTransfer)
+                {
+                    BotOrderAttackTransfer atm = (BotOrderAttackTransfer)order;
+                    AILog.Log("Debug", atm.ToString());
+                }
+            }
         }
 
         public static void PrintAllTerritories(BotMain state, BotMap map)

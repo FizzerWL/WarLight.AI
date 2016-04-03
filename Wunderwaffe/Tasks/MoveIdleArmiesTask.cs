@@ -2,6 +2,7 @@
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 
 using WarLight.Shared.AI.Wunderwaffe.Move;
+using System.Linq;
 
 
 namespace WarLight.Shared.AI.Wunderwaffe.Tasks
@@ -58,18 +59,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 if (ourTerritory.GetIdleArmies().IsEmpty == false && ourTerritory.GetExpansionMoves().Count > 0)
                 {
                     var bestMove = GetBestExpansionMoveToAddArmies(ourTerritory.GetExpansionMoves());
-                    if (IsAddingArmiesBeneficial(bestMove))
+                    if (IsAddingArmiesBeneficial(bestMove, state))
                         outvar.AddOrder(new BotOrderAttackTransfer(state.Me.ID, ourTerritory, bestMove.To, ourTerritory.GetIdleArmies(), "MoveIdleArmiesTask2"));
                 }
             }
             return outvar;
         }
 
-        private static bool IsAddingArmiesBeneficial(BotOrderAttackTransfer expansionMove)
+        private static bool IsAddingArmiesBeneficial(BotOrderAttackTransfer expansionMove, BotMain state)
         {
             var isBeneficial = true;
-            var containsToTerritoryOpponentNeighbor = expansionMove.To.GetOpponentNeighbors
-                ().Count > 0 ? true : false;
+            // check for opponent bordering neighbors
+            bool containsToTerritoryOpponentNeighbor = expansionMove.To.GetOpponentNeighbors().Count > 0;
             var containsFromTerritoryOpponentBorderingNeighbor = false;
             foreach (var ownedNeighbor in expansionMove.From.GetOwnedNeighbors())
             {
@@ -78,11 +79,57 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     containsFromTerritoryOpponentBorderingNeighbor = true;
                 }
             }
-            if (containsToTerritoryOpponentNeighbor == false && containsFromTerritoryOpponentBorderingNeighbor
-                 == true)
+            if (containsToTerritoryOpponentNeighbor == false && containsFromTerritoryOpponentBorderingNeighbor == true)
             {
                 isBeneficial = false;
             }
+
+            // check if we can continue our expansion from that territory
+            List<BotBonus> expandBonuses = state.ExpansionTask.expandBonuses;
+            List<BotTerritory> vmExpandTerritories = new List<BotTerritory>();
+            foreach (BotBonus expandBonus in expandBonuses)
+            {
+                vmExpandTerritories.AddRange(expandBonus.Territories);
+            }
+            BotMap workingMap = state.WorkingMap;
+            BotTerritory vmFrom = expansionMove.From;
+            BotTerritory vmTo = expansionMove.To;
+            BotTerritory wmFrom = workingMap.Territories[vmFrom.ID];
+            BotTerritory wmTo = workingMap.Territories[vmTo.ID];
+            List<BotTerritory> wmExpandTerritories = new List<BotTerritory>();
+            foreach (BotTerritory vmTerritory in vmExpandTerritories)
+            {
+                wmExpandTerritories.Add(workingMap.Territories[vmTerritory.ID]);
+            }
+            List<BotTerritory> wmNeutralExpandTerritories = wmExpandTerritories.Where(o => o.OwnerPlayerID == TerritoryStanding.NeutralPlayerID).ToList();
+
+            bool canContinueFromTarget = false;
+            bool canContinueFromSource = false;
+            foreach (BotTerritory neighbor in wmFrom.Neighbors)
+            {
+                if (wmNeutralExpandTerritories.Contains(neighbor))
+                {
+                    canContinueFromSource = true;
+                }
+            }
+            foreach (BotTerritory neighbor in wmTo.Neighbors)
+            {
+                if (wmNeutralExpandTerritories.Contains(neighbor))
+                {
+                    canContinueFromTarget = true;
+                }
+            }
+            if (canContinueFromSource && !canContinueFromTarget)
+            {
+                isBeneficial = false;
+            }
+
+            if (wmFrom.GetNonOwnedNeighbors().Count > 0 && wmTo.GetNonOwnedNeighbors().Count == 0)
+            {
+                isBeneficial = false;
+            }
+
+
             return isBeneficial;
         }
 
@@ -115,12 +162,18 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     bestExpansionMove = expansionMoves[0];
                     foreach (BotOrderAttackTransfer atm_1 in expansionMoves)
                     {
-                        if (atm_1.To.GetNonOwnedNeighbors().Count > bestExpansionMove.To.GetNonOwnedNeighbors().Count)
+                        if (atm_1.To.ExpansionTerritoryValue > bestExpansionMove.To.ExpansionTerritoryValue)
+                        //if (atm_1.To.GetNonOwnedNeighbors().Count > bestExpansionMove.To.GetNonOwnedNeighbors().Count)
+                        {
                             bestExpansionMove = atm_1;
+                        }
                     }
                 }
             }
             return bestExpansionMove;
         }
+
+
+
     }
 }
