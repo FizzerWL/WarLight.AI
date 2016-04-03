@@ -16,10 +16,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 return;
             }
 
-            foreach (ReinforcementCard reinforcementCard in state.CardsHandler.GetCards(CardTypes.Reinforcement))
+            foreach (var reinforcementCard in state.CardsHandler.GetCards(CardTypes.Reinforcement))
             {
                 moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
-                state.MyIncome.FreeArmies += reinforcementCard.Armies;
+                state.MyIncome.FreeArmies += reinforcementCard.As<ReinforcementCard>().Armies;
             }
         }
 

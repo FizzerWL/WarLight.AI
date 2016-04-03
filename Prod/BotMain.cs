@@ -21,7 +21,7 @@ namespace WarLight.Shared.AI.Prod
 
         public string Description()
         {
-            return "Version 2.0 of WarLight's production AI.  Currently in beta. " + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable." : "");
+            return "Version 2.0 of WarLight's production AI." + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
@@ -74,6 +74,7 @@ namespace WarLight.Shared.AI.Prod
         public Dictionary<PlayerIDType, int> WeightedNeighbors;
         public HashSet<TerritoryIDType> AvoidTerritories = new HashSet<TerritoryIDType>(); //we're conducting some sort of operation here, such as a a blockade, so avoid attacking or deploying more here.
 
+        public Stopwatch Timer;
 
         //not available during picking:
         public MakeOrders.MakeOrdersMain MakeOrders; 
@@ -81,6 +82,7 @@ namespace WarLight.Shared.AI.Prod
 
         public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay)
         {
+            this.Timer = Stopwatch.StartNew();
             this.DistributionStandingOpt = distributionStanding;
             this.Standing = latestTurnStanding;
             this.PlayerID = myPlayerID;
