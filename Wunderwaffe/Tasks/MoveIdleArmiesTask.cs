@@ -123,8 +123,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             {
                 isBeneficial = false;
             }
-
-            if (wmFrom.GetNonOwnedNeighbors().Count > 0 && wmTo.GetNonOwnedNeighbors().Count == 0)
+            if (wmTo.GetNonOwnedNeighbors().Count == 0)
+            //if (wmFrom.GetNonOwnedNeighbors().Count > 0 && wmTo.GetNonOwnedNeighbors().Count == 0)
             {
                 isBeneficial = false;
             }

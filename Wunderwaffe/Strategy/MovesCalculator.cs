@@ -108,6 +108,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             BotState.DeleteBadMovesTask.CalculateDeleteBadMovesTask(movesSoFar);
 
             AILog.Log("MovesCalculator", "Armies used after all moves done: " + movesSoFar.GetTotalDeployment());
+
             BotState.MapUpdater.UpdateMap(BotState.WorkingMap);
             DistanceCalculator.CalculateDistanceToBorder(BotState, BotState.VisibleMap, BotState.WorkingMap);
             BotState.ExpansionMapUpdater.UpdateExpansionMap();
@@ -121,7 +122,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var transferMoves = TransferMovesChooser.CalculateTransferMoves2(BotState);
             MovesCommitter.CommittMoves(BotState, transferMoves);
             movesSoFar.MergeMoves(transferMoves);
+
             CalculateDelayMoves(movesSoFar);
+
             MovesCleaner.CleanupMoves(BotState, movesSoFar);
             movesSoFar = BotState.MovesScheduler2.ScheduleMoves(movesSoFar);
 
