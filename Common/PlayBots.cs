@@ -69,6 +69,7 @@ namespace WarLight.Shared.AI
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
+                //gameSettings["Map"] = 24591; //big USA, 3066 territories
                 //gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
                 //gameSettings["BombCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1));
                 //gameSettings["SanctionsCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1), new JProperty("Duration", 1), new JProperty("Percentage", 0.5));

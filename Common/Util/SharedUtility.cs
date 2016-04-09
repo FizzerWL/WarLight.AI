@@ -170,6 +170,15 @@ namespace WarLight.Shared.AI
             else
                 return def;
         }
+
+        public static Queue<T> ToQueue<T>(this IEnumerable<T> array)
+        {
+            var queue = new Queue<T>();
+            foreach (var a in array)
+                queue.Enqueue(a);
+            return queue;
+        }
+
     }
 
 }

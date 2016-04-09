@@ -48,8 +48,6 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (jumpsToGetToBonus == int.MaxValue)
                 return null; //can't take it within a reasonable searching distance
 
-            
-
             if (jumpsToGetToBonus == 0)
             {
                 //We're already in it
@@ -88,7 +86,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             while (true)
             {
-                var expand = visited.SelectMany(o => bot.Map.Territories[o].ConnectedTo.Keys).Where(o => visited.Contains(o) == false && bot.IsTeammateOrUs(standing.Territories[o].OwnerPlayerID) == false).ToHashSet(false); 
+                var expand = visited.SelectMany(o => bot.Map.Territories[o].ConnectedTo.Keys).Where(o => visited.Contains(o) == false && standing.Territories[o].OwnerPlayerID != bot.PlayerID).ToHashSet(false); 
 
                 if (expand.Count == 0)
                 {

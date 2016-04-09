@@ -21,42 +21,44 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             int numMustPlay = bot.CardsMustPlay;
 
+            if (numMustPlay > 0)
+                AILog.Log("PlayCards", "Must play " + numMustPlay + " cards, have " + bot.Cards.Count + ", teammate played " + cardsPlayedByTeammate.Count);
+
+            var availableCards = bot.Cards.ToDictionary(o => o.ID, o => o);
+            
+
             foreach (var card in bot.Cards)
             {
                 if (cardsPlayedByTeammate.Contains(card.ID))
-                    continue; //Teammate played it
+                {
+                    //Teammate played it
+                    availableCards.Remove(card.ID);
+                    continue; 
+                }
 
-                if (card.CardID == CardType.Reinforcement.CardID)
+                Action<CardType, Func<BotMain, CardInstance, bool>> tryPlay = (cardType, playFn) =>
                 {
-                    if (PlayReinforcementCard(bot, card))
+                    if (card.CardID == cardType.CardID && playFn(bot, card))
+                    {
+                        availableCards.Remove(card.ID);
                         numMustPlay--;
-                }
-                else if (card.CardID == CardType.Sanctions.CardID)
-                {
-                    if (PlaySanctionsCard(bot, card))
-                        numMustPlay--;
-                }
-                else if (card.CardID == CardType.Bomb.CardID)
-                {
-                    if (PlayBombCard(bot, card))
-                        numMustPlay--;
-                }
-                else if (card.CardID == CardType.Blockade.CardID)
-                {
-                    if (PlayBlockadeCard(bot, card))
-                        numMustPlay--;
-                }
-                else if (card.CardID == CardType.Diplomacy.CardID)
-                {
-                    if (PlayDiplomacyCard(bot, card))
-                        numMustPlay--;
-                }
-                else if (numMustPlay > 0) //For now, just discard all non-reinforcement cards if we must use the card
-                {
-                    AILog.Log("PlayCards", "Must discard card " + card);
-                    bot.Orders.AddOrder(GameOrderDiscard.Create(bot.PlayerID, card.ID));
-                    numMustPlay--;
-                }
+                    }
+                };
+
+                tryPlay(CardType.Reinforcement, PlayReinforcementCard);
+                tryPlay(CardType.Sanctions, PlaySanctionsCard);
+                tryPlay(CardType.Bomb, PlayBombCard);
+                tryPlay(CardType.Blockade, PlayBlockadeCard);
+                tryPlay(CardType.Diplomacy, PlayDiplomacyCard);
+            }
+
+            while (numMustPlay > 0)
+            {
+                var card = availableCards.First().Value;
+                AILog.Log("PlayCards", "Discarding card " + card + ", type=" + card.CardID);
+                bot.Orders.AddOrder(GameOrderDiscard.Create(bot.PlayerID, card.ID));
+                numMustPlay--;
+                availableCards.Remove(card.ID);
             }
         }
 

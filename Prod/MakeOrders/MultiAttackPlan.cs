@@ -45,7 +45,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var visited = new HashSet<TerritoryIDType>();
             var stack = new Stack<MultiAttackPlan>();
-            if (!TryTraverseBonus(bot, standing, allUnownedTerrsInBonus.ToHashSet(true), terr, visited, stack))
+            if (!TryTraverseBonus(bot, standing, allUnownedTerrsInBonus.ToHashSet(true), stackOn, visited, stack))
                 return null;
 
             return ret.Concat(Enumerable.Reverse(stack).Skip(1)).ToList(); //skip the first one, as that's the one we're already on.  Our plan just contains the movements we want to make

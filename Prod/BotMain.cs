@@ -74,7 +74,11 @@ namespace WarLight.Shared.AI.Prod
         public Dictionary<PlayerIDType, int> WeightedNeighbors;
         public HashSet<TerritoryIDType> AvoidTerritories = new HashSet<TerritoryIDType>(); //we're conducting some sort of operation here, such as a a blockade, so avoid attacking or deploying more here.
 
-        public Stopwatch Timer;
+        private Stopwatch Timer;
+        public bool PastTime(double seconds)
+        {
+            return Timer.Elapsed.TotalSeconds >= seconds;
+        }
 
         //not available during picking:
         public MakeOrders.MakeOrdersMain MakeOrders; 
@@ -123,6 +127,8 @@ namespace WarLight.Shared.AI.Prod
 
         public int ArmiesToTake(Armies defenseArmies)
         {
+            Assert.Fatal(!defenseArmies.Fogged, "ArmiesToTake called on fog");
+
             var ret = SharedUtility.Round((defenseArmies.DefensePower / Settings.OffenseKillRate) - 0.5);
 
             if (ret == SharedUtility.Round(defenseArmies.DefensePower * Settings.DefenseKillRate))

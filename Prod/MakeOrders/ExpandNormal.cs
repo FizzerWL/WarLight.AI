@@ -44,7 +44,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 if (Bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Any(o => o.To == expandTo))
                     continue; //we've already attacked it
 
-                int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[expandTo].NumArmies);
+                int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[expandTo].NumArmies.Fogged ? ExpansionHelper.GuessNumberOfArmies(Bot, expandTo) : Bot.Standing.Territories[expandTo].NumArmies);
 
                 var attackFromList = Bot.Map.Territories[expandTo].ConnectedTo.Keys
                     .Select(o => Bot.Standing.Territories[o])

@@ -47,12 +47,24 @@ namespace WarLight.Shared.AI.Prod
                     weight -= GuessNumberOfArmies(bot, ts.ID).DefensePower * armyMult;
                 else if (bot.IsTeammate(ts.OwnerPlayerID))
                     weight -= bot.Players[ts.OwnerPlayerID].IsAIOrHumanTurnedIntoAI ? 0 : ts.NumArmies.DefensePower * 4 * armyMult; //Human teammate in it. We'll defer to them since humans know best.
-                else if (ts.IsNeutral)
-                    weight -= ts.NumArmies.DefensePower * armyMult; //Neutral in it
                 else if (ts.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
                     weight -= Math.Max(bot.Settings.InitialNeutralsInDistribution, bot.Settings.InitialPlayerArmiesPerTerritory) * armyMult; //assume another player could start there
+                else if (ts.IsNeutral)
+                {
+                    //Neutral in it
+                    if (ts.NumArmies.Fogged == false)
+                        weight -= ts.NumArmies.DefensePower * armyMult;
+                    else
+                        weight -= GuessNumberOfArmies(bot, ts.ID).DefensePower * armyMult;
+                }
                 else
-                    weight -= ts.NumArmies.DefensePower * 3 * armyMult; //Opponent in it - expansion less likely
+                {
+                    //Opponent in it - expansion less likely
+                    if (ts.NumArmies.Fogged == false)
+                        weight -= ts.NumArmies.DefensePower * 3 * armyMult;
+                    else
+                        weight -= GuessNumberOfArmies(bot, ts.ID).DefensePower * armyMult;
+                }
             }
 
             return weight;

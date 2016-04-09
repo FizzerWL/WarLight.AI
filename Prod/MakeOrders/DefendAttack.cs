@@ -131,7 +131,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private void TryDoAttack(PossibleAttack attack, ref int armiesToOffense)
         {
-            int attackWith = Bot.ArmiesToTake(Bot.Standing.Territories[attack.To].NumArmies);
+            var toTS = Bot.Standing.Territories[attack.To];
+
+            int attackWith = Bot.ArmiesToTake(toTS.NumArmies.Fogged == false ? toTS.NumArmies : ExpansionHelper.GuessNumberOfArmies(Bot, toTS.ID));
 
             //Add a few more to what's required so we're not as predictable.
             if (Bot.UseRandomness)

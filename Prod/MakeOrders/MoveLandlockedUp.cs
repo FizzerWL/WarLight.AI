@@ -14,13 +14,11 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         /// </summary>
         public static void Go(BotMain bot)
         {
-            var start = Environment.TickCount;
-
             foreach (var landlocked in bot.Standing.Territories.Values.Where(o => o.OwnerPlayerID == bot.PlayerID
                 && bot.Map.Territories[o.ID].ConnectedTo.Keys.All(c => bot.IsTeammateOrUs(bot.Standing.Territories[c].OwnerPlayerID))
                 && bot.MakeOrders.GetArmiesAvailable(o.ID) > 0))
             {
-                if (Environment.TickCount - start > 1000)
+                if (bot.PastTime(1))
                 {
                     //Extreme cases (i.e. where one player controls all of a big map), this algorithm can take forever.  We don't care about these extreme cases since they've already won.  Stop processing after too long (max 1 second per AI)
                     AILog.Log("MoveLandlockedUp", "Giving up due to time");

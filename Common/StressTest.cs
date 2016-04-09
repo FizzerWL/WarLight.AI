@@ -72,7 +72,7 @@ namespace WarLight.Shared.AI
                 //gameSettings["Map"] = 42717; //thirty years war, 2264 territories
                 //gameSettings["Map"] = 34083; //Africa big, 1544 territories
                 gameSettings["DistributionMode"] = 0; //full dist
-                gameSettings["TerritoryLimit"] = 0; //no limit
+                gameSettings["TerritoryLimit"] = 0; //terr limit
                 gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
                 //gameSettings["AutomaticTerritoryDistribution"] = "Automatic"; //skip picking, if you're only looking to optimize orders
             });
