@@ -52,7 +52,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             foreach (var borderTerritory in MultiAttackStanding.Territories.Values.Where(o => Bot.IsBorderTerritory(MultiAttackStanding, o.ID)).OrderByDescending(o => o.NumArmies.NumArmies).ToList())
             {
-                if (Bot.PastTime(3))
+                if (Bot.PastTime(10))
                     return;
 
                 var stackSize = Math.Max(0, MultiAttackStanding.Territories[borderTerritory.ID].NumArmies.NumArmies - Bot.Settings.OneArmyMustStandGuardOneOrZero);
@@ -65,12 +65,12 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     .Where(o => Bot.BonusValue(o) > 0)
                     .Select(o =>
                     {
-                        if (maxDistance > 1 && Bot.PastTime(1))
+                        if (maxDistance > 1 && Bot.PastTime(7))
                         {
                             AILog.Log("MultiAttackExpand", "Due to slow speed, reducing bonus search distance from " + maxDistance + " to 1");
                             maxDistance = 1; //if we're taking too long, give up on far away bonuses.  Otherwise this algorithm can take forever on large maps
                         }
-                        if (Bot.PastTime(3))
+                        if (Bot.PastTime(10))
                             return null;
 
                         return MultiAttackPathToBonus.TryCreate(Bot, borderTerritory.ID, o, MultiAttackStanding, maxDistance);

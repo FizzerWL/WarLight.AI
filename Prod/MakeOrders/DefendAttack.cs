@@ -108,6 +108,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var armiesLeft = armiesToOffense;
 
+
             if (!Bot.UseRandomness)
             {
                 int attackIndex = 0;
@@ -121,6 +122,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             {
                 while (orderedAttacks.Count > 0)
                 {
+                    if (armiesLeft == 0 && Bot.PastTime(8))
+                        return; //if we're running slowly and have no armies to deploy, just skip attacks.  We just miss out on attacks that we could have done with standing armies.
+
                     var i = RandomUtility.WeightedRandomIndex(orderedAttacks, o => o.OffenseImportance);
                     TryDoAttack(orderedAttacks[i], ref armiesLeft);
                     orderedAttacks.RemoveAt(i);

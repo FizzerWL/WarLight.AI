@@ -18,8 +18,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 
             foreach (var reinforcementCard in state.CardsHandler.GetCards(CardTypes.Reinforcement))
             {
+                var numArmies = reinforcementCard.As<ReinforcementCard>().Armies;
+                AILog.Log("PlayCardsTask", "Playing reinforcement card " + reinforcementCard.CardInstanceId + " for " + numArmies + " armies");
                 moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
-                state.MyIncome.FreeArmies += reinforcementCard.As<ReinforcementCard>().Armies;
+                state.MyIncome.FreeArmies += numArmies;
             }
         }
 
@@ -42,6 +44,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             {
                 if (numMustPlay > 0 && !cardsPlayedByAnyone.Contains(card.ID))
                 {
+                    AILog.Log("PlayCardsTask", "Discarding card " + card.ID);
                     moves.AddOrder(new BotOrderGeneric(GameOrderDiscard.Create(state.Me.ID, card.ID)));
                     numMustPlay--;
                 }

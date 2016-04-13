@@ -25,6 +25,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot.Cards
         {
             foreach (CardInstance cardInstance in BotState.Cards)
             {
+                AILog.Log("CardsHandler", "Have card " + cardInstance.ID + " of type " + cardInstance.CardID);
                 Card card = null;
                 if (cardInstance.CardID == CardType.Reinforcement.CardID)
                 {

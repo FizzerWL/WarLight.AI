@@ -44,7 +44,6 @@ namespace WarLight.Shared.AI.Prod
 
             while (true)
             {
-
                 var takeThisTurn = terrsToTake.Where(o => bot.Map.Territories[o].ConnectedTo.Keys.Any(z => ownedTerritoriesTraverse.Contains(z))).ToHashSet(true);
 
                 if (takeThisTurn.Count == 0)

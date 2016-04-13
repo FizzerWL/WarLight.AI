@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 
 namespace WarLight.Shared.AI
 {
@@ -311,7 +312,7 @@ namespace WarLight.Shared.AI
             incomes.Add(OpponentPlayerID, new PlayerIncome(5));
 
             var settings = new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16, false, false, new Dictionary<CardIDType, object>(), false, GameFogLevel.Foggy);
-            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, settings, NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
+            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, settings, NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0, Stopwatch.StartNew());
         }
 
         static IWarLightAI Bot;

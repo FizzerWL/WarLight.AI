@@ -45,15 +45,18 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var visited = new HashSet<TerritoryIDType>();
             var stack = new Stack<MultiAttackPlan>();
-            if (!TryTraverseBonus(bot, standing, allUnownedTerrsInBonus.ToHashSet(true), stackOn, visited, stack))
+            if (!TryTraverseBonus(bot, standing, allUnownedTerrsInBonus.ToHashSet(true), stackOn, visited, stack, 0))
                 return null;
 
             return ret.Concat(Enumerable.Reverse(stack).Skip(1)).ToList(); //skip the first one, as that's the one we're already on.  Our plan just contains the movements we want to make
 
         }
 
-        private static bool TryTraverseBonus(BotMain bot, GameStanding standing, HashSet<TerritoryIDType> allUnownedTerrsInBonus, TerritoryIDType terrID, HashSet<TerritoryIDType> visited, Stack<MultiAttackPlan> stack)
+        private static bool TryTraverseBonus(BotMain bot, GameStanding standing, HashSet<TerritoryIDType> allUnownedTerrsInBonus, TerritoryIDType terrID, HashSet<TerritoryIDType> visited, Stack<MultiAttackPlan> stack, int depth)
         {
+            if (depth > 20)
+                return false; //prevent stack overflows. If the bonus is too deep, we'll just skip it
+
             visited.Add(terrID);
             stack.Push(new MultiAttackPlan(bot, terrID, MultiAttackPlanType.MainStack));
 
@@ -73,7 +76,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             //Traverse from big to small.  We want to take bigger territories first so that more remainders are left for taking smaller ones
             foreach (var next in nextSteps.OrderByDescending(o => ExpansionHelper.GuessNumberOfArmies(bot, o, standing).DefensePower))
             {
-                if (TryTraverseBonus(bot, standing, allUnownedTerrsInBonus, next, visited, stack))
+                if (TryTraverseBonus(bot, standing, allUnownedTerrsInBonus, next, visited, stack, depth + 1))
                     return true;
             }
 

@@ -107,10 +107,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             var orderDelayCards = BotState.CardsHandler.GetCards(Shared.AI.Wunderwaffe.Bot.Cards.CardTypes.OrderDelay);
             foreach (Card orderPrio in orderPriorityCards)
             {
+                AILog.Log("MovesScheduler", "Playing order priority card " + orderPrio.CardInstanceId);
                 OrderPriorityCardPlays.Add(new BotOrderGeneric(GameOrderPlayCardOrderPriority.Create(orderPrio.CardInstanceId, BotState.Me.ID)));
             }
             foreach (Card orderDelay in orderDelayCards)
             {
+                AILog.Log("MovesScheduler", "Playing order delay card " + orderDelay.CardInstanceId);
                 OrderDelayCardPlays.Add(new BotOrderGeneric(GameOrderPlayCardOrderDelay.Create(orderDelay.CardInstanceId, BotState.Me.ID)));
             }
 

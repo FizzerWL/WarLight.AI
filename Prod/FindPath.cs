@@ -48,9 +48,10 @@ namespace WarLight.Shared.AI.Prod
                 if (nodes.Count == 0)
                     return null;
 
-                nodes.Sort((x, y) => distances[x] - distances[y]);
+                nodes.Sort((x, y) => SharedUtility.CompareInts(distances[x], distances[y]));
 
                 var smallest = nodes[0];
+
                 nodes.Remove(smallest);
 
                 if (finish(smallest))
@@ -81,7 +82,9 @@ namespace WarLight.Shared.AI.Prod
                         previous[neighbor] = smallest;
                     }
                 }
+
             }
+
 
 #if CSSCALA
             throw new Exception();

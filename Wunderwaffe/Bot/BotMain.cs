@@ -7,6 +7,7 @@ using WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms;
 using WarLight.Shared.AI.Wunderwaffe.Bot.Cards;
 using System;
 using System.Text;
+using System.Diagnostics;
 
 namespace WarLight.Shared.AI.Wunderwaffe.Bot
 {
@@ -85,7 +86,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         }
 
-        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings settings, int numTurns, Dictionary<PlayerIDType, PlayerIncome> playerIncomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay)
+        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings settings, int numTurns, Dictionary<PlayerIDType, PlayerIncome> playerIncomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer)
         {
             this.Players = players;
             this.Me = players[myPlayerID];
