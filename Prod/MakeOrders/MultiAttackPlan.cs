@@ -57,6 +57,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (depth > 20)
                 return false; //prevent stack overflows. If the bonus is too deep, we'll just skip it
 
+            if (bot.PastTime(10))
+                return false; //don't look for too long. This algorithm can take forever on large maps, so abort if we're slow.
+
             visited.Add(terrID);
             stack.Push(new MultiAttackPlan(bot, terrID, MultiAttackPlanType.MainStack));
 
