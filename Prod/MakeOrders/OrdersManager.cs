@@ -43,6 +43,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         public bool TryDeploy(TerritoryIDType terrID, int armies)
         {
+            if (Bot.AvoidTerritories.Contains(terrID))
+                return false;
+
             Assert.Fatal(Bot.Standing.Territories[terrID].OwnerPlayerID == Bot.PlayerID);
 
             if (armies == 0)
@@ -63,8 +66,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             return true;
         }
 
-        public void AddAttack(TerritoryIDType from, TerritoryIDType to, AttackTransferEnum attackTransfer, int numArmies, bool attackTeammates, bool byPercent = false)
+        public void AddAttack(TerritoryIDType from, TerritoryIDType to, AttackTransferEnum attackTransfer, int numArmies, bool attackTeammates, bool byPercent = false, bool bosses = false, bool commanders = false)
         {
+            Assert.Fatal(Bot.Map.Territories[from].ConnectedTo.ContainsKey(to), from + " does not connect to " + to);
+
             var actualArmies = numArmies;
             var actualByPercent = byPercent;
 
@@ -101,6 +106,12 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 {
                     var used = existingFrom.SelectMany(o => o.NumArmies.SpecialUnits).Select(o => o.ID).ToHashSet(false);
                     specials = specials.Where(o => used.Contains(o.ID) == false).ToArray();
+
+                    if (bosses == false)
+                        specials = specials.Where(o => o.IsBoss() == false).ToArray();
+
+                    if (commanders == false)
+                        specials = specials.Where(o => !(o is Commander)).ToArray();
                 }
 
                 AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, actualMode, actualByPercent, new Armies(actualArmies, false, specials), attackTeammates));

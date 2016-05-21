@@ -86,7 +86,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         }
 
-        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings settings, int numTurns, Dictionary<PlayerIDType, PlayerIncome> playerIncomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer)
+        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings settings, int numTurns, Dictionary<PlayerIDType, PlayerIncome> playerIncomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer, List<string> directives)
         {
             this.Players = players;
             this.Me = players[myPlayerID];
@@ -243,6 +243,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
             //if (settings.FogLevel != GameFogLevel.NoFog) //this is true of all bots, so it's not necessary to call out.
             //    sb.AppendLine("Since bots have to be stateless it's not possible to use intel gathered in previous turns.");
+            if (settings.NoSplit)
+                sb.AppendLine("This bot does not understand no-split mode and will issue attacks as if no-split mode was disabled.");
             if (settings.Commanders)
                 sb.AppendLine("This bot does not understand Commanders and won't move or attack with them.");
             if (settings.MultiAttack)

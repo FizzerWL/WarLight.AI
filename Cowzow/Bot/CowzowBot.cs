@@ -43,6 +43,8 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         {
             var sb = new StringBuilder();
 
+            if (settings.NoSplit)
+                sb.AppendLine("This bot does not understand no-split mode and will issue attacks as if no-split mode was disabled.");
             if (settings.Commanders)
                 sb.AppendLine("This bot does not understand Commanders and won't move or attack with them.");
             if (settings.MultiAttack)
@@ -95,7 +97,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         public readonly Dictionary<TerritoryIDType, int> OpponentVision = new Dictionary<TerritoryIDType, int>();
         public BonusAnalyzer Analyzer;
 
-        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer)
+        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer, List<string> directives)
         {
             this.Me = players[myPlayerID];
             this.Players = players;

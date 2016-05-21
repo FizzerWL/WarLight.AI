@@ -52,8 +52,10 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         /// <param name="armies">Number of armies to deploy</param>
         private static void Deploy(BotMain bot, string source, IEnumerable<TerritoryIDType> terrs, int armies)
         {
+            var canDeployOn = terrs.Where(o => bot.AvoidTerritories.Contains(o) == false);
+
             if (!bot.UseRandomness)
-                DeployExact(bot, source, terrs, armies);
+                DeployExact(bot, source, canDeployOn, armies);
             else
             {
                 //In randomness, break the deployment up into chunks (we could just call it on every army individually, but that's inefficient when our income gets very high)
@@ -62,7 +64,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 while (armiesDone < armies)
                 {
                     var deploy = Math.Min(armies - armiesDone, chunkSize);
-                    DeployExact(bot, source, terrs, deploy);
+                    DeployExact(bot, source, canDeployOn, deploy);
                     armiesDone += deploy;
                 }
             }

@@ -87,7 +87,6 @@
     <Compile Include="Cowzow\Move\BotOrderDeploy.cs" />
     <Compile Include="Prod\BonusPath.cs" />
     <Compile Include="Prod\BotMain.cs" />
-    <Compile Include="Prod\MakeOrders\Commanders.cs" />
     <Compile Include="Prod\MakeOrders\DefendAttack.cs" />
     <Compile Include="Prod\MakeOrders\DeployRemaining.cs" />
     <Compile Include="Prod\MakeOrders\Expand.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="Prod\MakeOrders\MultiAttackPathToBonus.cs" />
     <Compile Include="Prod\MakeOrders\MultiAttackPlan.cs" />
     <Compile Include="Prod\MakeOrders\PossibleExpandTarget.cs" />
+    <Compile Include="Prod\MakeOrders\SpecialUnits.cs" />
     <Compile Include="Prod\MakePicks\PickByWeight.cs" />
     <Compile Include="Prod\MakePicks\PickCluster.cs" />
     <Compile Include="Prod\Neighbor.cs" />

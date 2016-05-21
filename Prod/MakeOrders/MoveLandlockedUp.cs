@@ -19,14 +19,14 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 && !bot.AvoidTerritories.Contains(o.ID)
                 && bot.MakeOrders.GetArmiesAvailable(o.ID) > 0))
             {
-                if (bot.PastTime(8))
+                if (bot.PastTime(5))
                 {
                     //Extreme cases (i.e. where one player controls all of a big map), this algorithm can take forever.  We don't care about these extreme cases since they've already won.  Stop processing after too long
                     AILog.Log("MoveLandlockedUp", "Giving up due to time");
                     break; 
                 }
 
-                var moveTowards = bot.MoveTowardsNearestBorder(landlocked.ID);
+                var moveTowards = bot.MoveTowardsNearestBorder(landlocked.ID, true);
 
                 if (moveTowards.HasValue && !bot.AvoidTerritories.Contains(moveTowards.Value))
                 {

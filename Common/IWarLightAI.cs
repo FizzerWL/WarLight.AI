@@ -28,7 +28,8 @@ namespace WarLight.Shared.AI
         /// <param name="teammatesOrders">Orders your teammates have committed, if any.</param>
         /// <param name="gameID">ID of the game, for debugging</param>
         /// <param name="timer">A timer that represents how long we've been working on our AI.  In single-player games, this will include time that previous AIs spent.  AIs can optionally use this to play faster if the player has been waiting a long time.  Generally, we don't want to keep the player waiting more than 15 seconds.</param>
-        void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer);
+        /// <param name="directives">Some single player levels need to pass custom logic to the AI, which will appear in this parameter.</param>
+        void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer, List<string> directives);
 
         List<TerritoryIDType> GetPicks();
 

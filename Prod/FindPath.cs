@@ -45,6 +45,8 @@ namespace WarLight.Shared.AI.Prod
 
             while (true)
             {
+                if (bot.PastTime(10))
+                    return null; //if we're taking too long, just abort.  This algorithm can take forever on big maps.
                 if (nodes.Count == 0)
                     return null;
 

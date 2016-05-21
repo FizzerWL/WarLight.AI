@@ -18,7 +18,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var attackableTerritories = Bot.Standing.Territories.Values.
                 Where(o => bot.Map.Territories[o.ID].ConnectedTo.Keys.Any(c => bot.Standing.Territories[c].OwnerPlayerID == bot.PlayerID && !bot.AvoidTerritories.Contains(c)));
 
-            var terrs = attackableTerritories.Where(o => o.IsNeutral).Select(o => o.ID).ToHashSet(false);
+            var terrs = attackableTerritories.Where(o => o.IsNeutral || o.OwnerPlayerID == TerritoryStanding.FogPlayerID).Select(o => o.ID).ToHashSet(false);
             AttackableNeutrals = GetExpansionWeights(terrs);
         }
 
@@ -93,7 +93,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 .Distinct()
                 .Select(o =>
                 {
-                    if (Bot.PastTime(10))
+                    if (Bot.PastTime(7))
                         return null; //stop trying to expand if we're slow
 
                     return BonusPath.TryCreate(Bot, o, ts => ts.OwnerPlayerID == Bot.PlayerID);

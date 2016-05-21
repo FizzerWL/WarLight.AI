@@ -26,6 +26,7 @@ namespace WarLight.Shared.AI
         protected abstract SpecialUnit CloneSpecific();
         public abstract int ModifyAttackPower(int attackPower);
         public abstract int ModifyDefensePower(int defensePower);
+        public abstract bool IsBoss();
 
         public static SpecialUnit DeserializeFromString(string raw, bool ignoreIDAndOwner)
         {
@@ -46,11 +47,11 @@ namespace WarLight.Shared.AI
             //We assume it's a commander for now
             return "cmdr," + this.ID + "," + this.OwnerID;
         }
+
     }
 
     public class Commander : SpecialUnit
     {
-
         protected override SpecialUnit CloneSpecific()
         {
             return new Commander();
@@ -62,6 +63,30 @@ namespace WarLight.Shared.AI
         public override int ModifyDefensePower(int defensePower)
         {
             return defensePower + 7;
+        }
+        public override bool IsBoss()
+        {
+            return false;
+        }
+    }
+
+    public class Boss1 : SpecialUnit
+    {
+        protected override SpecialUnit CloneSpecific()
+        {
+            return new Boss1();
+        }
+        public override int ModifyAttackPower(int attackPower)
+        {
+            return attackPower + 200;
+        }
+        public override int ModifyDefensePower(int defensePower)
+        {
+            return defensePower + 200;
+        }
+        public override bool IsBoss()
+        {
+            return true;
         }
     }
 }

@@ -33,6 +33,8 @@ namespace WarLight.Shared.AI.Prod
         {
             var sb = new StringBuilder();
 
+            if (settings.NoSplit)
+                sb.AppendLine("This bot does not understand no-split mode and will issue attacks as if no-split mode was disabled.");
             if (settings.Cards.ContainsKey(CardType.OrderPriority.CardID))
                 sb.AppendLine("This bot does not understand how to play Order Priority cards.");
             if (settings.Cards.ContainsKey(CardType.OrderDelay.CardID))
@@ -74,6 +76,7 @@ namespace WarLight.Shared.AI.Prod
         public Dictionary<PlayerIDType, int> WeightedNeighbors;
         public HashSet<TerritoryIDType> AvoidTerritories = new HashSet<TerritoryIDType>(); //we're conducting some sort of operation here, such as a a blockade, so avoid attacking or deploying more here.
         private Stopwatch Timer;
+        public List<string> Directives;
 
         public bool PastTime(double seconds)
         {
@@ -89,7 +92,7 @@ namespace WarLight.Shared.AI.Prod
         public MakeOrders.MakeOrdersMain MakeOrders; 
         public MakeOrders.OrdersManager Orders { get { return MakeOrders.Orders; } }
 
-        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer)
+        public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer, List<string> directives)
         {
             this.DistributionStandingOpt = distributionStanding;
             this.Standing = latestTurnStanding;
@@ -108,6 +111,7 @@ namespace WarLight.Shared.AI.Prod
             this.IsFFA = Opponents.Count > 1 && (Opponents.Any(o => o.Team == PlayerInvite.NoTeam) || Opponents.GroupBy(o => o.Team).Count() > 1);
             this.WeightedNeighbors = WeightNeighbors();
             this.Timer = timer;
+            this.Directives = directives;
             AILog.Log("BotMain", "Prod initialized.  Starting at " + timer.Elapsed.TotalSeconds + " seconds");
         }
 
@@ -306,13 +310,13 @@ namespace WarLight.Shared.AI.Prod
         }
 
 
-        public TerritoryIDType? MoveTowardsNearestBorder(TerritoryIDType id)
+        public TerritoryIDType? MoveTowardsNearestBorder(TerritoryIDType id, bool neutralOk)
         {
             var neighborDistances = new KeyValueList<TerritoryIDType, int>();
 
             foreach (var immediateNeighbor in Map.Territories[id].ConnectedTo.Keys)
             {
-                var nearestBorder = FindNearestBorder(immediateNeighbor, id);
+                var nearestBorder = FindNearestBorder(immediateNeighbor, id, neutralOk);
                 if (nearestBorder != null)
                     neighborDistances.Add(immediateNeighbor, nearestBorder.Depth);
             }
@@ -341,7 +345,7 @@ namespace WarLight.Shared.AI.Prod
             public int Depth;
         }
 
-        public FindNearestBorderResult FindNearestBorder(TerritoryIDType id, TerritoryIDType? exclude)
+        public FindNearestBorderResult FindNearestBorder(TerritoryIDType id, TerritoryIDType? exclude, bool neutralOk)
         {
             var queue = new Queue<TerritoryIDType>();
             queue.Enqueue(id);
@@ -353,7 +357,7 @@ namespace WarLight.Shared.AI.Prod
 
             while (true)
             {
-                TerritoryIDType? r = FindNearestBorderRecurse(queue, visited);
+                var r = FindNearestBorderRecurse(queue, visited, neutralOk);
                 if (r.HasValue)
                 {
                     FindNearestBorderResult ret = new FindNearestBorderResult();
@@ -374,12 +378,17 @@ namespace WarLight.Shared.AI.Prod
 #endif
         }
 
-        private TerritoryIDType? FindNearestBorderRecurse(Queue<TerritoryIDType> queue, HashSet<TerritoryIDType> visited)
+        private TerritoryIDType? FindNearestBorderRecurse(Queue<TerritoryIDType> queue, HashSet<TerritoryIDType> visited, bool neutralOk)
         {
-
             var id = queue.Dequeue();
 
-            if (Map.Territories[id].ConnectedTo.Keys.Any(o => !this.IsTeammateOrUs(this.Standing.Territories[o].OwnerPlayerID)))
+            if (Map.Territories[id].ConnectedTo.Keys.Any(o =>
+                {
+                    if (neutralOk)
+                        return !this.IsTeammateOrUs(this.Standing.Territories[o].OwnerPlayerID);
+                    else
+                        return this.IsOpponent(this.Standing.Territories[o].OwnerPlayerID);
+                }))
                 return id; //We're a border
 
             foreach (var notVisited in Map.Territories[id].ConnectedTo.Keys.Where(o => !visited.Contains(o)))

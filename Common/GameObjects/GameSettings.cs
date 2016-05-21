@@ -42,8 +42,9 @@ namespace WarLight.Shared.AI
         public Dictionary<CardIDType, object> Cards;
         public bool LocalDeployments;
         public GameFogLevel FogLevel;
+        public bool NoSplit;
 
-        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks, Dictionary<CardIDType, object> cards, bool localDeployments, GameFogLevel fog)
+        public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks, Dictionary<CardIDType, object> cards, bool localDeployments, GameFogLevel fog, bool nosplit)
         {
 
             this.OffenseKillRate = offensiveKillRate;
@@ -66,6 +67,7 @@ namespace WarLight.Shared.AI
             this.Cards = cards;
             this.LocalDeployments = localDeployments;
             this.FogLevel = fog;
+            this.NoSplit = nosplit;
         }
 
         public int OneArmyMustStandGuardOneOrZero

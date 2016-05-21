@@ -81,10 +81,12 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 var armiesLeft = armies;
                 while (armiesLeft > 0)
                 {
+                    bool deployedAny = false;
                     foreach(var d in betterThanAvg)
                     {
                         if (Bot.Orders.TryDeploy(d.From, 1))
                         {
+                            deployedAny = true;
                             allDefenses.AddTo(d.From, 1);
                             armiesLeft--;
                             if (armiesLeft <= 0)
@@ -92,7 +94,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                         }
                     }
 
-                    if (armies == armiesLeft)
+                    if (!deployedAny)
                         break; //We couldn't deploy any, possibly due to local deployments.
                 }
             }
@@ -135,6 +137,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         private void TryDoAttack(PossibleAttack attack, ref int armiesToOffense)
         {
+            bool commanders = true;
             var toTS = Bot.Standing.Territories[attack.To];
 
             int attackWith = Bot.ArmiesToTake(toTS.NumArmies.Fogged == false ? toTS.NumArmies : ExpansionHelper.GuessNumberOfArmies(Bot, toTS.ID));
@@ -149,6 +152,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 {
                     var origAttackWith = attackWith;
                     attackWith = SharedUtility.Round(attackWith * RandomUtility.RandomPercentage());
+                    commanders = false;
                     AILog.Log("Offense", "Willing to do a \"stupid\" attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + ": attacking with " + attackWith + " instead of our planned " + origAttackWith);
                 }
             }
@@ -163,7 +167,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 //We can't swing it. Just deploy the rest and quit. Will try again next turn.
                 if (armiesToOffense > 0 && Bot.Orders.TryDeploy(attack.From, armiesToOffense))
                 {
-                    AILog.Log("Offense", "Could not attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + ". Short by " + need + ".  Just deploying " + armiesToOffense + " to the source and quitting attacks.");
+                    AILog.Log("Offense", "Could not attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + ". Short by " + need + ".  Just deploying " + armiesToOffense + " to the source.");
                     armiesToOffense = 0;
                 }
             }
@@ -179,7 +183,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 }
 
                 //Now issue the attack
-                Bot.Orders.AddAttack(attack.From, attack.To, AttackTransferEnum.AttackTransfer, attackWith, false);
+                Bot.Orders.AddAttack(attack.From, attack.To, AttackTransferEnum.AttackTransfer, attackWith, false, commanders: commanders);
                 AILog.Log("Offense", "Attacking from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + " with " + attackWith + " by deploying " + need);
             }
 

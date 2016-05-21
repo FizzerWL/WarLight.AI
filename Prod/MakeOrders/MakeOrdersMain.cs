@@ -28,8 +28,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             PlayCards.Go(Bot);
 
-            //Commanders movement
-            Commanders.Go(Bot);
+            //Special units movement
+            SpecialUnits.Go(Bot);
 
             //Ensure teammates defragment bonuses
             ResolveTeamBonuses.Go(Bot);

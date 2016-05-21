@@ -178,7 +178,8 @@ namespace WarLight.Shared.AI
                 (bool)settingsNode["AllowPercentageAttacks"],
                 cards,
                 (bool)settingsNode["LocalDeployments"],
-                fog
+                fog,
+                (bool)settingsNode["NoSplit"]
                 );
 
         }

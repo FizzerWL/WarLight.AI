@@ -311,8 +311,8 @@ namespace WarLight.Shared.AI
             incomes.Add(MyPlayerID, new PlayerIncome(StartingArmies));
             incomes.Add(OpponentPlayerID, new PlayerIncome(5));
 
-            var settings = new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16, false, false, new Dictionary<CardIDType, object>(), false, GameFogLevel.Foggy);
-            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, settings, NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0, Stopwatch.StartNew());
+            var settings = new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16, false, false, new Dictionary<CardIDType, object>(), false, GameFogLevel.Foggy, false);
+            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, settings, NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0, Stopwatch.StartNew(), new List<string>());
         }
 
         static IWarLightAI Bot;
