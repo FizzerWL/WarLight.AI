@@ -8,67 +8,36 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
     public class ExpansionTask
     {
         public BotMain BotState;
+        private List<BotBonus> takeOverBonuses = new List<BotBonus>();
+        public List<BotBonus> expandBonuses = new List<BotBonus>();
+
         public ExpansionTask(BotMain state)
         {
             this.BotState = state;
         }
 
-
-        // TODO
-        public Moves CalculateExpansionTask(int maxDeployment)
-        {
-            Moves expansionMoves = new Moves();
-            return null;
-        }
-
-
-
         public void CalculateExpansionMoves(Moves moves)
         {
-            var armiesForExpansion = Math.Min(BotState.Settings.MinimumArmyBonus, BotState.MyIncome.Total - moves.GetTotalDeployment());
-            var armiesForTakeOver = BotState.MyIncome.Total - moves.GetTotalDeployment();
-            if (BotState.VisibleMap.GetOpponentBorderingTerritories().Count == 0)
-            {
-                armiesForExpansion = BotState.MyIncome.Total - moves.GetTotalDeployment();
-            }
+            int armiesForExpansion = BotState.MyIncome.Total - moves.GetTotalDeployment();
+            AddValueToImmediateBonuses(armiesForExpansion);
+            CalculateTakeOverMoves(moves);
+            CalculateNonTakeOverMoves(moves);
+            CalculateNullTakeOverMoves(moves);
+        }
 
-            AddValueToImmediateBonuses(armiesForTakeOver);
+        private void CalculateNonTakeOverMoves(Moves moves)
+        {
             var sortedAccessibleBonuses = BotState.BonusExpansionValueCalculator.SortAccessibleBonuses(BotState.VisibleMap);
-            var bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(armiesForTakeOver);
-            var takenOverBonuses = new List<BotBonus>();
-            var armiesUsedForTakeOver = 0;
+            int armiesForExpansion = BotState.MyIncome.Total - moves.GetTotalDeployment();
+            bool isExpandingAfterTakeOverSmart = IsExpandingAfterTakeOverSmart();
+            bool opponentBorderPresent = BotState.VisibleMap.GetOpponentBorderingTerritories().Count > 0;
 
-            // calculate the moves for the bonuses that can be immediately taken
-            foreach (var bonus in sortedAccessibleBonuses)
-            {
-                if (bonusesThatCanBeTaken.Contains(bonus))
-                {
-                    var expansionMoves = BotState.TakeTerritoriesTaskCalculator.CalculateTakeTerritoriesTask(armiesForTakeOver, bonus.GetNotOwnedTerritories(), BotTerritory.DeploymentType.Normal, "MovesCalculator.CalculateExpansionMoves");
-                    MovesCommitter.CommittMoves(BotState, expansionMoves);
-                    moves.MergeMoves(expansionMoves);
-                    armiesForTakeOver -= expansionMoves.GetTotalDeployment();
-                    bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(armiesForTakeOver);
-                    takenOverBonuses.Add(bonus);
-                    armiesUsedForTakeOver += expansionMoves.GetTotalDeployment();
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-
-            var isExpandingAfterTakeOverSmart = IsExpandingAfterTakeOverSmart();
-
-
-            var opponentBorderPresent = BotState.VisibleMap.GetOpponentBorderingTerritories().Count > 0;
-            armiesForExpansion = Math.Max(0, armiesForExpansion - armiesUsedForTakeOver);
-            if (takenOverBonuses.Count == 0 || isExpandingAfterTakeOverSmart)
+            if (takeOverBonuses.Count == 0 || isExpandingAfterTakeOverSmart)
             {
                 BotBonus bonusToExpand = null;
                 foreach (var bonus in sortedAccessibleBonuses)
                 {
-                    if (!takenOverBonuses.Contains(bonus))
+                    if (!takeOverBonuses.Contains(bonus))
                     {
                         var condition1 = bonus.GetVisibleNeutralTerritories().Count > 0;
                         var condition2 = bonus.Amount > 0;
@@ -101,12 +70,21 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     }
                     Moves oneStepMoves = null;
                     if (!opponentBorderPresent)
+                    {
                         oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, bonusToExpand, true, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
+
+                    }
                     else
+                    {
                         oneStepMoves = BotState.TakeTerritoriesTaskCalculator.CalculateOneStepExpandBonusTask(armiesForExpansion, bonusToExpand, false, BotState.WorkingMap, BotTerritory.DeploymentType.Normal);
+                    }
 
                     if (oneStepMoves != null)
                     {
+                        if (!expandBonuses.Contains(bonusToExpand))
+                        {
+                            expandBonuses.Add(bonusToExpand);
+                        }
                         firstStep = false;
                         armiesForExpansion -= oneStepMoves.GetTotalDeployment();
                         MovesCommitter.CommittMoves(BotState, oneStepMoves);
@@ -116,6 +94,54 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 }
             }
         }
+
+        private void CalculateNullTakeOverMoves(Moves moves)
+        {
+            var sortedAccessibleBonuses = BotState.BonusExpansionValueCalculator.SortAccessibleBonuses(BotState.VisibleMap);
+            var bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(0);
+            foreach (var bonus in sortedAccessibleBonuses)
+            {
+                if (bonusesThatCanBeTaken.Contains(bonus) && bonus.GetOpponentNeighbors().Count == 0)
+                {
+                    Moves expansionMoves = getTakeOverMoves(0, bonus);
+                    MovesCommitter.CommittMoves(BotState, expansionMoves);
+                    moves.MergeMoves(expansionMoves);
+                    bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(0);
+                    takeOverBonuses.Add(bonus);
+                }
+            }
+        }
+
+        private void CalculateTakeOverMoves(Moves moves)
+        {
+            int armiesForExpansion = BotState.MyIncome.Total - moves.GetTotalDeployment();
+            var sortedAccessibleBonuses = BotState.BonusExpansionValueCalculator.SortAccessibleBonuses(BotState.VisibleMap);
+            var bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(armiesForExpansion);
+            foreach (var bonus in sortedAccessibleBonuses)
+            {
+                if (bonusesThatCanBeTaken.Contains(bonus))
+                {
+                    Moves expansionMoves = getTakeOverMoves(armiesForExpansion, bonus);
+                    MovesCommitter.CommittMoves(BotState, expansionMoves);
+                    moves.MergeMoves(expansionMoves);
+                    armiesForExpansion -= expansionMoves.GetTotalDeployment();
+                    bonusesThatCanBeTaken = GetBonusesThatCanBeTaken(armiesForExpansion);
+                    takeOverBonuses.Add(bonus);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+
+        private Moves getTakeOverMoves(int armiesForExpansion, BotBonus bonus)
+        {
+            Moves expansionMoves = BotState.TakeTerritoriesTaskCalculator.CalculateTakeTerritoriesTask(armiesForExpansion, bonus.GetNotOwnedTerritories(), BotTerritory.DeploymentType.Normal, "MovesCalculator.CalculateExpansionMoves");
+            return expansionMoves;
+        }
+
 
         private Boolean IsExpandingAfterTakeOverSmart()
         {
@@ -161,6 +187,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                         outvar.Add(bonus);
                 }
             }
+            outvar.RemoveAll(o => takeOverBonuses.Contains(o));
+            outvar.RemoveAll(o => expandBonuses.Contains(o));
             return outvar;
         }
 

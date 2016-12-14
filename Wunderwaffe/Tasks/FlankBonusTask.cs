@@ -21,7 +21,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var sortedFlankingTerritories = state.TerritoryValueCalculator.GetSortedFlankingValueTerritories();
             foreach (var flankableTerritory in sortedFlankingTerritories)
             {
-                if (flankableTerritory.FlankingTerritoryValue <= 2)
+                if (flankableTerritory.FlankingTerritoryValue <= 0)
                 {
                     break;
                 }

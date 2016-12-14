@@ -49,6 +49,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
 
         public DefendTerritoryTask DefendTerritoryTask;
+        public BonusRunTask BonusRunTask;
         public DefendTerritoriesTask DefendTerritoriesTask;
         public MapUpdater MapUpdater;
 
@@ -77,6 +78,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.ExpansionTask = new ExpansionTask(this);
             this.BonusExpansionValueCalculator = new BonusExpansionValueCalculator(this);
             this.DefendTerritoryTask = new DefendTerritoryTask(this);
+            this.BonusRunTask = new BonusRunTask(this);
             this.DefendTerritoriesTask = new DefendTerritoriesTask(this);
             this.MapUpdater = new MapUpdater(this);
             this.PreventOpponentExpandBonusTask = new PreventOpponentExpandBonusTask(this);

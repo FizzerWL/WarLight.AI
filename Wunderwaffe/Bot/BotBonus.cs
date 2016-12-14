@@ -267,11 +267,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public bool CanTakeOver()
         {
             if (this.IsOwnedByMyself())
+            {
                 return false;
+            }
             foreach (var territory in this.Territories)
             {
-                if (territory.OwnerPlayerID != BotState.Me.ID && territory.GetOwnedNeighbors().Count == 0)
+                if (territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID || (territory.OwnerPlayerID != BotState.Me.ID && territory.GetOwnedNeighbors().Count == 0))
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -280,10 +284,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             var terrs = this.Territories;
             if (terrs.Count == 0)
+            {
                 return false;
-            foreach (var territory in terrs.Skip(1))
+            }
+            //foreach (var territory in terrs.Skip(1))
+            foreach (var territory in terrs)
                 if (territory.OwnerPlayerID != terrs[0].OwnerPlayerID || BotState.IsOpponent(territory.OwnerPlayerID) == false)
+                {
                     return false;
+                }
             return true;
         }
 

@@ -38,27 +38,27 @@ namespace WarLight.Shared.AI.Wunderwaffe.Debug
 
         public static void PrintTerritories(BotMap map, BotMain BotState)
         {
-            List<BotTerritory> territories = map.Territories.Values.ToList();
-            //List<BotTerritory> opponentTerritories = territories.Where(o => o.OwnerPlayerID == BotState.Opponents.First().ID).ToList();
-            AILog.Log("Debug", "Territories:");
-            foreach (BotTerritory territory in territories)
-            {
-                string player = "fog";
-                if (territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
-                {
-                    player = "neutral";
-                }
-                else if (territory.OwnerPlayerID == BotState.Me.ID)
-                {
-                    player = "Me";
-                }
-                else if (territory.OwnerPlayerID == BotState.Opponents.First().ID)
-                {
-                    player = "opponent";
-                }
+            //List<BotTerritory> territories = map.Territories.Values.ToList();
+            ////List<BotTerritory> opponentTerritories = territories.Where(o => o.OwnerPlayerID == BotState.Opponents.First().ID).ToList();
+            //AILog.Log("Debug", "Territories:");
+            //foreach (BotTerritory territory in territories)
+            //{
+            //    string player = "fog";
+            //    if (territory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
+            //    {
+            //        player = "neutral";
+            //    }
+            //    else if (territory.OwnerPlayerID == BotState.Me.ID)
+            //    {
+            //        player = "Me";
+            //    }
+            //    else if (territory.OwnerPlayerID == BotState.Opponents.First().ID)
+            //    {
+            //        player = "opponent";
+            //    }
 
-                AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPower);
-            }
+            //    AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPower);
+            //}
         }
 
         public static void PrintGuessedDeployment(BotMap map, BotMain BotState)
@@ -122,15 +122,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Debug
         public static void PrintMoves(BotMain state, Moves moves)
         {
 
-            //for (int i = 0; i < moves.Orders.Count; i++)
-            //{
-            //    var order = moves.Orders[i];
-            //    if (order is BotOrderAttackTransfer)
-            //    {
-            //        BotOrderAttackTransfer atm = (BotOrderAttackTransfer)order;
-            //        AILog.Log("Debug", atm.ToString());
-            //    }
-            //}
+            for (int i = 0; i < moves.Orders.Count; i++)
+            {
+                var order = moves.Orders[i];
+                if (order is BotOrderAttackTransfer)
+                {
+                    BotOrderAttackTransfer atm = (BotOrderAttackTransfer)order;
+                    AILog.Log("Debug", atm.ToString());
+                }
+            }
         }
 
         public static void PrintAllTerritories(BotMain state, BotMap map)

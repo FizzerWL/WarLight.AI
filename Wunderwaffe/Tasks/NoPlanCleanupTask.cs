@@ -8,7 +8,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
     /// <summary>NoPlanCleanupTask is responsible for calculating the remaining moves after the other tasks have been fulfilled.
     /// </summary>
     /// <remarks>
-    /// If the other tasks don't use the full deployment then this task is responsible for deploying the remaining armies. Also if there are idle armies after the other tasks then in this task those armies can get used to perform an expansion step.
+    /// If the other tasks don't use the full deployment then this task is responsible for deploying the remaining armies. Also if there are idle armies after the other
+    /// tasks then in this task those armies can get used to perform an expansion step.
     /// </remarks>
     public class NoPlanCleanupTask
     {

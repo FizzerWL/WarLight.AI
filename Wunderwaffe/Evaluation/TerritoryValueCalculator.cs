@@ -26,7 +26,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         private const int DEFENSE_ADJUSTMENT_FACTOR = 4;
 
-        // TODO: was 3
         /// <summary>Sorts the territories from high priority to low priority.</summary>
         /// <remarks>
         /// Sorts the territories from high priority to low priority. If it's an opponent territory then the AttackValue is used and
@@ -207,7 +206,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         {
             return inTerritories.OrderByDescending(o => o.ExpansionTerritoryValue).ToList();
         }
-        
+
         /// <remarks>Calculates the territory values.</remarks>
         /// <param name="mapToWriteIn">the map in which the territory values are to be inserted</param>
         /// <param name="mapToUse">the map to use for calculating the values</param>
@@ -254,8 +253,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         /// <remarks>Calculates the attack territory values.</remarks>
         /// <param name="territory">allowed are neutral and opponent territories</param>
-        public void CalculateAttackTerritoryValue(BotTerritory territory, BotMap mapToWriteIn
-        )
+        public void CalculateAttackTerritoryValue(BotTerritory territory, BotMap mapToWriteIn)
         {
             var currentValue = 0;
             // Add 100.000 * armies reward to the value if it's a spot in an
@@ -279,6 +277,21 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                     currentValue += bonus.Amount * LOWEST_MEDIUM_PRIORITY_VALUE;
                 }
             }
+
+
+            // Add up to bonus.value for the territory being adjacent to a bonus that the opponent is close to complete
+            List<BotBonus> neighborsOpponentWantsToComplete = GetNeighborBonusesPlayerIsCloseToComplete(territory, BotState.Opponents.First().ID);
+            foreach (BotBonus bonus in neighborsOpponentWantsToComplete)
+            {
+                currentValue += bonus.Amount;
+            }
+            // Add up to bonuus.vlaue for the territory being adjacent to a bonus that we are close to complete
+            List<BotBonus> neighborsWeWantToComplete = GetNeighborBonusesPlayerIsCloseToComplete(territory, BotState.Me.ID);
+            foreach (BotBonus bonus in neighborsWeWantToComplete)
+            {
+                currentValue += bonus.Amount;
+            }
+
 
             // Add up to 30 to the armies reward for being close to an opponent
             // Bonus
@@ -313,7 +326,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                     foreach (var opponentTerritory in vmBonus.GetVisibleOpponentTerritories())
                     {
                         var lwmTerritory = BotState.LastVisibleMapX.Territories[opponentTerritory.ID];
-                        if (lwmTerritory.IsVisible&& lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
+                        if (lwmTerritory.IsVisible && lwmTerritory.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
                             opponentIsExpanding = true;
                     }
                     if (opponentIsExpanding)
@@ -331,6 +344,34 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             currentValue *= ATTACK_ADJUSTMENT_FACTOR;
             mapToWriteIn.Territories[territory.ID].AttackTerritoryValue = currentValue;
         }
+
+        private List<BotBonus> GetNeighborBonusesPlayerIsCloseToComplete(BotTerritory territory, PlayerIDType player)
+        {
+            List<BotTerritory> neighborsDifferentBonuses = territory.Neighbors.Except(territory.GetNeighborsWithinSameBonus()).ToList();
+            List<BotBonus> almostCompleteBonuses = new List<BotBonus>();
+            foreach (BotTerritory neighbor in neighborsDifferentBonuses)
+            {
+                if (neighbor.Bonuses.Count == 0)
+                {
+                    continue;
+                }
+                BotBonus bonus = neighbor.Bonuses[0];
+                // don't add value if we are already bordering
+                if ((BotState.IsOpponent(player) && bonus.GetOwnedNeighborTerritories().Count > 0))
+                {
+                    continue;
+                }
+
+                List<BotTerritory> differentPlayerTerritories = bonus.Territories.Where(t => t.OwnerPlayerID != TerritoryStanding.NeutralPlayerID && t.OwnerPlayerID != player).ToList();
+                List<BotTerritory> playerTerritories = bonus.Territories.Where(t => t.OwnerPlayerID == player).ToList();
+                if (differentPlayerTerritories.Count == 0 && bonus.NeutralArmies.DefensePower <= 4 && playerTerritories.Count > 0)
+                {
+                    almostCompleteBonuses.Add(bonus);
+                }
+            }
+            return almostCompleteBonuses.Distinct().ToList();
+        }
+
 
         private void CalculateDefenseTerritoryValue(BotTerritory territory, BotMap mapToWriteIn)
         {
@@ -419,6 +460,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             // Add 10 for each opponent neighbor
             currentValue += 10 * territory.GetOpponentNeighbors().Count;
 
+            // add 5 if the opponent is in a neighboring bonus (if it's the same bonus then we don't expand there anyways)
+            Boolean opponentInNeighborBonus = territory.Neighbors.Where(n => n.Bonuses.Count > 0 && n.Bonuses[0].ContainsOpponentPresence()).ToList().Count > 0;
+            if (opponentInNeighborBonus)
+            {
+                currentValue += 5;
+            }
+
             // Add 1 for each neutral neighbor in another Bonus
             foreach (var neighbor_2 in territory.Neighbors)
             {
@@ -447,7 +495,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             // TODO develop more complex algorithm also with already made decisions
             var flankingValue = 0;
             foreach (var bonusNeighborTerritory in bonusNeighborTerritories)
+            {
                 flankingValue += bonusNeighborTerritory.Bonuses.Sum(b => b.Amount);
+            }
 
             var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
             territoryToWriteIn.FlankingTerritoryValue = flankingValue;
