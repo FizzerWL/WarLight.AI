@@ -412,7 +412,7 @@ namespace WarLight.Shared.AI
                     var airlift = order.As<GameOrderPlayCardAirlift>();
                     jOrder["from"] = (int)airlift.FromTerritoryID;
                     jOrder["to"] = (int)airlift.ToTerritoryID;
-                    jOrder["armiesToAirlift"] = airlift.GetArmies().SerializeToString();
+                    jOrder["armiesToAirlift"] = airlift.Armies.SerializeToString();
                 }
                 else if (order is GameOrderPlayCardGift)
                 {

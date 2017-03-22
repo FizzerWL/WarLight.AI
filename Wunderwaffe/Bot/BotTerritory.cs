@@ -81,7 +81,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
                 remainingArmies = remainingArmies.Subtract(new Armies(getOwnKills(atm.Armies.NumArmies, remainingArmies.DefensePower)));
 
             if (!remainingArmies.Fogged && remainingArmies.NumArmies < 1)
-                remainingArmies = new Armies(1, false, remainingArmies.SpecialUnits);
+                remainingArmies = new Armies(1, remainingArmies.SpecialUnits);
             return remainingArmies;
         }
 

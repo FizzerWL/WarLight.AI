@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WarLight.Shared.AI.Prod.MakeOrders
 {
@@ -35,18 +34,18 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         }
 
 
-        public void Deploy(TerritoryIDType terr, int armies)
+        public void Deploy(TerritoryIDType terr, int armies, bool force = false)
         {
-            if (!TryDeploy(terr, armies))
+            if (!TryDeploy(terr, armies, force))
                 throw new Exception("Deploy failed.  Territory=" + terr + ", armies=" + armies + ", us=" + Bot.PlayerID + ", Income=" + Bot.EffectiveIncome.ToString() + ", IncomeTrakcer=" + Bot.MakeOrders.IncomeTracker.ToString());
         }
 
-        public bool TryDeploy(TerritoryIDType terrID, int armies)
+        public bool TryDeploy(TerritoryIDType terrID, int armies, bool force = false)
         {
-            if (Bot.AvoidTerritories.Contains(terrID))
+            if (!force && Bot.AvoidTerritories.Contains(terrID))
                 return false;
 
-            Assert.Fatal(Bot.Standing.Territories[terrID].OwnerPlayerID == Bot.PlayerID);
+            Assert.Fatal(Bot.Standing.Territories[terrID].OwnerPlayerID == Bot.PlayerID, "Not owned");
 
             if (armies == 0)
                 return true; //just pretend like we did it
@@ -55,8 +54,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (!Bot.MakeOrders.IncomeTracker.TryRecordUsedArmies(terrID, armies))
                 return false;
 
-            IEnumerable<GameOrderDeploy> deploys = Orders.OfType<GameOrderDeploy>();
-            GameOrderDeploy existing = deploys.FirstOrDefault(o => o.DeployOn == terrID);
+            var existing = Orders.OfType<GameOrderDeploy>().FirstOrDefault(o => o.DeployOn == terrID);
 
             if (existing != null)
                 existing.NumArmies += armies;
@@ -114,7 +112,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                         specials = specials.Where(o => !(o is Commander)).ToArray();
                 }
 
-                AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, actualMode, actualByPercent, new Armies(actualArmies, false, specials), attackTeammates));
+                AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, actualMode, actualByPercent, new Armies(actualArmies, specials), attackTeammates));
             }
         }
     }

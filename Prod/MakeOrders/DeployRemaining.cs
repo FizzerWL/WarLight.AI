@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WarLight.Shared.AI.Prod.MakeOrders
 {
@@ -52,7 +51,11 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         /// <param name="armies">Number of armies to deploy</param>
         private static void Deploy(BotMain bot, string source, IEnumerable<TerritoryIDType> terrs, int armies)
         {
-            var canDeployOn = terrs.Where(o => bot.AvoidTerritories.Contains(o) == false);
+            var canDeployOn = terrs.Where(o => bot.AvoidTerritories.Contains(o) == false).ToList();
+
+            if (canDeployOn.Count == 0)
+                canDeployOn = terrs.ToList(); //if we can't deploy otherwise, ignore AvoidTerritories
+            Assert.Fatal(canDeployOn.Count > 0, "No deploy options");
 
             if (!bot.UseRandomness)
                 DeployExact(bot, source, canDeployOn, armies);
@@ -74,7 +77,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         {
             var allAttacksOrDefenses = bot.MakeOrders.DefendAttack.WeightedMoves.Where(o => terrs.Contains(o.From)).ToList();
 
-            if (!bot.UseRandomness)
+            if (!bot.UseRandomness) 
                 allAttacksOrDefenses = allAttacksOrDefenses.OrderByDescending(o => o.HighestImportance).ToList();
 
             while (allAttacksOrDefenses.Count > 0)
@@ -120,7 +123,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         private static void Deploy(BotMain bot, string source, TerritoryIDType terrID, int armies)
         {
             AILog.Log("DeployRemaining", source + " deploying " + armies + " to " + bot.TerrString(terrID));
-            bot.Orders.Deploy(terrID, armies);
+            bot.Orders.Deploy(terrID, armies, true);
         }
     }
 }

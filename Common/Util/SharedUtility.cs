@@ -155,6 +155,39 @@ namespace WarLight.Shared.AI
             foreach (T t in a)
                 action(t);
         }
+
+        /// <summary>
+        /// Parses the passed string into an integer. If the passed string cannot be parsed, returns 0.  
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static int ParseOrZero(string str)
+        {
+            int i;
+            if (int.TryParse(str, out i))
+                return i;
+            else
+                return 0;
+        }
+
+
+
+        public static T MaxSelectorOrDefault<T>(this IEnumerable<T> a, Func<T, int> selector) where T : class
+        {
+            T ret = null;
+
+            int max = int.MinValue;
+            foreach (var e in a)
+            {
+                int v = selector(e);
+                if (v > max)
+                {
+                    max = v;
+                    ret = e;
+                }
+            }
+            return ret;
+        }
         public static bool ContainsAll<T>(this HashSet<T> col, IEnumerable<T> items)
         {
             foreach (var u in items)

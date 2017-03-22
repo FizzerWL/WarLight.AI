@@ -27,9 +27,16 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.Airlift; }
         }
 
-        public Armies GetArmies() //must use a wrapper function for historical reasons :(
+        public Armies Armies //must use this function instead of NumArmies directly for historical reasons :(
         {
-            return this.NumArmies;
+            get
+            {
+                return this.NumArmies;
+            }
+            set
+            {
+                this.NumArmies = value;
+            }
         }
     }
 }

@@ -141,36 +141,34 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
             RiskyAttackMoves = ScheduleAttacksAttackingArmies(RiskyAttackMoves);
 
             if (!OrderPrioPlayed && (EarlyAttacks.Count != 0 || SupportMovesWhereOpponentMightAttack.Count != 0 || CrushingAttackMovesToSlipperyTerritories.Count != 0))
-            {
-                semiSortedMoves.AddRange(OrderPriorityCardPlays);
-            }
+                OrderPriorityCardPlays.ForEach(o => semiSortedMoves.Add(o));
 
-            semiSortedMoves.AddRange(EarlyAttacks);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightBreak);
-            semiSortedMoves.AddRange(CrushingAttackMovesToSlipperyTerritories);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightGetAGoodAttack);
-            semiSortedMoves.AddRange(SupportMovesWhereOpponentMightAttack);
+            EarlyAttacks.ForEach(o => semiSortedMoves.Add(o));
+            SupportMovesWhereOpponentMightBreak.ForEach(o => semiSortedMoves.Add(o));
+            CrushingAttackMovesToSlipperyTerritories.ForEach(o => semiSortedMoves.Add(o));
+            SupportMovesWhereOpponentMightGetAGoodAttack.ForEach(o => semiSortedMoves.Add(o));
+            SupportMovesWhereOpponentMightAttack.ForEach(o => semiSortedMoves.Add(o));
 
 
             if (!OrderDelayPlayed && RiskyAttackMoves.Count != 0)
             {
-                semiSortedMoves.AddRange(OrderDelayCardPlays);
+                OrderDelayCardPlays.ForEach(o => semiSortedMoves.Add(o));
             }
 
-            semiSortedMoves.AddRange(DelayAttackMoves);
-            semiSortedMoves.AddRange(SafeAttackMovesWithGoodAttack);
-            semiSortedMoves.AddRange(NormalSupportMoves);
-            semiSortedMoves.AddRange(BigExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(TransferMoves);
-            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesNonAttack);
-            semiSortedMoves.AddRange(BigExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(NonOpponentBorderingSmallExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(OpponentBorderingSmallExpansionMovesWithAttack);
-            semiSortedMoves.AddRange(TransferingExpansionMoves);
-            semiSortedMoves.AddRange(SnipeMoves);
-            semiSortedMoves.AddRange(SafeAttackMovesWithPossibleBadAttack);
-            semiSortedMoves.AddRange(RiskyAttackMoves);
+            DelayAttackMoves.ForEach(o => semiSortedMoves.Add(o));
+            SafeAttackMovesWithGoodAttack.ForEach(o => semiSortedMoves.Add(o));
+            NormalSupportMoves.ForEach(o => semiSortedMoves.Add(o));
+            BigExpansionMovesNonAttack.ForEach(o => semiSortedMoves.Add(o));
+            TransferMoves.ForEach(o => semiSortedMoves.Add(o));
+            NonOpponentBorderingSmallExpansionMovesNonAttack.ForEach(o => semiSortedMoves.Add(o));
+            OpponentBorderingSmallExpansionMovesNonAttack.ForEach(o => semiSortedMoves.Add(o));
+            BigExpansionMovesWithAttack.ForEach(o => semiSortedMoves.Add(o));
+            NonOpponentBorderingSmallExpansionMovesWithAttack.ForEach(o => semiSortedMoves.Add(o));
+            OpponentBorderingSmallExpansionMovesWithAttack.ForEach(o => semiSortedMoves.Add(o));
+            TransferingExpansionMoves.ForEach(o => semiSortedMoves.Add(o));
+            SnipeMoves.ForEach(o => semiSortedMoves.Add(o));
+            SafeAttackMovesWithPossibleBadAttack.ForEach(o => semiSortedMoves.Add(o));
+            RiskyAttackMoves.ForEach(o => semiSortedMoves.Add(o));
 
             if (semiSortedMoves.Count == 0)
             {

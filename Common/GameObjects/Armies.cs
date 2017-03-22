@@ -12,7 +12,7 @@ namespace WarLight.Shared.AI
         public readonly bool Fogged;
         public readonly SpecialUnit[] SpecialUnits;
 
-        public Armies(int i = 0, bool fogged = false, SpecialUnit[] specialUnits = null)
+        public Armies(int i = 0, SpecialUnit[] specialUnits = null, bool fogged = false)
         {
             this.Fogged = fogged;
             this._numArmies = i;
@@ -90,7 +90,7 @@ namespace WarLight.Shared.AI
                 specials = list.ToArray();
             }
 
-            return new Armies(Math.Max(0, this._numArmies - armies._numArmies), false, specials);
+            return new Armies(Math.Max(0, this._numArmies - armies._numArmies), specials);
         }
 
         public Armies Add(Armies armies)
@@ -116,7 +116,7 @@ namespace WarLight.Shared.AI
             }
 
 
-            return new Armies(this._numArmies + armies._numArmies, false, specials);
+            return new Armies(this._numArmies + armies._numArmies, specials);
         }
 
 
@@ -154,7 +154,7 @@ namespace WarLight.Shared.AI
             var specials = new SpecialUnit[split.Length - 1];
             for (int i = 0; i < split.Length - 1; i++)
                 specials[i] = SpecialUnit.DeserializeFromString(split[i + 1], false);
-            return new Armies(armies, false, specials);
+            return new Armies(armies, specials);
         }
 
         public string SerializeToString()

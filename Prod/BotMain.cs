@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WarLight.Shared.AI.Prod
 {
@@ -21,7 +20,7 @@ namespace WarLight.Shared.AI.Prod
 
         public string Description()
         {
-            return "Version 2.0 of WarLight's production AI." + (UseRandomness ? "This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
+            return "Version 2.0 of WarLight's production AI." + (UseRandomness ? " This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
@@ -309,6 +308,14 @@ namespace WarLight.Shared.AI.Prod
             return c.HasValue && c.Value == PlayerID;
         }
 
+        public TerritoryIDType? MoveTowardsNearestBorderNonNeutralThenNeutral(TerritoryIDType terrID)
+        {
+            var move = this.MoveTowardsNearestBorder(terrID, false);
+            if (!move.HasValue)
+                move = this.MoveTowardsNearestBorder(terrID, true);
+
+            return move;
+        }
 
         public TerritoryIDType? MoveTowardsNearestBorder(TerritoryIDType id, bool neutralOk)
         {

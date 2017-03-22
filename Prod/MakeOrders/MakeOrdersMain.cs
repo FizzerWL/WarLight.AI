@@ -111,7 +111,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             }
 
             //Subtract airlift out's
-            armies -= Orders.Orders.OfType<GameOrderPlayCardAirlift>().Where(o => o.FromTerritoryID == terrID).Sum(o => o.GetArmies().NumArmies);
+            armies -= Orders.Orders.OfType<GameOrderPlayCardAirlift>().Where(o => o.FromTerritoryID == terrID).Sum(o => o.Armies.NumArmies);
 
             //Subtract 1, since one must remain
             if (Bot.Settings.OneArmyStandsGuard)
