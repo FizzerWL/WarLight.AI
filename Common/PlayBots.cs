@@ -60,18 +60,27 @@ namespace WarLight.Shared.AI
         private static void PlayGame(List<string> bots, bool parallel)
         {
             AILog.Log("PlayBots", "Creating game...");
-            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
+            var templateID = 1;
+            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", templateID, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
                 gameSettings["ReinforcementCard"] = "none";
                 //gameSettings["Fog"] = GameFogLevel.NoFog.ToString();
                 //gameSettings["Fog"] = GameFogLevel.ModerateFog.ToString();
-                gameSettings["Fog"] = GameFogLevel.ExtremeFog.ToString();
+                //gameSettings["Fog"] = GameFogLevel.ExtremeFog.ToString();
                 //gameSettings["OneArmyStandsGuard"] = false;
                 //ZeroAllBonuses(gameSettings);
                 //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
                 //gameSettings["Map"] = 24591; //big USA, 3066 territories
-                //gameSettings["MultiAttack"] = true; gameSettings["AllowPercentageAttacks"] = true;
+                //gameSettings["MultiAttack"] = true; 
+                //gameSettings["AllowPercentageAttacks"] = false;
+                //gameSettings["AllowAttackOnly"] = false;
+                //gameSettings["AllowTransferOnly"] = false;
+
+                //var wastelands = new JObject();
+                //wastelands["NumberOfWastelands"] = 0;
+                //wastelands["WastelandSize"] = 10;
+                //gameSettings["Wastelands"] = wastelands;
                 //gameSettings["BombCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1));
                 //gameSettings["SanctionsCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1), new JProperty("Duration", 1), new JProperty("Percentage", 0.5));
                 //gameSettings["BlockadeCard"] = new JObject(new JProperty("InitialPieces", 50), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("MultiplyAmount", 10));
