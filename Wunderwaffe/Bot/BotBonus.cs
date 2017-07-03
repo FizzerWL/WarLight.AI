@@ -95,7 +95,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public List<BotBonus> GetNeighborBonuses()
         {
-            var x = this.Territories.SelectMany(o => o.Neighbors);
+            //var x = this.Territories.SelectMany(o => o.Neighbors);
             return this.Territories.SelectMany(o => o.Neighbors).SelectMany(o => o.Bonuses).Where(o => o.ID != this.ID).Distinct().ToList();
         }
 

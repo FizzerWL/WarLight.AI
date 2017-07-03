@@ -17,7 +17,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         // TODO
         public Moves CalculateExpansionTask(int maxDeployment)
         {
-            Moves expansionMoves = new Moves();
+            /*Moves expansionMoves = */new Moves();
             return null;
         }
 

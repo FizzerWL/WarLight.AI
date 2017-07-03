@@ -21,9 +21,14 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         /// <param name="order"></param>
         public void AddOrder(GameOrder orderToAdd)
         {
+            if (!orderToAdd.OccursInPhase.HasValue)
+            {
+                Orders.Add(orderToAdd);
+                return;
+            }
             for (int i = 0; i < Orders.Count; i++)
             {
-                if ((int)orderToAdd.OccursInPhase.Value < (int)Orders[i].OccursInPhase.Value)
+                if (Orders[i].OccursInPhase.HasValue && (int)orderToAdd.OccursInPhase.Value < (int)Orders[i].OccursInPhase.Value)
                 {
                     Orders.Insert(i, orderToAdd);
                     return;

@@ -12,7 +12,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             foreach(var terr in bot.Standing.Territories.Values)
             {
                 foreach(var su in terr.NumArmies.SpecialUnits)
-                    if (su.OwnerID == bot.PlayerID)
+                    if (su.OwnerID == bot.PlayerID) 
                     {
                         if (su is Commander)
                             DoCommander(bot, terr, (Commander)su);
