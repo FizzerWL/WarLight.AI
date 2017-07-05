@@ -33,7 +33,7 @@ namespace WarLight.Shared.AI.Cowzow.Move
 
         private static GameOrder Convert(BotOrderDeploy o)
         {
-            return GameOrderDeploy.Create(o.Armies, o.PlayerID, o.Territory.ID);
+            return GameOrderDeploy.Create(o.PlayerID, o.Armies, o.Territory.ID);
         }
 
         private static GameOrder Convert(BotOrderAttackTransfer o)

@@ -64,7 +64,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (existing != null)
                 existing.NumArmies += armies;
             else
-                AddOrder(GameOrderDeploy.Create(armies, Bot.PlayerID, terrID));
+                AddOrder(GameOrderDeploy.Create(Bot.PlayerID, armies, terrID));
 
             return true;
         }

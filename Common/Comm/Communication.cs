@@ -278,7 +278,7 @@ namespace WarLight.Shared.AI
             {
                 var terrID = (TerritoryIDType)(int)jOrder["deployOn"];
                 var armies = (int)jOrder["armies"];
-                return GameOrderDeploy.Create(armies, playerID, terrID);
+                return GameOrderDeploy.Create(playerID, armies, terrID);
             }
 
             if (type == "GameOrderAttackTransfer")
