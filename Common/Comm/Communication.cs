@@ -12,7 +12,7 @@ namespace WarLight.Shared.AI
 {
     public static class Communication
     {
-        public static string HttpRoot = "http://aiserver.warlight.net/api/";
+        public static string HttpRoot = "http://aiserver.warzone.com/api/";
         //public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
         //public static string HttpRoot = "http://192.168.1.105:9000/AIServer/api/";
 
@@ -278,7 +278,7 @@ namespace WarLight.Shared.AI
             {
                 var terrID = (TerritoryIDType)(int)jOrder["deployOn"];
                 var armies = (int)jOrder["armies"];
-                return GameOrderDeploy.Create(playerID, armies, terrID);
+                return GameOrderDeploy.Create(playerID, armies, terrID, false);
             }
 
             if (type == "GameOrderAttackTransfer")

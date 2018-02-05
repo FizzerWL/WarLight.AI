@@ -54,7 +54,10 @@
     <Compile Include="Common\GameObjects\ActiveCard.cs" />
     <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
     <Compile Include="Common\GameObjects\CardType.cs" />
+    <Compile Include="Common\GameObjects\Orders\GameOrderPurchase.cs" />
     <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
+    <Compile Include="Common\GameObjects\ResourceType.cs" />
+    <Compile Include="Common\GameObjects\StructureType.cs" />
     <Compile Include="Common\StressTest.cs" />
     <Compile Include="Common\PlayCrazy.cs" />
     <Compile Include="Common\PlayExported.cs" />

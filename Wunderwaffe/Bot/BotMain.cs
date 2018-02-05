@@ -226,6 +226,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             var sb = new StringBuilder();
 
+            if (settings.CommerceGame)
+                sb.AppendLine("This bot does not understand commerce games and won't be able to generate valid orders");
             if (settings.LocalDeployments)
                 sb.AppendLine("This bot does not support Local Deployments");
             if (settings.OneArmyStandsGuard == false)

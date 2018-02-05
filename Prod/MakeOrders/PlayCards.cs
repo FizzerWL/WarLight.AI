@@ -168,6 +168,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var numArmies = card.As<ReinforcementCardInstance>().Armies;
             AILog.Log("PlayCards", "Playing reinforcement card for " + numArmies);
             bot.Orders.AddOrder(GameOrderPlayCardReinforcement.Create(card.ID, bot.PlayerID));
+            bot.Orders.ArmiesFromReinforcementCards += numArmies;
             bot.EffectiveIncome.FreeArmies += numArmies;
             return true;
         }

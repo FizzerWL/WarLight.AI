@@ -27,6 +27,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             float minWeight = !highlyValuedOnly ? float.MinValue : ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? (float)RandomUtility.BellRandom(-9, 9) : 0);
 
             AILog.Log("Expand", "Expand called with useArmies=" + useArmies + ", minWeight=" + minWeight);
+            Assert.Fatal(useArmies >= 0, "useArmies negative");
 
             var meetsFilter = AttackableNeutrals.Where(o => o.Value.Weight > minWeight).ToDictionary(o => o.Key, o => o.Value);  //Don't bother with anything less than the min weight
 

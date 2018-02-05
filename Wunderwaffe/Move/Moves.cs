@@ -55,7 +55,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
 
         private GameOrder Convert(BotOrderDeploy o)
         {
-            return GameOrderDeploy.Create(o.PlayerID, o.Armies, o.Territory.ID);
+            return GameOrderDeploy.Create(o.PlayerID, o.Armies, o.Territory.ID, false);
         }
 
         private GameOrder Convert(BotOrderAttackTransfer o)

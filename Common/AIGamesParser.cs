@@ -244,7 +244,7 @@ namespace WarLight.Shared.AI
                         continue;
                     }
 
-                    order = GameOrderDeploy.Create(playerID, armies, terrID);
+                    order = GameOrderDeploy.Create(playerID, armies, terrID, false);
                 }
                 else
                 {

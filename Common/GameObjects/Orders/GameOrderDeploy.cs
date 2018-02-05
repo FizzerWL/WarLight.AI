@@ -17,7 +17,7 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.Deploys; }
         }
 
-        public static GameOrderDeploy Create(PlayerIDType playerID, int numArmies, TerritoryIDType deployOn)
+        public static GameOrderDeploy Create(PlayerIDType playerID, int numArmies, TerritoryIDType deployOn, bool free)
         {
             var o = new GameOrderDeploy();
             o.NumArmies = numArmies;

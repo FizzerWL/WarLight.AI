@@ -2,7 +2,8 @@
 {
     public enum TurnPhase
     {
-        CardsWearOff = 0,
+        Purchase = 0,
+        CardsWearOff = 5,
         Discards = 10,
         ReinforcementAndSpyCards = 20,
         Deploys = 25,

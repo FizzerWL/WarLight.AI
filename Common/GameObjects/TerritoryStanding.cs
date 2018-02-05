@@ -42,6 +42,9 @@ namespace WarLight.Shared.AI
             return TerritoryStanding.Create(this.ID, this.OwnerPlayerID, this.NumArmies);
         }
 
-
+        internal int NumStructures(StructureType city)
+        {
+            return 0; //not implemented
+        }
     }
 }

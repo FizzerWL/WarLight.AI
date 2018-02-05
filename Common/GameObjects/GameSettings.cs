@@ -44,6 +44,9 @@ namespace WarLight.Shared.AI
         public GameFogLevel FogLevel;
         public bool NoSplit;
 
+        public int? CommerceCityBaseCost;
+        public bool CommerceGame;
+
         public GameSettings(double offensiveKillRate, double defensiveKillRate, bool oneArmyMustStandGuard, int baseIncome, int initialNeutralsInDistribution, int initialNonDistributionArmies, int limitDistributionTerritories, DistributionIDType distributionModeID, Dictionary<BonusIDType, int> overriddenBonuses, bool commanders, bool allowAttackOnly, bool allowTransferOnly, int initialPlayerArmiesPerTerritory, RoundingModeEnum roundingMode, double luckModifier, bool multiAttack, bool allowPercentageAttacks, Dictionary<CardIDType, object> cards, bool localDeployments, GameFogLevel fog, bool nosplit)
         {
 
@@ -70,10 +73,19 @@ namespace WarLight.Shared.AI
             this.NoSplit = nosplit;
         }
 
+        internal int HowManyArmiesCanAfford(int goldForArmies)
+        {
+            return goldForArmies; //not implemented
+        }
+
         public int OneArmyMustStandGuardOneOrZero
         {
             get { return OneArmyStandsGuard ? 1 : 0; }
         }
 
+        public int CostOfBuyingArmies(int totalArmiesDeployed)
+        {
+            return totalArmiesDeployed; //not implemented
+        }
     }
 }

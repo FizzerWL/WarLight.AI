@@ -8,6 +8,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
     public class OrdersManager
     {
         public List<GameOrder> Orders = new List<GameOrder>();
+        public int ArmiesFromReinforcementCards;
         private BotMain Bot;
 
         public OrdersManager(BotMain bot)
@@ -54,7 +55,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             if (armies == 0)
                 return true; //just pretend like we did it
-            Assert.Fatal(armies > 0);
+            Assert.Fatal(armies > 0, "Armies negative");
 
             if (!Bot.MakeOrders.IncomeTracker.TryRecordUsedArmies(terrID, armies))
                 return false;
@@ -64,7 +65,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (existing != null)
                 existing.NumArmies += armies;
             else
-                AddOrder(GameOrderDeploy.Create(Bot.PlayerID, armies, terrID));
+                AddOrder(GameOrderDeploy.Create(Bot.PlayerID, armies, terrID, false));
 
             return true;
         }
@@ -119,6 +120,25 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
                 AddOrder(GameOrderAttackTransfer.Create(Bot.PlayerID, from, to, actualMode, actualByPercent, new Armies(actualArmies, specials), attackTeammates));
             }
+        }
+
+        private GameOrderPurchase _purchaseOrder;
+        public GameOrderPurchase PurchaseOrder
+        {
+            get
+            {
+                if (_purchaseOrder == null)
+                {
+                    _purchaseOrder = GameOrderPurchase.Create(Bot.PlayerID);
+                    AddOrder(_purchaseOrder);
+                }
+
+                return _purchaseOrder;
+            }
+        }
+        public bool HasPurchaseOrder
+        {
+            get { return _purchaseOrder != null; }
         }
     }
 }

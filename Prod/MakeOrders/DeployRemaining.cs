@@ -15,11 +15,16 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             DeployRemainingFreeArmies(bot);
         }
 
+        /// <summary>
+        /// Used for LD games
+        /// </summary>
+        /// <param name="bot"></param>
         static void DeployRemainingLockedArmies(BotMain bot)
         {
             foreach (var deploy in bot.MakeOrders.IncomeTracker.RestrictedBonusProgress)
             {
                 var count = deploy.TotalToDeploy - deploy.Deployed;
+
                 if (count > 0)
                     Deploy(bot, "DeployRemainingLockedArmies", bot.Map.Bonuses[deploy.Restriction].Territories, count);
             }
@@ -28,9 +33,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         static void DeployRemainingFreeArmies(BotMain bot)
         {
             var count = bot.MakeOrders.IncomeTracker.FreeArmiesUndeployed;
-            if (count == 0)
+            if (count <= 0)
                 return;
-
+            
             var ourTerritories = bot.Standing.Territories.Values.Where(o => o.OwnerPlayerID == bot.PlayerID).Select(o => o.ID).ToList();
 
             if (ourTerritories.Count == 0)

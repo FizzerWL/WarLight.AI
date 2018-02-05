@@ -27,5 +27,11 @@ namespace WarLight.Shared.AI
             r.ActiveCards = this.ActiveCards.Select(o => o.Clone()).ToList();
             return r;
         }
+
+        public int NumResources(PlayerIDType playerID, ResourceType type)
+        {
+            return 0; //not implemented
+        }
+
     }
 }

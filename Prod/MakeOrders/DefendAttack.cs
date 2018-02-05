@@ -152,7 +152,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     var origAttackWith = attackWith;
                     attackWith = SharedUtility.Round(attackWith * RandomUtility.RandomPercentage());
                     commanders = false;
-                    AILog.Log("Offense", "Willing to do a \"stupid\" attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + ": attacking with " + attackWith + " instead of our planned " + origAttackWith);
+                    if (attackWith != origAttackWith)
+                        AILog.Log("Offense", "Willing to do a \"stupid\" attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + ": attacking with " + attackWith + " instead of our planned " + origAttackWith);
                 }
             }
             else

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace WarLight.Shared.AI.Prod
 
         public string Description()
         {
-            return "Version 2.0 of WarLight's production AI." + (UseRandomness ? " This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
+            return "Version 2.0 of Warzone's production AI." + (UseRandomness ? " This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
@@ -59,6 +59,7 @@ namespace WarLight.Shared.AI.Prod
         public GameStanding Standing;
         public PlayerIDType PlayerID;
         public Dictionary<PlayerIDType, GamePlayer> Players;
+
         public MapDetails Map;
         public GameSettings Settings;
         public Dictionary<PlayerIDType, TeammateOrders> TeammatesOrders;
@@ -104,7 +105,7 @@ namespace WarLight.Shared.AI.Prod
             this.CardsMustPlay = cardsMustPlay;
             this.Incomes = incomes;
             this.BaseIncome = Incomes[PlayerID];
-            this.EffectiveIncome = BaseIncome.Clone();
+            this.EffectiveIncome = this.BaseIncome.Clone();
             this.Neighbors = players.Keys.ExceptOne(PlayerID).ConcatOne(TerritoryStanding.NeutralPlayerID).ToDictionary(o => o, o => new Neighbor(this, o));
             this.Opponents = players.Values.Where(o => o.State == GamePlayerState.Playing && !IsTeammateOrUs(o.ID)).ToList();
             this.IsFFA = Opponents.Count > 1 && (Opponents.Any(o => o.Team == PlayerInvite.NoTeam) || Opponents.GroupBy(o => o.Team).Count() > 1);
@@ -465,6 +466,30 @@ namespace WarLight.Shared.AI.Prod
                     .Select(o => o.OwnerPlayerID)
                     .Distinct()
                     .ForEach(o => ret[o] = ret[o] - Standing.Territories[borderTerr.ID].NumArmies.DefensePower);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Finds territories that are "safe" -- not near an opponent
+        /// </summary>
+        /// <param name="acceptableRangeFromOpponent">If 0, territories directly adjanent to an opponent will be returned.  If 1, terriories must have a least one spot away, etc.</param>
+        /// <returns></returns>
+        public HashSet<TerritoryIDType> TerritoriesNotNearOpponent(int acceptableRangeFromOpponent)
+        {
+            var ret = this.Standing.Territories.Values.Where(o => o.OwnerPlayerID == PlayerID).Select(o => o.ID).ToHashSet(true);
+
+            //Start with all opponent territories
+            var terrs = ret.Where(o => IsOpponent(Standing.Territories[o].OwnerPlayerID)).ToHashSet(true);
+
+            //traverse out, removing found territories from the return value
+            for (int i = 0; i < acceptableRangeFromOpponent; i++)
+            {
+                var traverse = terrs.SelectMany(o => Map.Territories[o].ConnectedTo.Keys);
+                terrs.AddRange(traverse);
+                ret.RemoveAll(traverse);
             }
 
             return ret;

@@ -259,5 +259,17 @@ namespace WarLight.Shared.AI
             }
         }
 
+        public int ArmiesDeployedToBonus(BonusIDType bonusID)
+        {
+            return _armiesUsedOnBonuses.ValueOrZero(bonusID);
+        }
+
+        public int TotalArmiesDeployed
+        {
+            get
+            {
+                return _freeArmiesUsedOn.Values.Sum() + _armiesUsedOnBonuses.Values.Sum();
+            }
+        }
     }
 }
