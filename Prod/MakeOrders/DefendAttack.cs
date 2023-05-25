@@ -29,7 +29,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (Bot.Settings.MultiAttack)
                 baseOffenseRatio = 0; //in MA, our expansion routine is actually our primary attack weapon.  Therefore, set offense ratio to 0 so that we skip the routine that tries to attack one territory at a time.
             var offenseRatio = baseOffenseRatio + (Bot.UseRandomness ? RandomUtility.BellRandom(-.15, .15) : 0);
-            int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio);
+            int armiesToOffense = SharedUtility.Round(incomeToUse * offenseRatio, capWithinBounds: true);
             int armiesToDefense = incomeToUse - armiesToOffense;
 
             AILog.Log("DefendAttack", "offenseRatio=" + offenseRatio + ": " + armiesToOffense + " armies go to offense, " + armiesToDefense + " armies go to defense");
@@ -55,12 +55,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 AILog.Log("Defense", "No defenses");
                 return;
             }
-
-#if IOS
-            //Work around the "attacking to JIT compile method" for below WeightedRandom call
-            if (RandomUtility.RandomNumber(2) == -1)
-                new List<PossibleAttack>().Select(o => o.DefenseImportance).ToList();
-#endif
+            
 
             var allDefenses = new Dictionary<TerritoryIDType, int>();
 
@@ -69,8 +64,18 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 for (int i = 0; i < armies; i++)
                 {
                     var defend = orderedDefenses.WeightedRandom(o => o.DefenseImportance);
-                    if (Bot.Orders.TryDeploy(defend.From, 1))
-                        allDefenses.AddTo(defend.From, 1);
+
+                    //If we have lots of armies, try deploying faster so we don't spend forever doing aries one at a time.
+                    if (armies > 1000 && Bot.Orders.TryDeploy(defend.From, armies / 20))
+                    {
+                        allDefenses.AddTo(defend.From, armies / 20);
+                        i += armies / 20 - 1;
+                    }
+                    else
+                    {
+                        if (Bot.Orders.TryDeploy(defend.From, 1))
+                            allDefenses.AddTo(defend.From, 1);
+                    }
                 }
             }
             else
@@ -144,20 +149,20 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             //Add a few more to what's required so we're not as predictable.
             if (Bot.UseRandomness)
             {
-                attackWith += SharedUtility.Round(attackWith * (RandomUtility.RandomPercentage() * .2));
+                attackWith += SharedUtility.Round(attackWith * (RandomUtility.RandomPercentage() * .2), capWithinBounds: true);
 
                 //Once in a while, be willing to do a stupid attack.  Sometimes it will work out, sometimes it will fail catastrophically
                 if (RandomUtility.RandomNumber(20) == 0)
                 {
                     var origAttackWith = attackWith;
-                    attackWith = SharedUtility.Round(attackWith * RandomUtility.RandomPercentage());
+                    attackWith = SharedUtility.Round(attackWith * RandomUtility.RandomPercentage(), capWithinBounds: true);
                     commanders = false;
                     if (attackWith != origAttackWith)
                         AILog.Log("Offense", "Willing to do a \"stupid\" attack from " + Bot.TerrString(attack.From) + " to " + Bot.TerrString(attack.To) + ": attacking with " + attackWith + " instead of our planned " + origAttackWith);
                 }
             }
             else
-                attackWith += SharedUtility.Round(attackWith * 0.1);
+                attackWith += SharedUtility.Round(attackWith * 0.1, capWithinBounds: true);
 
             int have = Bot.MakeOrders.GetArmiesAvailable(attack.From);
             int need = Math.Max(0, attackWith - have);

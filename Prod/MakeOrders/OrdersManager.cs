@@ -42,23 +42,33 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
         public void Deploy(TerritoryIDType terr, int armies, bool force = false)
         {
-            if (!TryDeploy(terr, armies, force))
-                throw new Exception("Deploy failed.  Territory=" + terr + ", armies=" + armies + ", us=" + Bot.PlayerID + ", Income=" + Bot.EffectiveIncome.ToString() + ", IncomeTrakcer=" + Bot.MakeOrders.IncomeTracker.ToString());
+            var reason = TryDeployWithReason(terr, armies, force);
+
+            if (reason != null)
+                throw new Exception("Deploy failed. reason=" + reason + "  Territory=" + terr + ", armies=" + armies + ", us=" + Bot.PlayerID + ", Income=" + Bot.EffectiveIncome.ToString() + ", IncomeTracker=" + Bot.MakeOrders.IncomeTracker.ToString());
         }
 
         public bool TryDeploy(TerritoryIDType terrID, int armies, bool force = false)
         {
-            if (!force && Bot.AvoidTerritories.Contains(terrID))
-                return false;
+            return TryDeployWithReason(terrID, armies, force) == null;
+        }
 
-            Assert.Fatal(Bot.Standing.Territories[terrID].OwnerPlayerID == Bot.PlayerID, "Not owned");
+        public string TryDeployWithReason(TerritoryIDType terrID, int armies, bool force = false)
+        {
+            if (!force && Bot.AvoidTerritories.Contains(terrID))
+                return "AvoidTerritories and !force";
+
+            if (Bot.Standing.Territories[terrID].OwnerPlayerID != Bot.PlayerID)
+                return "Not owned";
 
             if (armies == 0)
-                return true; //just pretend like we did it
-            Assert.Fatal(armies > 0, "Armies negative");
+                return null; //just pretend like we did it
+            Assert.Fatal(armies > 0, "Armies negative 1");
 
-            if (!Bot.MakeOrders.IncomeTracker.TryRecordUsedArmies(terrID, armies))
-                return false;
+            string itReason;
+            int unused;
+            if (!Bot.MakeOrders.IncomeTracker.TryRecordUsedArmies2(terrID, armies, out unused, out itReason))
+                return "IncomeTracker " + itReason;
 
             var existing = Orders.OfType<GameOrderDeploy>().FirstOrDefault(o => o.DeployOn == terrID);
 
@@ -67,7 +77,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             else
                 AddOrder(GameOrderDeploy.Create(Bot.PlayerID, armies, terrID, false));
 
-            return true;
+            return null;
         }
 
         public void AddAttack(TerritoryIDType from, TerritoryIDType to, AttackTransferEnum attackTransfer, int numArmies, bool attackTeammates, bool byPercent = false, bool bosses = false, bool commanders = false)

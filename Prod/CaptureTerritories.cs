@@ -26,8 +26,8 @@ namespace WarLight.Shared.AI.Prod
             Assert.Fatal(armiesEarnPerTurn >= 0, "Negative armiesEarnPerTurn");
             var armiesDefending = terrsToTake.Sum(o => terrToTakeDefenders(bot.Standing.Territories[o]));
 
-            var avgAttackersNeededPerTerritory = bot.ArmiesToTake(new Armies(SharedUtility.Round((double)armiesDefending / (double)terrsToTake.Count)));
-            var avgRemaindersPerTerritory = avgAttackersNeededPerTerritory - SharedUtility.Round(avgAttackersNeededPerTerritory * bot.Settings.DefenseKillRate);
+            var avgAttackersNeededPerTerritory = bot.ArmiesToTake(new Armies(SharedUtility.Round((double)armiesDefending / (double)terrsToTake.Count, capWithinBounds: true)));
+            var avgRemaindersPerTerritory = avgAttackersNeededPerTerritory - SharedUtility.Round(avgAttackersNeededPerTerritory * bot.Settings.DefenseKillRate, capWithinBounds: true);
 
 
             var armiesNeeded = bot.ArmiesToTake(new Armies(armiesDefending));
@@ -40,7 +40,7 @@ namespace WarLight.Shared.AI.Prod
                 var totalDeployed = armiesEarnPerTurn * turns;
                 var totalArmies = armiesWeHaveInOrAroundBonus + totalDeployed;
 
-                var territoriesGettingRemaindersFrom = Math.Min(terrsToTake.Count - SharedUtility.Round(terrsToTake.Count / (float)turns), terrsToTake.Count - 1);
+                var territoriesGettingRemaindersFrom = Math.Min(terrsToTake.Count - SharedUtility.Round(terrsToTake.Count / (float)turns, capWithinBounds: true), terrsToTake.Count - 1);
                 var remaindersCanUse = territoriesGettingRemaindersFrom * avgRemaindersPerTerritory;
 
                 var armiesToStandGuard = territoriesGettingRemaindersFrom * bot.Settings.OneArmyMustStandGuardOneOrZero;

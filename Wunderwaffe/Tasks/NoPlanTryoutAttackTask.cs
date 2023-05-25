@@ -41,9 +41,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 {
                     var smallAttackPresent = IsTerritoryAttackingOpponentTerritorySmall(ownedNeighbors[i], territoryToAttack);
                     if (smallAttackPresent)
-                        neededNewArmies = territoryToAttack.Armies.DefensePower;
+                        neededNewArmies = territoryToAttack.Armies.DefensePowerOr(10);
                     else
-                        neededNewArmies = territoryToAttack.Armies.DefensePower + 1;
+                        neededNewArmies = territoryToAttack.Armies.DefensePowerOr(10) + 1;
 
                     if (ownedNeighbors[i].GetIdleArmies().NumArmies >= neededNewArmies)
                     {
@@ -77,7 +77,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         {
             foreach (var atm in opponentTerritory.IncomingMoves)
             {
-                if (atm.Armies.AttackPower <= 1 && atm.From.ID == ourTerritory.ID)
+                if (atm.Armies.AttackPowerOr(10) <= 1 && atm.From.ID == ourTerritory.ID)
                     return true;
             }
             return false;
@@ -101,7 +101,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var outvar = new List<BotTerritory>();
             foreach (var territory_1 in possibleCandidates)
             {
-                if (territory_1.Armies.DefensePower <= 2 && territory_1.IncomingMoves.None(o => o.Armies.AttackPower > 1))
+                if (territory_1.Armies.DefensePowerOr(10) <= 2 && territory_1.IncomingMoves.None(o => o.Armies.AttackPowerOr(10) > 1))
                     outvar.Add(territory_1);
             }
             return outvar;

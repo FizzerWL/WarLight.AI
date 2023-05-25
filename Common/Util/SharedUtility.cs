@@ -64,17 +64,46 @@ namespace WarLight.Shared.AI
                     return i;
         }
 
-        public static int Round(this double p, bool roundUpOnHalf = true)
+        public static int Round(this double p, bool roundUpOnHalf = true, bool capWithinBounds = false)
         {
-            var i = (int)p;
-            if (p - i > 0.5)
-                return i + 1;
+            int i;
+            if (p > int.MaxValue)
+            {
+                if (capWithinBounds)
+                    return int.MaxValue;
+                else
+                    throw new Exception("Round exceeded max limit");
+            }
+            else if (p < int.MinValue)
+            {
+                if (capWithinBounds)
+                    return int.MinValue;
+                else
+                    throw new Exception("Round exceeded min limit");
+            }
             else
-                if (roundUpOnHalf && p - i == 0.5)
+                i = (int)p;
+
+            if (p < 0)
+            {
+                if (p - i < -0.5)
+                    return i - 1;
+                else if (roundUpOnHalf && p - i == -0.5)
+                    return i - 1;
+                else
+                    return i;
+            }
+            else
+            {
+                if (p - i > 0.5)
+                    return i + 1;
+                else if (roundUpOnHalf && p - i == 0.5)
                     return i + 1;
                 else
                     return i;
+            }
         }
+
         public static int Ceiling(double d)
         {
             var c = (int)d;
@@ -212,6 +241,23 @@ namespace WarLight.Shared.AI
             return queue;
         }
 
+
+        public static int CompareDoubles(double f, double s)
+        {
+            return f.CompareTo(s);
+        }
+
+        public static T ExtractAt<T>(this List<T> list, int index)
+        {
+            var ret = list[index];
+            list.RemoveAt(index);
+            return ret;
+        }
+        public static List<T> SortAndReturn<T>(this List<T> list, Comparison<T> compare)
+        {
+            list.Sort(compare);
+            return list;
+        }
     }
 
 }

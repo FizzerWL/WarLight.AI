@@ -84,7 +84,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 if (friendlyArmies * ratio > enemyArmies)
                     continue;
 
-                var armies = SharedUtility.Round(bot.EffectiveIncome.FreeArmies * (bot.UseRandomness ? RandomUtility.BellRandom(.1, .4) : .25));
+                var armies = SharedUtility.Round(bot.EffectiveIncome.FreeArmies * (bot.UseRandomness ? RandomUtility.BellRandom(.1, .4) : .25), capWithinBounds: true);
                 if (armies < 5)
                     armies = 5;
 
@@ -93,6 +93,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     && bot.Map.Territories[o].ConnectedTo.Keys.None(t => oppTerrs.Contains(t))
                     && bot.Standing.Territories[o].NumArmies.SpecialUnits.Length == 0
                     && bot.Standing.Territories[o].NumArmies.NumArmies < armies * 2
+                    && bot.Map.Territories[o].ConnectedTo.Keys.ConcatOne(o).None(t => bot.Standing.Territories[t].NumArmies.SpecialUnits.Any(su => su is Commander && su.OwnerID == bot.PlayerID)) //never blockade if we're on or adjacent to our commander
                     ).ToList();
                 if (canBlockade.Count == 0)
                     continue;
@@ -123,7 +124,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                 .Where(o => bot.IsOpponent(o.OwnerPlayerID) && o.NumArmies.Fogged == false)
                 .ToList();
 
-            var minArmies = !bot.UseRandomness ? bot.BaseIncome.Total * 2 : SharedUtility.Round(bot.BaseIncome.Total * RandomUtility.BellRandom(1, 3));
+            var minArmies = !bot.UseRandomness ? bot.BaseIncome.Total * 2 : SharedUtility.Round(bot.BaseIncome.Total * RandomUtility.BellRandom(1, 3), capWithinBounds: true);
 
             var weights = allBombableEnemyTerritories.Where(o => o.NumArmies.NumArmies > minArmies).ToDictionary(o => o.ID, o => o.NumArmies.NumArmies - minArmies);
             if (weights.Count == 0)

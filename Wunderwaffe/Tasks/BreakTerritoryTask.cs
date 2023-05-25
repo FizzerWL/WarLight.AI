@@ -41,7 +41,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         private Moves CalculateBreakTerritoryMoves(BotTerritory opponentTerritory, int maxDeployment, int opponentDeployment, string source)
         {
             var outvar = new Moves();
-            var opponentArmies = opponentTerritory.Armies.DefensePower;
+            var opponentArmies = opponentTerritory.Armies.DefensePowerOr(10);
             opponentArmies += opponentDeployment;
             var neededAttackArmies = opponentTerritory.getNeededBreakArmies(opponentArmies);
             //var neededAttackArmies = SharedUtility.Round(opponentArmies / BotState.Settings.OffensiveKillRate);

@@ -50,8 +50,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             foreach (var opponentNeighbor in territoryToDefend.GetOpponentNeighbors())
             {
                 currentDeployment += opponentNeighbor.GetTotalDeployment(lowerConservativeLevel);
-                var opponentArmies = opponentNeighbor.GetArmiesAfterDeployment(lowerConservativeLevel).AttackPower;
-                var upperOpponentArmies = opponentNeighbor.GetArmiesAfterDeployment(upperConservativeLevel).AttackPower;
+                var opponentArmies = opponentNeighbor.GetArmiesAfterDeployment(lowerConservativeLevel).AttackPowerOr(10);
+                var upperOpponentArmies = opponentNeighbor.GetArmiesAfterDeployment(upperConservativeLevel).AttackPowerOr(10);
                 var deploymentDifference = upperOpponentArmies - opponentArmies;
                 for (var i = 0; i < step; i++)
                 {
@@ -69,8 +69,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var maxOpponentDeployment = territoryToDefend.GetOpponentNeighbors().Select(o => o.OwnerPlayerID).Distinct().Max(o => BotState.GetGuessedOpponentIncome(o, BotState.VisibleMap));
             var deploymentDifference_1 = maxOpponentDeployment - currentDeployment;
             maxAttackingArmies -= deploymentDifference_1;
-            var opponentKills = SharedUtility.Round(maxAttackingArmies * BotState.Settings.OffenseKillRate);
-            var ownArmies = territoryToDefend.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
+            var opponentKills = SharedUtility.Round(maxAttackingArmies * BotState.Settings.OffenseKillRate, capWithinBounds: true);
+            var ownArmies = territoryToDefend.GetArmiesAfterDeploymentAndIncomingMoves().DefensePowerOr(10);
             var missingArmies = Math.Max(0, opponentKills - ownArmies + 1);
             // First try to pull in more armies
             if (missingArmies > 0 && useBackgroundArmies)
@@ -112,7 +112,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 var biggestIdleArmyTerritory = unsortedNeighbors[0];
                 foreach (var territory in unsortedNeighbors)
                 {
-                    if (territory.GetIdleArmies().AttackPower > biggestIdleArmyTerritory.GetIdleArmies().AttackPower)
+                    if (territory.GetIdleArmies().AttackPowerOr(10) > biggestIdleArmyTerritory.GetIdleArmies().AttackPowerOr(10))
                         biggestIdleArmyTerritory = territory;
                 }
                 outvar.Add(biggestIdleArmyTerritory);

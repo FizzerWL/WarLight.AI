@@ -128,7 +128,12 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
         private static void Deploy(BotMain bot, string source, TerritoryIDType terrID, int armies)
         {
             AILog.Log("DeployRemaining", source + " deploying " + armies + " to " + bot.TerrString(terrID));
-            bot.Orders.Deploy(terrID, armies, true);
+
+            //In commerce games, it's OK if the deployment fails -- we'll just store the gold for the future. In non-commerce games, we must deploy to make valid orders
+            if (bot.Settings.CommerceGame)
+                bot.Orders.TryDeploy(terrID, armies, true);
+            else
+                bot.Orders.Deploy(terrID, armies, true);
         }
     }
 }

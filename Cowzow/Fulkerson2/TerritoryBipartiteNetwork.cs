@@ -167,7 +167,7 @@ namespace WarLight.Shared.AI.Cowzow.Fulkerson2
                 else
                 {
                     visited.Add(curr);
-                    var edges = new List<Edge>(residual[curr.End.ID].Edges);
+                    var edges = residual[curr.End.ID].Edges.ToList();
                     if (IsPositive(curr) && Eval != null)
                         edges.Sort((a,b) => Eval.Compare(a, b));
                     for (var i = edges.Count - 1; i >= 0; i--)

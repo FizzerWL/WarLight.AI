@@ -58,7 +58,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             if (powerDiff > 0)
             {
                 if (bot.UseRandomness)
-                    toDeploy = SharedUtility.Round(toDeploy * RandomUtility.BellRandom(0.5, 1.5));
+                    toDeploy = SharedUtility.Round(toDeploy * RandomUtility.BellRandom(0.5, 1.5), capWithinBounds: true);
                 if (toDeploy > bot.MakeOrders.IncomeTracker.RemainingUndeployed)
                     toDeploy = bot.MakeOrders.IncomeTracker.RemainingUndeployed;
 
@@ -176,18 +176,18 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     var visitOnRoute = visit.Where(o => terrRoutes.ContainsKey(o)).ToList();
                     if (visitOnRoute.Count > 0)
                     {
-                        var final = visitOnRoute.Select(o => terrRoutes[o]).MaxSelectorOrDefault(o => o.Index);
-                        if (RandomUtility.RandomPercentage() > final.Route.Chance)
+                        var finalTerr = visitOnRoute.Select(o => terrRoutes[o]).MaxSelectorOrDefault(o => o.Index);
+                        if (RandomUtility.RandomPercentage() > finalTerr.Route.Chance)
                         {
-                            AILog.Log("SpecialUnits", "Skipping moving boss to route due to failed random check: " + final.Route);
+                            AILog.Log("SpecialUnits", "Skipping moving boss to route due to failed random check: " + finalTerr.Route);
                             break;
                         }
                         else
                         {
-                            var move = FindPath.TryFindShortestPath(bot, terr.ID, t => t == final.Terr);
-                            AILog.Log("SpecialUnits", "Moving boss to get back to route. Moving to " + bot.TerrString(move[0]) + " to get to " + bot.TerrString(final.Terr) + " index=" + final.Index + " " + final.Route);
+                            var move = FindPath.TryFindShortestPath(bot, terr.ID, t => t == finalTerr.Terr);
+                            AILog.Log("SpecialUnits", "Moving boss to get back to route. Moving to " + bot.TerrString(move[0]) + " to get to " + bot.TerrString(finalTerr.Terr) + " index=" + finalTerr.Index + " " + finalTerr.Route);
                             bot.Orders.AddAttack(terr.ID, move[0], AttackTransferEnum.AttackTransfer, 0, true, bosses: true);
-                            bot.AvoidTerritories.Add(final.Terr);
+                            bot.AvoidTerritories.Add(finalTerr.Terr);
                             return;
                         }
                     }
@@ -210,6 +210,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                         return bot.Players[ts.OwnerPlayerID].IsAI ? 3 : 2; //prefer human player
                     else if (ts.OwnerPlayerID == TerritoryStanding.NeutralPlayerID)
                         return 1;
+                    else if (ts.OwnerPlayerID == TerritoryStanding.FogPlayerID)
+                        return 1; //complete fog winds up here
                     else
                         throw new Exception("Unexpected owner " + ts.OwnerPlayerID);
 

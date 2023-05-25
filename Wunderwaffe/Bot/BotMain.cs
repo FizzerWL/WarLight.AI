@@ -209,7 +209,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
             Debug.Debug.PrintTerritories(VisibleMap, this);
             //LastVisibleMap = VisibleMap.GetMapCopy();
-            return this.MovesCalculator.CalculatedMoves.Convert();
+            var ret = this.MovesCalculator.CalculatedMoves.Convert();
+
+            foreach (var attack in ret.OfType<GameOrderAttackTransfer>())
+                Assert.Fatal(attack.NumArmies.NumArmies >= 0, "Armies negative");
+            return ret;
         }
 
         public string Name()

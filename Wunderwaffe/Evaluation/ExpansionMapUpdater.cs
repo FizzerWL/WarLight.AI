@@ -41,7 +41,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             {
                 var emTakenTerritory = expansionMap.Territories[vmTakenTerritory.ID];
                 emTakenTerritory.OwnerPlayerID = BotState.Me.ID;
-                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefenseKillRate)));
+                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefenseKillRate, capWithinBounds: true)));
             }
         }
     }

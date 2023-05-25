@@ -70,9 +70,9 @@ namespace WarLight.Shared.AI.Prod
 
             var criticalPath = new HashSet<TerritoryIDType>();
 
-            foreach(var final in finalTerritoriesCaptured)
+            foreach(var terr in finalTerritoriesCaptured)
             {
-                var path = FindPath.TryFindShortestPathReversed(bot, o => weOwn(bot.Standing.Territories[o]), final, o => traverse.Contains(o));
+                var path = FindPath.TryFindShortestPathReversed(bot, o => weOwn(bot.Standing.Territories[o]), terr, o => traverse.Contains(o));
 
                 if (path != null)
                 {
@@ -81,7 +81,7 @@ namespace WarLight.Shared.AI.Prod
                 }
                 else
                 {
-                    AILog.Log("BonusPath", "  Could not find a path to " + bot.TerrString(final));
+                    AILog.Log("BonusPath", "  Could not find a path to " + bot.TerrString(terr));
                 }
             }
 

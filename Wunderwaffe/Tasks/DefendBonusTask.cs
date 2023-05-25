@@ -50,12 +50,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
 
         private static List<BotTerritory> GetThreateningTerritories(BotBonus ownedBonus)
         {
-            var outvar = new HashSet<BotTerritory>();
+            var outvar = new Dictionary<TerritoryIDType, BotTerritory>();
             foreach (var territory in ownedBonus.Territories)
-                outvar.AddRange(territory.GetOpponentNeighbors());
-            var returnList = new List<BotTerritory>();
-            returnList.AddRange(outvar);
-            return returnList;
+                foreach (var bt in territory.GetOpponentNeighbors())
+                    outvar[bt.ID] = bt;
+            return outvar.Values.ToList();
         }
     }
 }

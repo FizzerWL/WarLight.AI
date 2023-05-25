@@ -105,7 +105,7 @@ namespace WarLight.Shared.AI.Cowzow.Comparators
                         //if (neighbor.Bonus.HasWasteland())
                         //    modifier *= 0.7; //TODO: Check the desirability of this bonus and adjust accordingly here
                         score += modifier;
-                        DumpSet.Add(e.ID, e);
+                        DumpSet[e.ID] = e;
                         break;
                     }
                 }
@@ -143,7 +143,7 @@ namespace WarLight.Shared.AI.Cowzow.Comparators
                         {
                             score += 0.8 * bonus.ArmiesReward;
                             if (bonus.ArmiesReward > 1)
-                                DumpSet.Add(e.ID, e);
+                                DumpSet[e.ID] = e;
                         }
                         else
                             score += 0.1 * bonus.ArmiesReward;

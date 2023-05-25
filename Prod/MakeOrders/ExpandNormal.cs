@@ -21,25 +21,29 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             AttackableNeutrals = GetExpansionWeights(terrs);
         }
 
-        public override void Go(int useArmies, bool highlyValuedOnly)
+        public override void Go(int useArmiesArg, bool highlyValuedOnly)
         {
             //In FFA, focus on expansion even moreso than in headsup
             float minWeight = !highlyValuedOnly ? float.MinValue : ExpansionHelper.BaseBonusWeight + (Bot.IsFFA ? -10 : 0) + (Bot.UseRandomness ? (float)RandomUtility.BellRandom(-9, 9) : 0);
 
-            AILog.Log("Expand", "Expand called with useArmies=" + useArmies + ", minWeight=" + minWeight);
-            Assert.Fatal(useArmies >= 0, "useArmies negative");
+            AILog.Log("Expand", "Expand called with useArmies=" + useArmiesArg + ", minWeight=" + minWeight);
+            var useArmies = useArmiesArg < 0 ? 0 : useArmiesArg; //useArmiesArg can be negative in commerce games.  Treat it as 0
 
-            var meetsFilter = AttackableNeutrals.Where(o => o.Value.Weight > minWeight).ToDictionary(o => o.Key, o => o.Value);  //Don't bother with anything less than the min weight
+            var meetsFilter = AttackableNeutrals.Where(o => o.Value.Weight > minWeight).ToDictionary(o => o.Key, o => o.Value).ToList();  //Don't bother with anything less than the min weight
+
+            if (Bot.UseRandomness)
+                meetsFilter.Sort((f, s) => SharedUtility.CompareDoubles(s.Value.Weight, f.Value.Weight));
+            else
+                meetsFilter.Sort((f, s) => f.Value.Weight != s.Value.Weight ? SharedUtility.CompareDoubles(s.Value.Weight, f.Value.Weight) : SharedUtility.CompareInts((int)f.Key, (int)s.Key));
 
             AILog.Log("Expand", meetsFilter.Count + " items over weight " + minWeight + " (" + AttackableNeutrals.Count + " total), top:");
-            foreach (var spot in meetsFilter.OrderByDescending(o => o.Value.Weight).Take(10))
+            foreach (var spot in meetsFilter.Take(10))
                 AILog.Log("Expand", " - " + spot.Value);
 
             int armiesToExpandWithRemaining = useArmies;
             while (meetsFilter.Count > 0)
             {
-                var expandTo = meetsFilter.OrderByDescending(o => o.Value.Weight).First().Key;
-                meetsFilter.Remove(expandTo);
+                var expandTo = meetsFilter.ExtractAt(0).Key;
 
                 if (Bot.Orders.Orders.OfType<GameOrderAttackTransfer>().Any(o => o.To == expandTo))
                     continue; //we've already attacked it
@@ -50,7 +54,8 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
                     .Select(o => Bot.Standing.Territories[o])
                     .Where(o => o.OwnerPlayerID == Bot.PlayerID && !Bot.AvoidTerritories.Contains(o.ID))
                     .ToDictionary(o => o.ID, o => Bot.MakeOrders.GetArmiesAvailable(o.ID))
-                    .OrderByDescending(o => o.Value).ToList();
+                    .OrderByDescending(o => o.Value)
+                    .ToList();
 
                 if (attackFromList.Count == 0)
                     continue; //nowhere to attack from

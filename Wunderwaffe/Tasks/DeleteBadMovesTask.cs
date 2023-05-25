@@ -44,9 +44,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                         interestingAttacks.Add(atm);
                 }
             }
-            var territoriesWithInterestingAttacks = new HashSet<BotTerritory>();
+            var territoriesWithInterestingAttacks = new Dictionary<TerritoryIDType, BotTerritory>();
             foreach (BotOrderAttackTransfer atm_1 in interestingAttacks)
-                territoriesWithInterestingAttacks.Add(atm_1.From);
+                territoriesWithInterestingAttacks[atm_1.From.ID] = atm_1.From;
         }
 
         // TODO weitermachen

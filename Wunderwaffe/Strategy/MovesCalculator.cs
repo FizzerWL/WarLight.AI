@@ -165,8 +165,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
         private void CalculateNoPlanTryoutAttackMoves(Moves moves)
         {
             var foundMove = true;
+            int foundMoveCount = 0;
             while (foundMove)
             {
+                foundMoveCount++;
+                if (foundMoveCount > 50)
+                    break; //prevent infinite loops
                 foundMove = false;
                 var tryoutAttackMoves = NoPlanTryoutAttackTask.CalculateNoPlanTryoutAttackTask(BotState, false, true, true);
                 if (tryoutAttackMoves != null)

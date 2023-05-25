@@ -20,7 +20,7 @@ namespace WarLight.Shared.AI.Prod
 
         public string Description()
         {
-            return "Version 2.0 of Warzone's production AI." + (UseRandomness ? " This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers AIs in multi-player games, as well as custom single-player levels." : "");
+            return "Version 2.0 of Warzone's production AI." + (UseRandomness ? " This bot allows randomness to influence its actions to keep it from being predictable.  This is the same AI that powers the AIs in the single-player campaign and in multi-player games" : "");
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
@@ -128,20 +128,25 @@ namespace WarLight.Shared.AI.Prod
             {
                 var toTake = ArmiesToTake(def);
                 var mustOccupyTerritory = ret + Settings.OneArmyMustStandGuardOneOrZero;
-                var willLoseInFight = SharedUtility.Round(def.DefensePower * Settings.DefenseKillRate);
+                var willLoseInFight = SharedUtility.Round(def.DefensePower * Settings.DefenseKillRate, capWithinBounds: true);
                 ret = Math.Max(toTake, mustOccupyTerritory + willLoseInFight);
             }
 
-            return ret;
+            if (ret < 0)
+                return 0; //things break if we return negative, so never do that.  TODO: Ideally we'd never return 0, but we'll keep returning 0 for backcompat purposes since returning 1 would make the AI smarter
+            else
+                return ret;
         }
 
         public int ArmiesToTake(Armies defenseArmies)
         {
             Assert.Fatal(!defenseArmies.Fogged, "ArmiesToTake called on fog");
 
-            var ret = SharedUtility.Round((defenseArmies.DefensePower / Settings.OffenseKillRate) - 0.5);
+            var def = defenseArmies.DefensePower;
 
-            if (ret == SharedUtility.Round(defenseArmies.DefensePower * Settings.DefenseKillRate))
+            var ret = def == 0 ? 1 : SharedUtility.Round((def / Settings.OffenseKillRate) - 0.5, capWithinBounds: true);
+
+            if (ret == SharedUtility.Round(def * Settings.DefenseKillRate, capWithinBounds: true))
                 ret++;
 
             if (Settings.RoundingMode == RoundingModeEnum.WeightedRandom && (!UseRandomness || RandomUtility.RandomNumber(3) != 0))
@@ -151,10 +156,13 @@ namespace WarLight.Shared.AI.Prod
             {
                 //Add up some armies to account for luck
                 var factor = UseRandomness ? RandomUtility.BellRandom(2.5, 17.5) : 10.0;
-                ret += SharedUtility.Round(Settings.LuckModifier / factor * ret); 
+                ret += SharedUtility.Round(Settings.LuckModifier / factor * ret, capWithinBounds: true); 
             }
 
-            return ret;
+            if (ret < 0)
+                return 0; //things break if we return negative, so never do that.  TODO: Ideally we'd never return 0, but we'll keep returning 0 for backcompat purposes since returning 1 would make the AI smarter
+            else
+                return ret;
         }
 
         public List<GameOrder> GetOrders()
@@ -459,13 +467,13 @@ namespace WarLight.Shared.AI.Prod
             foreach (var borderTerr in BorderTerritories)
             {
                 //Subtract one weight for each defending army we have next to that player
-
+                var def = Standing.Territories[borderTerr.ID].NumArmies.DefensePower;
                 Map.Territories[borderTerr.ID].ConnectedTo.Keys
                     .Select(o => Standing.Territories[o])
                     .Where(o => ret.ContainsKey(o.OwnerPlayerID))
                     .Select(o => o.OwnerPlayerID)
                     .Distinct()
-                    .ForEach(o => ret[o] = ret[o] - Standing.Territories[borderTerr.ID].NumArmies.DefensePower);
+                    .ForEach(o => ret[o] = ret[o] - def);
             }
 
             return ret;

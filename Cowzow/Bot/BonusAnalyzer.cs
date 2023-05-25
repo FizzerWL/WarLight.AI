@@ -114,7 +114,7 @@ namespace WarLight.Shared.AI.Cowzow.Bot
 
         public void PrintReport()
         {
-            var bonusIds = new List<BonusIDType>(Bot.BotMap.Bonuses.Keys);
+            var bonusIds = Bot.BotMap.Bonuses.Keys.ToList();
             bonusIds.Sort();
             AILog.Log("BonusAnalyzer", "Expected troops: " + TroopEstimate);
             foreach (var i in bonusIds)

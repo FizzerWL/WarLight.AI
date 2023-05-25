@@ -98,6 +98,9 @@ namespace WarLight.Shared.AI.Cowzow.Bot
         private EdgePriorityComparator Eval;
         public readonly Dictionary<TerritoryIDType, int> OpponentVision = new Dictionary<TerritoryIDType, int>();
         public BonusAnalyzer Analyzer;
+        private Dictionary<PlayerIDType, TeammateOrders> TeammatesOrders;
+        private int CardsMustPlay;
+        private List<CardInstance> Cards;
 
         public void Init(GameIDType gameID, PlayerIDType myPlayerID, Dictionary<PlayerIDType, GamePlayer> players, MapDetails map, GameStanding distributionStanding, GameSettings gameSettings, int numberOfTurns, Dictionary<PlayerIDType, PlayerIncome> incomes, GameOrder[] prevTurn, GameStanding latestTurnStanding, GameStanding previousTurnStanding, Dictionary<PlayerIDType, TeammateOrders> teammatesOrders, List<CardInstance> cards, int cardsMustPlay, Stopwatch timer, List<string> directives)
         {
@@ -111,6 +114,9 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             this.PreviousTurnStanding = previousTurnStanding;
             this.MyIncome = incomes[myPlayerID];
             this.PreviousTurn = prevTurn;
+            this.TeammatesOrders = teammatesOrders;
+            this.CardsMustPlay = cardsMustPlay;
+            this.Cards = cards;
 
             //teammatesOrders
             //cards
@@ -167,17 +173,54 @@ namespace WarLight.Shared.AI.Cowzow.Bot
             var deploys = GetPlaceArmiesMoves();
             var attacks = GetAttackTransferMoves();
 
-            var final = new List<BotOrder>();
-            deploys.ForEach(o => final.Add(o));
-            attacks.ForEach(o => final.Add(o));
+            var finalOrders = new List<BotOrder>();
+            deploys.ForEach(o => finalOrders.Add(o));
+            attacks.ForEach(o => finalOrders.Add(o));
 
-            AILog.Log("Cowzow", "Final " + final.Count + " orders: ");
-            foreach (var order in final)
+            AILog.Log("Cowzow", "Final " + finalOrders.Count + " orders: ");
+            foreach (var order in finalOrders)
                 AILog.Log("Cowzow", " - " + order);
 
-            return BotOrder.Convert(final);
+            var ret = BotOrder.Convert(finalOrders);
+
+            CheckDiscard(ret);
+            return ret;
         }
 
+        /// <summary>
+        /// Check if we are in a situation where we must play cards to commit. In this case, simply discard randomly, since we don't know how to play cards effectively.
+        /// </summary>
+        /// <param name="ret"></param>
+        private void CheckDiscard(List<GameOrder> ret)
+        {
+            //If there are players on our team that have yet to take their turn, do not discard cards
+            if (Me.Team != PlayerInvite.NoTeam && this.Players.Values.Any(o => IsTeammate(o.ID) && o.State == GamePlayerState.Playing && !o.HasCommittedOrders))
+                return;
+
+            if (this.CardsMustPlay <= 0)
+                return;
+
+            // Discard as many cards as needed
+            var cardsPlayedByTeammates = this.TeammatesOrders == null ? new HashSet<CardInstanceIDType>() : 
+                this.TeammatesOrders
+                .Where(o => o.Value.Orders != null)
+                .SelectMany(o => o.Value.Orders)
+                .Where(o => o is GameOrderPlayCard || o is GameOrderDiscard)
+                .Select(o => o is GameOrderPlayCard ? o.As<GameOrderPlayCard>().CardInstanceID : o.As<GameOrderDiscard>().CardInstanceID)
+                .ToHashSet(false);
+
+            var discard = this.CardsMustPlay;
+
+            foreach (var card in this.Cards)
+            {
+                if (discard > 0 && !cardsPlayedByTeammates.Contains(card.ID))
+                {
+                    AILog.Log("ChcekDiscard", "Discarding card " + card.ID);
+                    ret.Insert(0, GameOrderDiscard.Create(Me.ID, card.ID));
+                    discard--;
+                }
+            }
+        }
 
         public IEnumerable<BotOrderDeploy> GetPlaceArmiesMoves()
         {
@@ -253,11 +296,24 @@ namespace WarLight.Shared.AI.Cowzow.Bot
                 }
             }
 
-            var best = totalAttackPaths[0].Start;
-            if (armiesLeft > 0)
+
+            if (totalAttackPaths.Count == 0)
             {
-                placeArmiesMoves.AddTo(best.ID, armiesLeft);
-                best.Armies = best.Armies + armiesLeft;
+                //Deploy randomly
+                if (armiesLeft > 0)
+                {
+                    var deployOn = this.LatestStanding.Territories.Values.RandomWhere(o => o.OwnerPlayerID == Me.ID).ID;
+                    placeArmiesMoves.AddTo(deployOn, armiesLeft);
+                }
+            }
+            else
+            {
+                var best = totalAttackPaths[0].Start;
+                if (armiesLeft > 0)
+                {
+                    placeArmiesMoves.AddTo(best.ID, armiesLeft);
+                    best.Armies = best.Armies + armiesLeft;
+                }
             }
 
             MyDeployments.Clear();

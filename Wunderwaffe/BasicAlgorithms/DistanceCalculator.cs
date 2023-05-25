@@ -13,13 +13,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             var annotatedTerritories = CalculateDistances(mapToUse, toTerritories, blockedTerritories);
             outvar.Add(fromTerritory);
             var currentTerritory = fromTerritory;
-            var currentDistance = annotatedTerritories[fromTerritory];
+            var currentDistance = annotatedTerritories[fromTerritory.ID];
             while (currentDistance != 0)
             {
                 var closestNeighbor = GetClosestNeighborToTargetTerritories(currentTerritory, annotatedTerritories, blockedTerritories);
                 outvar.Add(closestNeighbor);
                 currentTerritory = closestNeighbor;
-                currentDistance = annotatedTerritories[closestNeighbor];
+                currentDistance = annotatedTerritories[closestNeighbor.ID];
             }
             return outvar;
         }
@@ -38,7 +38,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
                 foreach (var territory in annotadedTerritories.Keys)
                 {
                     var territoryDistance = annotadedTerritories[territory];
-                    territory.DistanceToOwnBonus = territoryDistance;
+                    mapToUse.Territories[territory].DistanceToOwnBonus = territoryDistance;
                 }
             }
         }
@@ -55,29 +55,28 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             {
                 var annotadedTerritories = CalculateDistances(mapToUse, opponentBonusTerritories, null);
                 foreach (var territory in annotadedTerritories.Keys)
-                    territory.DistanceToOpponentBonus = annotadedTerritories[territory];
+                    mapToUse.Territories[territory].DistanceToOpponentBonus = annotadedTerritories[territory];
             }
         }
 
         // TODO
-        public static Dictionary<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
+        public static KeyValuePair<BotTerritory, int> GetClosestTerritoryToOpponentBonus(BotMain state, BotMap mapToUse, BotBonus opponentBonus)
         {
             List<BotTerritory> Territories = opponentBonus.Territories;
             var annotadedTerritories = CalculateDistances(mapToUse, Territories, null);
             var minDistance = 1000;
             BotTerritory minDistanceTerritory = null;
-            foreach (var territory in annotadedTerritories.Keys)
+            foreach (var territoryID in annotadedTerritories.Keys)
             {
-                var territoryDistance = annotadedTerritories[territory];
+                var territory = mapToUse.Territories[territoryID];
+                var territoryDistance = annotadedTerritories[territoryID];
                 if (territory.OwnerPlayerID == state.Me.ID && territoryDistance < minDistance)
                 {
-                    minDistance = annotadedTerritories[territory];
+                    minDistance = annotadedTerritories[territoryID];
                     minDistanceTerritory = territory;
                 }
             }
-            Dictionary<BotTerritory, int> returnTerritory = new Dictionary<BotTerritory, int>();
-            returnTerritory.Add(minDistanceTerritory, minDistance);
-            return returnTerritory;
+            return new KeyValuePair<BotTerritory, int>(minDistanceTerritory, minDistance);
         }
 
         /// <summary>Care0Spots</summary>
@@ -94,7 +93,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DistanceToUnimportantSpot = territoryDistance;
             }
         }
@@ -113,7 +112,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DistanceToImportantSpot = territoryDistance;
             }
         }
@@ -133,7 +132,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DistanceToHighlyImportantSpot = territoryDistance;
             }
         }
@@ -148,7 +147,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DistanceToOpponentBorder = territoryDistance;
             }
         }
@@ -170,7 +169,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DistanceToImportantOpponentBorder = territoryDistance;
             }
         }
@@ -182,7 +181,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                var territoryToWriteIn = mapToWriteIn.Territories[territory.ID];
+                var territoryToWriteIn = mapToWriteIn.Territories[territory];
                 territoryToWriteIn.DirectDistanceToOpponentBorder = territoryDistance;
             }
         }
@@ -202,7 +201,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             foreach (var territory in annotadedTerritories.Keys)
             {
                 var territoryDistance = annotadedTerritories[territory];
-                territory.DistanceToBorder = territoryDistance;
+                mapToUse.Territories[territory].DistanceToBorder = territoryDistance;
             }
         }
 
@@ -210,19 +209,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
         /// <param name="toTerritories"></param>
         /// <param name="blockedTerritories">blocked territories. Insert null here if not needed.</param>
         /// <returns></returns>
-        public static Dictionary<BotTerritory, int> CalculateDistances(BotMap mapToUse, List<BotTerritory> toTerritories, List<BotTerritory> blockedTerritories)
+        public static Dictionary<TerritoryIDType, int> CalculateDistances(BotMap mapToUse, List<BotTerritory> toTerritories, List<BotTerritory> blockedTerritories)
         {
-            var outvar = new Dictionary<BotTerritory, int>();
+            var outvar = new Dictionary<TerritoryIDType, int>();
             foreach (var territory in mapToUse.Territories.Values)
             {
                 if (toTerritories.Contains(territory))
-                {
-                    outvar.Add(territory, 0);
-                }
+                    outvar.Add(territory.ID, 0);
                 else
-                {
-                    outvar.Add(territory, int.MaxValue);
-                }
+                    outvar.Add(territory.ID, int.MaxValue);
             }
             // Now do the real stuff
             var hasSomethingChanged = true;
@@ -232,9 +227,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
                 foreach (var territory_1 in mapToUse.Territories.Values)
                 {
                     var closestNeighbor = GetClosestNeighborToTargetTerritories(territory_1, outvar, blockedTerritories);
-                    if (outvar[closestNeighbor] < outvar[territory_1] && outvar[territory_1] != outvar[closestNeighbor] + 1)
+                    if (outvar[closestNeighbor.ID] < outvar[territory_1.ID] && outvar[territory_1.ID] != outvar[closestNeighbor.ID] + 1)
                     {
-                        outvar[territory_1] = outvar[closestNeighbor] + 1;
+                        outvar[territory_1.ID] = outvar[closestNeighbor.ID] + 1;
                         hasSomethingChanged = true;
                     }
                 }
@@ -242,7 +237,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             return outvar;
         }
 
-        private static BotTerritory GetClosestNeighborToTargetTerritories(BotTerritory inTerritory, Dictionary<BotTerritory, int> annotatedTerritories, List<BotTerritory> blockedTerritories)
+        private static BotTerritory GetClosestNeighborToTargetTerritories(BotTerritory inTerritory, Dictionary<TerritoryIDType, int> annotatedTerritories, List<BotTerritory> blockedTerritories)
         {
             var nonBlockedNeighbors = new List<BotTerritory>();
             foreach (var neighbor in inTerritory.Neighbors)
@@ -255,8 +250,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.BasicAlgorithms
             var closestNeighbor = inTerritory;
             foreach (var neighbor_1 in nonBlockedNeighbors)
             {
-                var neighborDistance = annotatedTerritories[neighbor_1];
-                if (neighborDistance < annotatedTerritories[closestNeighbor])
+                var neighborDistance = annotatedTerritories[neighbor_1.ID];
+                if (neighborDistance < annotatedTerritories[closestNeighbor.ID])
                 {
                     closestNeighbor = neighbor_1;
                 }

@@ -112,12 +112,23 @@ namespace WarLight.Shared.AI
         /// <returns>
         /// True if the change was successful. False if we couldn't do it.
         /// </returns>
-        public bool TryRecordUsedArmies(TerritoryIDType territoryID, int numArmies)
+        public bool TryRecordUsedArmies(TerritoryIDType territoryID, int numArmies, bool allowNegative = false)
         {
+            int unused;
+            string unused2;
+            return TryRecordUsedArmies2(territoryID, numArmies, out unused, out unused2, allowNegative);
+        }
+
+        /// <param name="numShort">If we return false, this will tell the caller how many armies short they are.</param>
+        public bool TryRecordUsedArmies2(TerritoryIDType territoryID, int numArmies, out int numShort, out string returnedFalseReason, bool allowNegative = false)
+        {
+            returnedFalseReason = "unspecified";
+
+            numShort = 0;
             Assert.Fatal(_income != null, "_income is null");
             if (numArmies == 0)
                 return true; //no-op
-            else if (numArmies < 0)
+            if (numArmies < 0)
                 return TryRemoveUsedArmies(territoryID, -numArmies);
 
 
@@ -133,10 +144,16 @@ namespace WarLight.Shared.AI
                         var avail = _income.BonusRestrictions[bonusID];
                         if (avail > used)
                         {
-                            var toUse = Math.Min(numArmies, avail - used); //can't name a variable "use" in actionscript
+                            var toUse = Math.Min(numArmies, avail - used); //num armies to use on this bonus. can't name a variable "use" in actionscript
 
-                            if (_income.FreeArmies - _freeArmiesUsedOn.Values.Sum() < numArmies - toUse)
+                            var freeArmiesAvailable = _income.FreeArmies - _freeArmiesUsedOn.Values.Sum();
+                            var used2 = numArmies - toUse;
+                            if (freeArmiesAvailable < used2 && !allowNegative)
+                            {
+                                numShort = used2 - freeArmiesAvailable;
+                                returnedFalseReason = "avail < used2 && !allowNegative, avail=" + avail + " used2=" + used2 + " numArmies=" + numArmies + " used=" + used + " avail2=" + freeArmiesAvailable + " toUse=" + toUse;
                                 return false; //We have some armies we could award from this bonus, but we wouldn't have enough free armies to award the rest of what's requested.  Therefore, abort now before recording bonus armies, so that the function doesn't change something and also return false.
+                            }
 
                             _armiesUsedOnBonuses.AddTo(bonusID, toUse);
                             _freeArmiesUsedOn.AddTo(territoryID, numArmies - toUse);
@@ -150,12 +167,17 @@ namespace WarLight.Shared.AI
             //Take free armies.
             int freeAvail = _income.FreeArmies - _freeArmiesUsedOn.Values.Sum();
 
-            if (freeAvail < numArmies)
+            if (freeAvail < numArmies && !allowNegative)
+            {
+                numShort = numArmies - freeAvail;
+                returnedFalseReason = "freeAvail < numArmies && !allowNegative  freeAvail=" + freeAvail + " numArmies=" + numArmies;
                 return false;
+            }
 
             _freeArmiesUsedOn.AddTo(territoryID, numArmies);
             return true;
         }
+
 
         public bool TryRemoveUsedArmies(TerritoryIDType territoryID, int armiesToRemove)
         {

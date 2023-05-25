@@ -22,7 +22,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
         private static void MergeMoves(BotMain state, Moves moves)
         {
             var deployedTo = new HashSet<TerritoryIDType>();
-            var attackedBetween = new HashSet<KeyValuePair<TerritoryIDType, TerritoryIDType>>();
+            var attackedBetween = new HashSet<string>();
 
             for (int i = 0; i < moves.Orders.Count; i++)
             {
@@ -50,7 +50,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
                 else if (order is BotOrderAttackTransfer)
                 {
                     var attack = (BotOrderAttackTransfer)order;
-                    var key = new KeyValuePair<TerritoryIDType, TerritoryIDType>(attack.From.ID, attack.To.ID);
+                    var key = attack.From.ID + " " + attack.To.ID;
 
                     if (attack.Armies.IsEmpty)
                     {

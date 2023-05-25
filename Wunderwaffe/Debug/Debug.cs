@@ -57,7 +57,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Debug
                     player = "opponent";
                 }
 
-                AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPower);
+                AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPowerOr(10));
             }
         }
 

@@ -11,7 +11,18 @@ namespace WarLight.Shared.AI.Prod.MakePicks
         {
             var expansionWeights = allAvailable.ToDictionary(o => o, o => GetExpansionWeight(bot, o));
 
-            var ordered = expansionWeights.OrderByDescending(o => o.Value).ToList();
+            var rnd = expansionWeights.ToDictionary(o => o.Key, o => RandomUtility.RandomNumber(int.MaxValue));
+
+            //Sort by weight descending.  If there's a tie, randomize it if we're a random bot, or sort by territory ID if we want to be consistent
+            var ordered = expansionWeights.ToList().SortAndReturn((f, s) =>
+            {
+                if (f.Value != s.Value)
+                    return SharedUtility.CompareDoubles(s.Value, f.Value);
+                else if (!bot.UseRandomness)
+                    return SharedUtility.CompareInts((int)f.Key, (int)s.Key);
+                else
+                    return SharedUtility.CompareInts(rnd[f.Key], rnd[s.Key]);
+            }).ToList();
 
             AILog.Log("PickTerritories", "Came up with " + expansionWeights.Count + " expansion weights: ");
             foreach (var e in ordered.Take(30))
@@ -38,6 +49,9 @@ namespace WarLight.Shared.AI.Prod.MakePicks
 
         private static float GetExpansionWeight(BotMain bot, TerritoryIDType terrID)
         {
+            if (bot.PastTime(10))
+                return 0;
+
             var td = bot.Map.Territories[terrID];
 
             var bonusPaths = td.PartOfBonuses

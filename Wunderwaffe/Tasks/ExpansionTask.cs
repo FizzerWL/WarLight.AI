@@ -86,8 +86,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 }
                 var foundMoves = true;
                 var firstStep = true;
+                int foundMovesCount = 0;
                 while (foundMoves)
                 {
+                    foundMovesCount++;
+                    if (foundMovesCount > 50)
+                        break; //prevent infinite loops
                     BotState.BonusValueCalculator.CalculateBonusValues(BotState.WorkingMap, BotState.VisibleMap);
                     foundMoves = false;
                     if (firstStep == false)

@@ -455,11 +455,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         private bool IsBonusAlreadyFlanked(BotBonus opponentBonus)
         {
-            var flankedTerritories = new HashSet<BotTerritory>();
+            var flankedTerritories = new HashSet<TerritoryIDType>();
             foreach (var ownedNeighbor in opponentBonus.GetOwnedNeighborTerritories())
                 foreach (var opponentNeighbor in ownedNeighbor.GetOpponentNeighbors())
                     if (opponentNeighbor.Details.PartOfBonuses.Contains(opponentBonus.ID))
-                        flankedTerritories.Add(opponentNeighbor);
+                        flankedTerritories.Add(opponentNeighbor.ID);
 
             return flankedTerritories.Count >= 2 ? true : false;
         }

@@ -139,7 +139,7 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
             var totalGold = Bot.Standing.NumResources(Bot.PlayerID, ResourceType.Gold);
             var spentGold = Bot.Settings.CostOfBuyingArmies(IncomeTracker.TotalArmiesDeployed);
             var maxPercent = !Bot.UseRandomness ? 0.5 : RandomUtility.BellRandom(0, 0.9);
-            int goldLeftToSpendOnCities = Math.Min(totalGold - spentGold, SharedUtility.Round(totalGold * maxPercent)); //limit our cities to about half our gold to ensure we don't over-build
+            int goldLeftToSpendOnCities = Math.Min(totalGold - spentGold, SharedUtility.Round(totalGold * maxPercent, capWithinBounds: true)); //limit our cities to about half our gold to ensure we don't over-build
 
             AILog.Log("BuildCities", "totalGold=" + totalGold + " spentGold=" + spentGold + " goldToSpendOnCities=" + goldLeftToSpendOnCities + " maxPercent=" + maxPercent);
 
@@ -151,6 +151,9 @@ namespace WarLight.Shared.AI.Prod.MakeOrders
 
             var eligibleTerritories = Bot.TerritoriesNotNearOpponent(acceptableRangeFromOpponent);
             eligibleTerritories.RemoveAll(Bot.AvoidTerritories);
+
+            if (eligibleTerritories.Count == 0)
+                return;
 
             var numCitiesOn = eligibleTerritories.ToDictionary(o => o, o => Bot.Standing.Territories[o].NumStructures(StructureType.City));
 

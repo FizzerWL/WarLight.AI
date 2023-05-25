@@ -33,11 +33,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     highestDefenceTerritoryValue = territory.DefenceTerritoryValue;
                 }
             }
-            var currentArmies = highestDefenceValueTerritory.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
+            if (highestDefenceValueTerritory == null)
+                return outvar;
+            var currentArmies = highestDefenceValueTerritory.GetArmiesAfterDeploymentAndIncomingMoves().DefensePowerOr(10);
             var attackingArmies = CalculateOpponentAttackingArmies(highestDefenceValueTerritory, opponentAttacks);
 
-            var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPower * state.Settings.OffenseKillRate);
-            //var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPower * state.Settings.OffensiveKillRate);
+            var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPowerOr(10) * state.Settings.OffenseKillRate);
+            //var minimumNeededArmies = SharedUtility.Round(attackingArmies.AttackPowerOr(10) * state.Settings.OffensiveKillRate);
             var maximumNeededArmies = minimumNeededArmies;
             var maximumMissingArmies = Math.Max(0, maximumNeededArmies - currentArmies);
             var minimumMissingArmies = Math.Max(0, minimumNeededArmies - currentArmies);
@@ -106,8 +108,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     continue;
 
                 var stilIdleArmies = CalculateStillOpponentIdleArmies(state, attackingOpponentTerritory, outvar);
-                var attackingOpponentArmies = SharedUtility.Round(ownedTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel).DefensePower / state.Settings.OffenseKillRate);
-                var opponentDeployment = Math.Max(0, attackingOpponentArmies - stilIdleArmies.DefensePower);
+                var attackingOpponentArmies = SharedUtility.Round(ownedTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel).DefensePowerOr(10) / state.Settings.OffenseKillRate);
+                var opponentDeployment = Math.Max(0, attackingOpponentArmies - stilIdleArmies.DefensePowerOr(10));
                 if (opponentDeployment > 0)
                     outvar.AddOrder(new BotOrderDeploy(opponentID, attackingOpponentTerritory, opponentDeployment));
 
@@ -143,7 +145,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             foreach (var territory in opponentNeighbors)
             {
                 var idleArmies = CalculateStillOpponentIdleArmies(state, territory, alreadyMadeAttacks);
-                if (idleArmies.AttackPower > maxIdleArmies.AttackPower)
+                if (idleArmies.AttackPowerOr(10) > maxIdleArmies.AttackPowerOr(10))
                 {
                     maxIdleArmies = idleArmies;
                     maxIdleArmiesTerritory = territory;

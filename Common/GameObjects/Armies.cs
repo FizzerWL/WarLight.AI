@@ -173,5 +173,17 @@ namespace WarLight.Shared.AI
 
             return sb.ToString();
         }
+
+
+        public int AttackPowerOr(int def)
+        {
+            return this.Fogged ? def : AttackPower;
+        }
+
+
+        public int DefensePowerOr(int def)
+        {
+            return this.Fogged ? def : DefensePower;
+        }
     }
 }

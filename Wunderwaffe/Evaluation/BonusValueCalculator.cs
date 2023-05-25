@@ -138,11 +138,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var amountOfTerritoriesUnderThreat = territoriesUnderThreat.Count;
             var opponentArmies = 0;
             foreach (var opponentNeighbor in opponentNeighborTerritories)
-                opponentArmies += opponentNeighbor.Armies.AttackPower;
+                opponentArmies += opponentNeighbor.Armies.AttackPowerOr(10);
 
             var ownArmies = 0;
             foreach (var territoryUnderThread in territoriesUnderThreat)
-                ownArmies += territoryUnderThread.GetArmiesAfterDeploymentAndIncomingMoves().DefensePower;
+                ownArmies += territoryUnderThread.GetArmiesAfterDeploymentAndIncomingMoves().DefensePowerOr(10);
 
             var ownedNeighborTerritories = bonus.GetOwnedNeighborTerritories().Count;
             var amountTerritories = bonus.Territories.Count;
@@ -171,10 +171,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var amountTerritoriesUnderAttack = territoriesUnderAttack.Count;
             var opponentArmies = 0;
             foreach (var opponentTerritory in territoriesUnderAttack)
-                opponentArmies += opponentTerritory.Armies.DefensePower;
+                opponentArmies += opponentTerritory.Armies.DefensePowerOr(10);
             var ownArmies = 0;
             foreach (var ownedNeighbor in ownedNeighbors)
-                ownArmies += ownedNeighbor.GetIdleArmies().AttackPower;
+                ownArmies += ownedNeighbor.GetIdleArmies().AttackPowerOr(10);
             var opponentNeighbors = bonus.GetOpponentNeighbors().Count;
             var attackValue = 0;
             attackValue += armiesReward * 10000;
@@ -195,15 +195,16 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var amountOpponentTerritories = opponentTerritories.Count;
             var opponentArmies = 0;
             foreach (var opponentTerritory in opponentTerritories)
-                opponentArmies += opponentTerritory.Armies.DefensePower;
+                opponentArmies += opponentTerritory.Armies.DefensePowerOr(10);
 
-            var possibleAttackTerritories = new HashSet<BotTerritory>();
+            var possibleAttackTerritories = new Dictionary<TerritoryIDType, BotTerritory>();
             foreach (var opponentTerritory_1 in opponentTerritories)
-                possibleAttackTerritories.AddRange(opponentTerritory_1.GetOwnedNeighbors());
+                foreach (var neighbor in opponentTerritory_1.GetOwnedNeighbors())
+                    possibleAttackTerritories[neighbor.ID] = neighbor;
 
             var ownArmies = 0;
-            foreach (var possibleAttackTerritory in possibleAttackTerritories)
-                ownArmies += possibleAttackTerritory.GetIdleArmies().AttackPower;
+            foreach (var possibleAttackTerritory in possibleAttackTerritories.Values)
+                ownArmies += possibleAttackTerritory.GetIdleArmies().AttackPowerOr(10);
 
             var amountTerritories = bonus.Territories.Count;
             var opponentNeighbors = bonus.GetOpponentNeighbors().Count;
@@ -223,7 +224,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             var ownedTerritories = bonus.GetOwnedTerritories();
             var ownArmies = 0;
             foreach (var ownedTerritory in ownedTerritories)
-                ownArmies += ownedTerritory.Armies.DefensePower;
+                ownArmies += ownedTerritory.Armies.DefensePowerOr(10);
 
             GamePlayer maxOpponent = null;
             int maxPreventValue = int.MinValue;
@@ -248,14 +249,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         private int CalculatePreventValue(BotBonus bonus, List<BotTerritory> ownedTerritories, GamePlayer opponent, int ownArmies)
         {
-            var attackingTerritories = new HashSet<BotTerritory>();
+            var attackingTerritories = new Dictionary<TerritoryIDType, BotTerritory>();
 
             foreach (var ownedTerritory in ownedTerritories)
-                attackingTerritories.AddRange(ownedTerritory.Neighbors.Where(o => o.OwnerPlayerID == opponent.ID));
+                foreach (var neighbor in ownedTerritory.Neighbors.Where(o => o.OwnerPlayerID == opponent.ID))
+                    attackingTerritories[neighbor.ID] = neighbor;
 
             var opponentArmies = 0;
-            foreach (var territory in attackingTerritories)
-                opponentArmies += territory.Armies.AttackPower;
+            foreach (var territory in attackingTerritories.Values)
+                opponentArmies += territory.Armies.AttackPowerOr(10);
 
             var amountTerritories = bonus.Territories.Count;
             var preventValue = 0;

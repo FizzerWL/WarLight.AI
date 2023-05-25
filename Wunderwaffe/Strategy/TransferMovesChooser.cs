@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WarLight.Shared.AI.Wunderwaffe.Bot;
 using WarLight.Shared.AI.Wunderwaffe.Evaluation;
 
@@ -13,17 +14,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Strategy
         {
             // Calculate the border territories and the territories bordering border territories
             var outvar = new Moves();
-            var possibleFromTerritories = new HashSet<BotTerritory>();
-            possibleFromTerritories.AddRange(state.VisibleMap.GetBorderTerritories());
-            var temp = new HashSet<BotTerritory>();
-            foreach (var territory in possibleFromTerritories)
-            {
-                temp.AddRange(territory.GetOwnedNeighbors());
-            }
-            possibleFromTerritories.AddRange(temp);
+            var possibleFromTerritories = new Dictionary<TerritoryIDType, BotTerritory>();
+            state.VisibleMap.GetBorderTerritories().ForEach(o => possibleFromTerritories[o.ID] = o);
+            var temp = new Dictionary<TerritoryIDType, BotTerritory>();
+            foreach (var territory in possibleFromTerritories.Values)
+                territory.GetOwnedNeighbors().ForEach(o => temp[o.ID] = o);
+            temp.Values.ForEach(o => possibleFromTerritories[o.ID] = o);
             // Calculate which territories use for transferring
             List<BotTerritory> goodTransferTerritories = new List<BotTerritory>();
-            foreach (var possibleFromTerritory in possibleFromTerritories)
+            foreach (var possibleFromTerritory in possibleFromTerritories.Values)
             {
                 if (possibleFromTerritory.GetOpponentNeighbors().Count == 0 || possibleFromTerritory.DefenceTerritoryValue < TerritoryValueCalculator.LOWEST_HIGH_PRIORITY_VALUE)
                 {

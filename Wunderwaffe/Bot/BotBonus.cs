@@ -147,14 +147,14 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public List<BotTerritory> GetOwnedTerritoriesAndNeighbors()
         {
-            var territoriesToConsider = new HashSet<BotTerritory>();
+            var territoriesToConsider = new Dictionary<TerritoryIDType, BotTerritory>();
             foreach (var territory in this.Territories)
             {
-                territoriesToConsider.Add(territory);
-                territoriesToConsider.AddRange(territory.Neighbors);
+                territoriesToConsider[territory.ID] = territory;
+                territory.Neighbors.ForEach(o => territoriesToConsider[o.ID] = o);
             }
             List<BotTerritory> outvar = new List<BotTerritory>();
-            foreach (var territoryToConsider in territoriesToConsider)
+            foreach (var territoryToConsider in territoriesToConsider.Values)
             {
                 if (territoryToConsider.OwnerPlayerID == BotState.Me.ID)
                     outvar.Add(territoryToConsider);
@@ -164,19 +164,17 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public List<BotTerritory> GetOwnedNeighborTerritories()
         {
-            var territoriesToConsider = new HashSet<BotTerritory>();
+            var territoriesToConsider = new Dictionary<TerritoryIDType, BotTerritory>();
             foreach (var territory in this.Territories)
             {
                 var neighbors = territory.GetOwnedNeighbors();
                 foreach (var neighbor in neighbors)
                 {
                     if (!neighbor.Details.PartOfBonuses.Contains(this.ID))
-                        territoriesToConsider.Add(neighbor);
+                        territoriesToConsider[neighbor.ID] = neighbor;
                 }
             }
-            var outvar = new List<BotTerritory>();
-            outvar.AddRange(territoriesToConsider);
-            return outvar;
+            return territoriesToConsider.Values.ToList();
         }
 
         public bool ContainsOwnPresence()
